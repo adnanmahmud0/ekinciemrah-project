@@ -29,7 +29,7 @@ export default function ProductAndCatalogPage() {
             <IconPlus className="h-4 w-4" />
             Add Category
           </Button>
-          <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+          <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
             <IconPlus className="h-4 w-4" />
             Add Product
           </Button>
