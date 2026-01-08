@@ -1,5 +1,8 @@
-// components/app-sidebar.tsx
+"use client";
+
 import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   User,
   Package,
@@ -20,21 +23,31 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { VersionSwitcher } from "./version-switcher"; // you can remove this if not needed
-import { SearchForm } from "./search-form"; // optional – remove if you don't want search
+import { VersionSwitcher } from "./version-switcher";
+import { SearchForm } from "./search-form";
 
 const menuItems = [
-  { title: "User Management", icon: User, active: true },
-  { title: "Product & Catalog", icon: Package },
-  { title: "Orders & Invoicing", icon: ShoppingCart },
-  { title: "Payment & Credits", icon: CreditCard },
-  { title: "Reports & Analytics", icon: BarChart3 },
-  { title: "Reviews", icon: Star },
-  { title: "Settings", icon: Settings },
-  { title: "Notifications", icon: Bell },
+  { title: "User Management", icon: User, url: "/" },
+  { title: "Product & Catalog", icon: Package, url: "/product-and-catalog" },
+  {
+    title: "Orders & Invoicing",
+    icon: ShoppingCart,
+    url: "/orders-and-invoicing",
+  },
+  { title: "Payment & Credits", icon: CreditCard, url: "/payment-and-credit" },
+  {
+    title: "Reports & Analytics",
+    icon: BarChart3,
+    url: "/reports-and-analytics",
+  },
+  { title: "Reviews", icon: Star, url: "/reviews" },
+  { title: "Settings", icon: Settings, url: "/settings" },
+  { title: "Notifications", icon: Bell, url: "/notifications" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="">
@@ -58,13 +71,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
-                isActive={item.active}
+                isActive={pathname === item.url}
                 className="w-full px-5 py-5 my-1 justify-start text-bas text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground"
               >
-                <a href="#">
+                <Link href={item.url}>
                   <item.icon className="size-6" />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

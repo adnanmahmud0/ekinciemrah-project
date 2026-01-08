@@ -18,7 +18,7 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <DollarSign className="h-5 w-5 text-sidebar" />
-          <CardTitle className="">Total Revenue</CardTitle>
+          <CardTitle>Total Revenue</CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             $1,250.00
           </CardTitle>
@@ -27,7 +27,7 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <Users className="h-5 w-5 text-sidebar" />
-          <CardDescription>New Customers</CardDescription>
+          <CardTitle>New Customers</CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             1,234
           </CardTitle>
@@ -36,7 +36,7 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <FileText className="h-5 w-5 text-sidebar" />
-          <CardDescription>Active Accounts</CardDescription>
+          <CardTitle>Active Accounts</CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             45,678
           </CardTitle>
@@ -45,7 +45,7 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <MessageSquare className="h-5 w-5 text-sidebar" />
-          <CardDescription>Growth Rate</CardDescription>
+          <CardTitle>Growth Rate</CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             4.5%
           </CardTitle>

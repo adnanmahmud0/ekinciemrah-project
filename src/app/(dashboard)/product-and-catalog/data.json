@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "product": "Tomatoes",
+    "category": "Vegetables",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  },
+  {
+    "id": 2,
+    "product": "Apple",
+    "category": "Fruits",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  },
+  {
+    "id": 3,
+    "product": "Tomatoes",
+    "category": "Vegetables",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  },
+  {
+    "id": 4,
+    "product": "Tomatoes",
+    "category": "Vegetables",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  },
+  {
+    "id": 5,
+    "product": "Tomatoes",
+    "category": "Vegetables",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  },
+  {
+    "id": 6,
+    "product": "Tomatoes",
+    "category": "Vegetables",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  },
+  {
+    "id": 7,
+    "product": "Tomatoes",
+    "category": "Vegetables",
+    "price": "$2.50/kg",
+    "stock": "500 lb",
+    "status": "Available"
+  }
+]

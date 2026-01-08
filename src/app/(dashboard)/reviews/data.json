@@ -1,0 +1,58 @@
+[
+    {
+        "id": "1",
+        "customer": "Rahim Uddin",
+        "product": "Apple",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    },
+    {
+        "id": "2",
+        "customer": "Korim",
+        "product": "Fruits",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    },
+    {
+        "id": "3",
+        "customer": "Jhon",
+        "product": "Vegetables",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    },
+    {
+        "id": "4",
+        "customer": "Zara",
+        "product": "Tomato",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    },
+    {
+        "id": "5",
+        "customer": "Ranju",
+        "product": "Vegetables",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    },
+    {
+        "id": "6",
+        "customer": "Krish",
+        "product": "Vegetables",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    },
+    {
+        "id": "7",
+        "customer": "Jack",
+        "product": "Vegetables",
+        "rating": 5.0,
+        "comment": "Best Quality Product",
+        "date": "April 18,2025"
+    }
+]
