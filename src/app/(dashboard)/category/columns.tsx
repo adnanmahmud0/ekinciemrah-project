@@ -11,32 +11,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AddCategoryDialog } from "@/components/dialog/add-category-dialog";
 
-export type Product = {
+export type Category = {
   id: number;
-  product: string;
-  category: string;
-  price: string;
-  stock: string;
+  name: string;
+  products: number;
   status: string;
 };
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Category>[] = [
   {
-    accessorKey: "product",
-    header: "Product",
+    accessorKey: "name",
+    header: "Category Name",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("name")}</div>
+    ),
   },
   {
-    accessorKey: "category",
-    header: "Category",
-  },
-  {
-    accessorKey: "price",
-    header: "Price",
-  },
-  {
-    accessorKey: "stock",
-    header: "Stock",
+    accessorKey: "products",
+    header: "Products",
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("products")}</div>
+    ),
   },
   {
     accessorKey: "status",
@@ -48,7 +45,7 @@ export const columns: ColumnDef<Product>[] = [
           <Badge
             variant="outline"
             className={
-              status === "Available"
+              status === "Active"
                 ? "border-green-500 text-green-500 bg-green-500/10"
                 : "border-gray-500 text-gray-500 bg-gray-500/10"
             }
@@ -62,7 +59,8 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: "actions",
     header: "Action",
-    cell: () => {
+    cell: ({ row }) => {
+      const category = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -72,7 +70,14 @@ export const columns: ColumnDef<Product>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <AddCategoryDialog
+              category={category}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  Edit
+                </DropdownMenuItem>
+              }
+            />
             <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

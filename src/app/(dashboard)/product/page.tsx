@@ -1,6 +1,3 @@
-import { IconPlus } from "@tabler/icons-react";
-
-import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/datatable/DataTable";
 import {
@@ -10,29 +7,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AddProductDialog } from "@/components/dialog/add-product-dialog";
 import { columns } from "./columns";
 import data from "./data.json";
 
-export default function ProductAndCatalogPage() {
+export default function ProductPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pr-6">
         <PageHeader
-          title="Product & Catelog Management"
-          description="Manage products, categories,& pricing"
+          title="Product Management"
+          description="Manage products, pricing, and stock"
         />
         <div className="flex gap-2 ml-6 md:ml-0">
-          <Button
-            variant="outline"
-            className="gap-2 text-primary border-primary hover:bg-primary/10"
-          >
-            <IconPlus className="h-4 w-4" />
-            Add Category
-          </Button>
-          <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-            <IconPlus className="h-4 w-4" />
-            Add Product
-          </Button>
+          <AddProductDialog />
         </div>
       </div>
 

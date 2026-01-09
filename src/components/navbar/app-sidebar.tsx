@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   User,
   Package,
+  Layers,
   ShoppingCart,
   CreditCard,
   BarChart3,
@@ -28,7 +29,8 @@ import { SearchForm } from "./search-form";
 
 const menuItems = [
   { title: "User Management", icon: User, url: "/" },
-  { title: "Product & Catalog", icon: Package, url: "/product-and-catalog" },
+  { title: "Product Management", icon: Package, url: "/product" },
+  { title: "Category Management", icon: Layers, url: "/category" },
   {
     title: "Orders & Invoicing",
     icon: ShoppingCart,
