@@ -1,9 +1,7 @@
 "use client";
 
-import { Search, User, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
 import data from "./data.json";
 
 export default function NotificationsPage() {
@@ -16,22 +14,12 @@ export default function NotificationsPage() {
         </Button>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-        <Input
-          placeholder="Search here......"
-          className="pl-9 bg-white border-gray-200"
-        />
-      </div>
-
       <div className="flex flex-col">
         {data.map((notification) => (
           <div
             key={notification.id}
             className={`flex items-start gap-4 p-4 ${
-              notification.type === "info"
-                ? "bg-blue-50/50"
-                : "bg-teal-50/50"
+              notification.type === "info" ? "bg-blue-50/50" : "bg-teal-50/50"
             } border-b border-white last:border-0`}
           >
             <div className="mt-1">

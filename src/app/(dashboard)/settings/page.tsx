@@ -15,12 +15,35 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Change Password"
-        description="Enter your new password to complete the reset."
+        title="Settings"
+        description="Manage your profile settings and preferences."
       />
 
-      <div className="rounded-lg bg-red-50/50 p-6 md:p-8">
+      <div className="rounded-lg p-6 md:p-8">
         <div className="grid gap-6 max-w-2xl">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="Your Name"
+              className="bg-blue-50/50 border-blue-100"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your.email@example.com"
+              className="bg-blue-50/50 border-blue-100"
+            />
+          </div>
+
+          <div className="border-t border-gray-200 my-2"></div>
+          
+          <h3 className="text-lg font-medium">Change Password</h3>
+
           <div className="grid gap-2">
             <Label htmlFor="current-password">Current Password</Label>
             <div className="relative">
