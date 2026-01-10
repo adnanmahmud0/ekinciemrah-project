@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OrderDetailsDialog } from "@/components/dialog/order-details-dialog";
 
 export type Order = {
   id: number;
@@ -21,6 +22,19 @@ export type Order = {
   total: string;
   invoice: string;
   status: string;
+  orderItems?: {
+    product: string;
+    quantity: string;
+    price: string;
+    total: string;
+  }[];
+  userInfo?: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    deliveryDate: string;
+  };
 };
 
 export const columns: ColumnDef<Order>[] = [
@@ -72,7 +86,8 @@ export const columns: ColumnDef<Order>[] = [
   {
     id: "actions",
     header: "Action",
-    cell: () => {
+    cell: ({ row }) => {
+      const order = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -82,8 +97,15 @@ export const columns: ColumnDef<Order>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem>Download Invoice</DropdownMenuItem>
+            <OrderDetailsDialog
+              order={order}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  View Details
+                </DropdownMenuItem>
+              }
+            />
+            <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

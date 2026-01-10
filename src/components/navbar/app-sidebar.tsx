@@ -37,11 +37,6 @@ const menuItems = [
     url: "/orders-and-invoicing",
   },
   { title: "Payment & Credits", icon: CreditCard, url: "/payment-and-credit" },
-  {
-    title: "Reports & Analytics",
-    icon: BarChart3,
-    url: "/reports-and-analytics",
-  },
   { title: "Reviews", icon: Star, url: "/reviews" },
   { title: "Settings", icon: Settings, url: "/settings" },
   { title: "Notifications", icon: Bell, url: "/notifications" },

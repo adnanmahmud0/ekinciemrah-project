@@ -1,13 +1,28 @@
 [
   {
     "id": 1,
-    "orderId": "ORD-1245",
-    "customer": "Restaurant",
-    "date": "2026-01-02",
+    "orderId": "ORD-2026-001",
+    "customer": "Downtown Restaurant",
+    "date": "2025-12-12",
     "items": 5,
-    "total": "$120.00",
+    "total": "$125.00",
     "invoice": "500 lb",
-    "status": "Generated"
+    "status": "Generated",
+    "orderItems": [
+      {
+        "product": "Tomatoes",
+        "quantity": "50/ Pound",
+        "price": "$2.50",
+        "total": "$125.00"
+      }
+    ],
+    "userInfo": {
+      "name": "Jhon Doe",
+      "email": "jhon145@gmail.com",
+      "phone": "01745....",
+      "address": "Dhaka Gulsan House #12",
+      "deliveryDate": "20/01/2026"
+    }
   },
   {
     "id": 2,
