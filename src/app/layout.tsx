@@ -1,5 +1,6 @@
 import "./globals.css";
 import { nunitoSans } from "./fonts";
+import { AuthProvider } from "@/context/auth-context";
 
 export default function RootLayout({
   children,
@@ -8,7 +9,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={nunitoSans.variable}>
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

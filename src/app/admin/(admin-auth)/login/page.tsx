@@ -1,5 +1,5 @@
 import { Login } from "@/components/auth/Login";
 
 export default function Page() {
-  return <Login showSignup={true} />;
+  return <Login showSignup={false} />;
 }

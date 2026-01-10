@@ -1,6 +1,6 @@
 // app/layout.tsx
 
-import { AppSidebar } from "@/components/navbar/app-sidebar";
+import { AppSidebar } from "@/components/admin-navbar-sidebar/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
