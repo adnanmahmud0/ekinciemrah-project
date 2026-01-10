@@ -1,5 +1,5 @@
-import { GalleryVerticalEnd } from "lucide-react";
 import React from "react";
+import Image from "next/image";
 
 export default function AuthLayout({
   children,
@@ -9,9 +9,10 @@ export default function AuthLayout({
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="bg-muted relative hidden lg:block">
-        <img
+        <Image
           src="/placeholder.svg"
           alt="Image"
+          fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

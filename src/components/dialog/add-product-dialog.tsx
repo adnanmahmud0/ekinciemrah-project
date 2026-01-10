@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useRef, useState, useEffect } from "react";
 import { IconPhoto, IconPlus, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,6 @@ interface AddProductDialogProps {
 
 export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Initialize form data if product exists
@@ -57,7 +57,6 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
@@ -65,7 +64,6 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
 
   const handleRemoveFile = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedFile(null);
     setPreviewUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";

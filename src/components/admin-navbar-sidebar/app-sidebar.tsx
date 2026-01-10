@@ -9,7 +9,6 @@ import {
   Layers,
   ShoppingCart,
   CreditCard,
-  BarChart3,
   Star,
   Settings,
   Bell,
@@ -24,8 +23,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { VersionSwitcher } from "./version-switcher";
-import { SearchForm } from "./search-form";
 
 const menuItems = [
   { title: "User Management", icon: User, url: "/" },

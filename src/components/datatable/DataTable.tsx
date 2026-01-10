@@ -66,6 +66,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
     [data]
   );
 
+  /* eslint-disable react-hooks/incompatible-library */
   const table = useReactTable({
     data,
     columns,

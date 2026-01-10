@@ -58,9 +58,7 @@ export const columns: ColumnDef<Review>[] = [
   {
     id: "actions",
     header: "Action",
-    cell: ({ row }) => {
-      const review = row.original;
-
+    cell: ({ }) => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function RootLayout({
   children,
@@ -29,10 +30,13 @@ export default function RootLayout({
             </Link>
             <div className="flex items-center gap-2">
               <div className="size-8 rounded-full overflow-hidden bg-muted">
-                <img
+                <Image
                   src="https://i.pravatar.cc/40?img=12"
                   alt="User avatar"
+                  width={32}
+                  height={32}
                   className="h-8 w-8 object-cover"
+                  unoptimized
                 />
               </div>
               <div className="leading-tight">
