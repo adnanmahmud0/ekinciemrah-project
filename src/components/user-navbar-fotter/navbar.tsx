@@ -85,7 +85,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="#"
+            href="/cart"
             className="text-white hover:text-white/80 transition-colors"
           >
             <ShoppingCart className="h-5 w-5" />
