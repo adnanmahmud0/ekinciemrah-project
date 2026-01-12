@@ -37,10 +37,9 @@ const SOCIAL_LINKS = [
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Store", href: "/store" },
-  { label: "Features", href: "/features" },
-  { label: "Blog", href: "/blog" },
+  { label: "Service", href: "/service" },
   { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -50,7 +49,7 @@ export default function Navbar() {
   return (
     <header className="shadow-md bg-primary tracking-wide relative z-50">
       {/* Top bar */}
-      <section className="flex items-center flex-wrap lg:justify-center gap-4 py-2.5 sm:px-10 px-4 border-primary-foreground/20 border-b min-h-[70px]">
+      <section className="flex items-center flex-wrap lg:justify-center gap-4 py-2.5 sm:px-10 px-4 border-primary-foreground/20 border-b min-h-17.5">
         {/* Social Icons - desktop only */}
         <div className="absolute left-10 z-50 flex items-center gap-4 max-lg:hidden">
           {SOCIAL_LINKS.map((link, index) => {
@@ -177,7 +176,7 @@ export default function Navbar() {
               <Menu className="h-7 w-7" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[380px] p-6">
+          <SheetContent side="left" className="w-75 sm:w-95 p-6">
             <div className="flex justify-between items-center mb-8">
               <Link href="/" onClick={() => setIsOpen(false)}>
                 <span className="text-xl font-bold text-foreground">
