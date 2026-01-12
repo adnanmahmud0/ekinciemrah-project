@@ -1,5 +1,6 @@
 "use client";
 
+import { Pin } from "lucide-react";
 import Image from "next/image";
 
 const categories = [
@@ -18,7 +19,8 @@ export default function Categories() {
         {/* Header */}
         <div className="mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#0D1E32] flex items-center gap-2">
-            <span className="text-[#146041] text-lg uppercase tracking-wider font-bold block mb-2">
+            <span className="text-[#146041] text-xl uppercase tracking-wider font-bold mb-2 flex items-center gap-2">
+              <Pin className="w-5 h-5" />
               Servify
             </span>
           </h2>
