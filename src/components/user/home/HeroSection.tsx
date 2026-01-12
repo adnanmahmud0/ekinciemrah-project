@@ -33,7 +33,7 @@ export default function HeroSection() {
               Offer a Service
             </Button>
           </div>
-
+          {/* kjfvkjnkjb n */}
           {/* Right Visuals - Collage */}
           <div className="lg:w-1/2 relative min-h-125 w-full flex items-center justify-center">
             {/* Decorative Elements */}
