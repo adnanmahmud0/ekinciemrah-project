@@ -1,7 +1,240 @@
-import React from 'react'
+"use client";
+import React, { use } from "react";
+import { notFound } from "next/navigation";
+import ProductDetails from "@/components/user/service/ProductDetails";
+import ProductReviews, { Review } from "@/components/user/service/ProductReviews";
+import ReviewForm from "@/components/user/service/ReviewForm";
+import { Product } from "@/components/user/service/ServiceCard";
 
-export default function page() {
+// Mock data - Replace with API call
+const MOCK_PRODUCTS: Product[] = [
+  {
+    id: "1",
+    name: "Red Tomatoes",
+    category: "Vegetables",
+    image: "/category-1.png",
+    rating: 4.5,
+    reviewCount: 20,
+    price: 2.50,
+    unit: "Pound",
+    description: "Fresh, vine-ripened organic red tomatoes grown without chemicals, harvested at peak ripeness for rich flavor, vibrant color, and juicy texture.",
+  },
+  {
+    id: "2",
+    name: "Carrots",
+    category: "Vegetables",
+    image: "/category-2.png",
+    rating: 4.5,
+    reviewCount: 20,
+    price: 2.50,
+    unit: "Pound",
+    description: "Fresh, vine-ripened organic carrots.",
+  },
+  {
+    id: "2a",
+    name: "Fresh Broccoli",
+    category: "Vegetables",
+    image: "/category-3.png",
+    rating: 4.7,
+    reviewCount: 18,
+    price: 3.20,
+    unit: "Pound",
+    description: "Crisp and nutritious organic broccoli florets.",
+  },
+  {
+    id: "2b",
+    name: "Bell Peppers",
+    category: "Vegetables",
+    image: "/category-4.png",
+    rating: 4.6,
+    reviewCount: 25,
+    price: 2.80,
+    unit: "Pound",
+    description: "Colorful organic bell peppers, perfect for salads.",
+  },
+  {
+    id: "2c",
+    name: "Cucumbers",
+    category: "Vegetables",
+    image: "/category-5.png",
+    rating: 4.4,
+    reviewCount: 12,
+    price: 1.90,
+    unit: "Pound",
+    description: "Fresh and crunchy organic cucumbers.",
+  },
+  {
+    id: "2d",
+    name: "Zucchini",
+    category: "Vegetables",
+    image: "/category-1.png",
+    rating: 4.3,
+    reviewCount: 14,
+    price: 2.20,
+    unit: "Pound",
+    description: "Tender organic zucchini, great for grilling.",
+  },
+  {
+    id: "3",
+    name: "Fresh Apples",
+    category: "Fruits",
+    image: "/category-2.png",
+    rating: 4.8,
+    reviewCount: 35,
+    price: 3.00,
+    unit: "Pound",
+    description: "Crisp and sweet organic apples.",
+  },
+  {
+    id: "4",
+    name: "Spinach",
+    category: "Greens",
+    image: "/category-3.png",
+    rating: 4.6,
+    reviewCount: 15,
+    price: 1.80,
+    unit: "Pound",
+    description: "Fresh organic spinach leaves.",
+  },
+  {
+    id: "5",
+    name: "Whole Milk",
+    category: "Dairy",
+    image: "/category-4.png",
+    rating: 4.7,
+    reviewCount: 42,
+    price: 4.50,
+    unit: "Gallon",
+    description: "Fresh whole milk from local farms.",
+  },
+  {
+    id: "6",
+    name: "Rice",
+    category: "Dry Groceries",
+    image: "/category-5.png",
+    rating: 4.9,
+    reviewCount: 58,
+    price: 12.00,
+    unit: "5lb Bag",
+    description: "Premium long-grain white rice.",
+  },
+  {
+    id: "7",
+    name: "Organic Pasta",
+    category: "Pantry",
+    image: "/category-1.png",
+    rating: 4.5,
+    reviewCount: 22,
+    price: 3.50,
+    unit: "Box",
+    description: "Artisan organic pasta made from durum wheat.",
+  },
+  {
+    id: "8",
+    name: "Cheddar Cheese",
+    category: "Cheese",
+    image: "/category-2.png",
+    rating: 4.8,
+    reviewCount: 31,
+    price: 6.00,
+    unit: "8oz",
+    description: "Aged sharp cheddar cheese.",
+  },
+];
+
+const MOCK_REVIEWS: Review[] = [
+  {
+    id: "1",
+    userId: "user1",
+    userName: "Rahim",
+    rating: 5,
+    comment: "Excellent tomatoes ! Very fresh & sweet.",
+    createdAt: "2 days ago",
+  },
+  {
+    id: "2",
+    userId: "user2",
+    userName: "Sadia",
+    rating: 5,
+    comment: "Excellent tomatoes ! Very fresh & sweet.",
+    createdAt: "2 days ago",
+  },
+  {
+    id: "3",
+    userId: "user3",
+    userName: "Sufiya",
+    rating: 5,
+    comment: "Excellent tomatoes ! Very fresh & sweet.",
+    createdAt: "2 days ago",
+  },
+  {
+    id: "4",
+    userId: "user4",
+    userName: "Rahim",
+    rating: 5,
+    comment: "Excellent tomatoes ! Very fresh & sweet.",
+    createdAt: "2 days ago",
+  },
+  {
+    id: "5",
+    userId: "user5",
+    userName: "Sadia",
+    rating: 5,
+    comment: "Excellent tomatoes ! Very fresh & sweet.",
+    createdAt: "2 days ago",
+  },
+  {
+    id: "6",
+    userId: "user6",
+    userName: "Sufiya",
+    rating: 5,
+    comment: "Excellent tomatoes ! Very fresh & sweet.",
+    createdAt: "2 days ago",
+  },
+];
+
+interface ProductPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function ProductPage({ params }: ProductPageProps) {
+  // Unwrap the params Promise using React.use() for Next.js 16
+  const { id } = use(params);
+
+  // In a real app, fetch product by id from API
+  const product = MOCK_PRODUCTS.find((p) => p.id === id);
+
+  if (!product) {
+    notFound();
+  }
+
+  const handleReviewSubmit = (rating: number, comment: string) => {
+    console.log("New review:", { rating, comment });
+    // In a real app, submit to API
+  };
+
   return (
-    <div>page</div>
-  )
+    <section className="py-12 bg-gray-50 min-h-screen">
+      <div className="container mx-auto px-6 md:px-12 lg:px-24">
+        {/* Product Details */}
+        <ProductDetails product={product} />
+
+        {/* Rate & Review Section */}
+        <div className="mt-16" id="reviews">
+          <div className="flex items-center gap-2 mb-8">
+            <span className="text-yellow-400 text-2xl">⭐</span>
+            <h2 className="text-3xl font-bold text-[#0D1E32]">Rate & Review</h2>
+          </div>
+
+          {/* Reviews Grid */}
+          <ProductReviews reviews={MOCK_REVIEWS} />
+
+          {/* Review Form */}
+          <div className="mt-12">
+            <ReviewForm onSubmit={handleReviewSubmit} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

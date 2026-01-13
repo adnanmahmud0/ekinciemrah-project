@@ -78,14 +78,14 @@ export default function Navbar() {
         {/* Icons */}
         <div className="lg:absolute lg:right-10 flex items-center ml-auto gap-6 sm:gap-8">
           <Link
-            href="#"
+            href="/favourite"
             className="text-white hover:text-white/80 transition-colors"
           >
             <Heart className="h-5 w-5" />
           </Link>
 
           <Link
-            href="#"
+            href="/cart"
             className="text-white hover:text-white/80 transition-colors"
           >
             <ShoppingCart className="h-5 w-5" />

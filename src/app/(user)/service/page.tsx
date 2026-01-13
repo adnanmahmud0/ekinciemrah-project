@@ -1,5 +1,5 @@
-import React from "react";
+import ServicePage from "@/components/user/service/ServicePage";
 
-export default function ServicePage() {
-  return <div>Service page</div>;
+export default function Page() {
+  return <ServicePage />;
 }
