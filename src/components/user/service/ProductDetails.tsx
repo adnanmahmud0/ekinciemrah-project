@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Star, Minus, Plus } from "lucide-react";
 import { Product } from "./ServiceCard";
 
@@ -49,8 +50,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             <Star
                                 key={i}
                                 className={`w-5 h-5 ${i < Math.floor(product.rating)
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-gray-300"
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300"
                                     }`}
                             />
                         ))}
@@ -103,9 +104,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <button className="flex-1 py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors">
-                            Buy Now
-                        </button>
+                        <Link href={`/purchase/${product.id}`} className="flex-1">
+                            <button className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors">
+                                Buy Now
+                            </button>
+                        </Link>
                         <button className="flex-1 py-4 bg-white hover:bg-gray-50 text-[#146041] border-2 border-[#146041] rounded-xl font-bold transition-colors">
                             + Add to Cart
                         </button>
