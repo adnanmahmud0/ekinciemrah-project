@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { CartItem } from "./CartItem";
 
 interface CartSummaryProps {
@@ -33,9 +34,11 @@ export default function CartSummary({ items, shipping }: CartSummaryProps) {
                 </div>
             </div>
 
-            <button className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors">
-                Proceed to Checkout
-            </button>
+            <Link href="/checkout">
+                <button className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors">
+                    Proceed to Checkout
+                </button>
+            </Link>
         </div>
     );
 }
