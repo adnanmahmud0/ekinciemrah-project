@@ -1,6 +1,11 @@
 // components/Footer.tsx
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+} from "lucide-react";
 
 const SOCIAL_LINKS = [
   { icon: Facebook, href: "#" },

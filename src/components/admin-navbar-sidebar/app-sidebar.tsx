@@ -25,18 +25,22 @@ import {
 } from "@/components/ui/sidebar";
 
 const menuItems = [
-  { title: "User Management", icon: User, url: "/" },
-  { title: "Product Management", icon: Package, url: "/product" },
-  { title: "Category Management", icon: Layers, url: "/category" },
+  { title: "User Management", icon: User, url: "/admin" },
+  { title: "Product Management", icon: Package, url: "/admin/product" },
+  { title: "Category Management", icon: Layers, url: "/admin/category" },
   {
     title: "Orders & Invoicing",
     icon: ShoppingCart,
-    url: "/orders-and-invoicing",
+    url: "/admin/orders-and-invoicing",
   },
-  { title: "Payment & Credits", icon: CreditCard, url: "/payment-and-credit" },
-  { title: "Reviews", icon: Star, url: "/reviews" },
-  { title: "Settings", icon: Settings, url: "/settings" },
-  { title: "Notifications", icon: Bell, url: "/notifications" },
+  {
+    title: "Payment & Credits",
+    icon: CreditCard,
+    url: "/admin/payment-and-credit",
+  },
+  { title: "Reviews", icon: Star, url: "/admin/reviews" },
+  { title: "Settings", icon: Settings, url: "/admin/settings" },
+  { title: "Notifications", icon: Bell, url: "/admin/notifications" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
