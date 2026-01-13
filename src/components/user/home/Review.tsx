@@ -72,14 +72,6 @@ export default function Review() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleNext();
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [currentIndex]); // Depend on currentIndex to handle the snap logic correctly
-
   const handleNext = () => {
     if (currentIndex >= reviews.length) {
       // If we somehow drifted, reset immediately
@@ -91,6 +83,14 @@ export default function Review() {
     setIsTransitioning(true);
     setCurrentIndex((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNext();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex]); // Depend on currentIndex to handle the snap logic correctly
 
   useEffect(() => {
     if (currentIndex === reviews.length) {
