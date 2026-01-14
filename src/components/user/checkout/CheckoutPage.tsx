@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import CheckoutCartItem from "./CheckoutCartItem";
 import { CartItem } from "../cart/CartItem";
+import { toast } from "sonner";
+import { Tag } from "lucide-react";
 
 // Mock data - Replace with cart state from context/redux
 const MOCK_CART_ITEMS: CartItem[] = [
@@ -53,6 +55,22 @@ export default function CheckoutPage({ initialCartItems = MOCK_CART_ITEMS }: Che
         region: "",
         deliveryDate: "",
     });
+    const [promoCode, setPromoCode] = useState("");
+    const [discount, setDiscount] = useState(0); // Store as percentage
+
+    const handleApplyPromo = () => {
+        const code = promoCode.toUpperCase().trim();
+        if (code === "FRESH25") {
+            setDiscount(25);
+            toast.success("Promo code applied! 25% discount added.");
+        } else if (code === "UNIFIED10") {
+            setDiscount(10);
+            toast.success("Promo code applied! 10% discount added.");
+        } else {
+            setDiscount(0);
+            toast.error("Invalid promo code. Please try again.");
+        }
+    };
 
     const handleUpdateQuantity = (id: string, quantity: number) => {
         setCartItems((prev) =>
@@ -67,7 +85,8 @@ export default function CheckoutPage({ initialCartItems = MOCK_CART_ITEMS }: Che
     const merchandiseSubtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const totalKg = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const shippingCost = 5.00;
-    const total = merchandiseSubtotal + shippingCost;
+    const discountAmount = (merchandiseSubtotal * discount) / 100;
+    const total = merchandiseSubtotal + shippingCost - discountAmount;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -214,6 +233,35 @@ export default function CheckoutPage({ initialCartItems = MOCK_CART_ITEMS }: Che
                                     </div>
                                 </div>
 
+                                {/* Promo Code */}
+                                <div className="mb-6 p-6 bg-[#E6F4F1]/50 rounded-2xl border-2 border-dashed border-[#146041]/20">
+                                    <h3 className="text-sm font-bold text-[#0D1E32] mb-3 flex items-center gap-2">
+                                        <Tag className="w-4 h-4 text-[#146041]" />
+                                        Have a Promo Code?
+                                    </h3>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={promoCode}
+                                            onChange={(e) => setPromoCode(e.target.value)}
+                                            placeholder="Enter your code"
+                                            className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#146041] focus:border-transparent uppercase font-bold"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleApplyPromo}
+                                            className="px-6 py-3 bg-[#146041] text-white rounded-xl font-bold hover:bg-[#0e4b32] transition-colors"
+                                        >
+                                            Apply
+                                        </button>
+                                    </div>
+                                    {discount > 0 && (
+                                        <p className="mt-2 text-sm font-medium text-[#146041]">
+                                            🎉 {discount}% discount applied!
+                                        </p>
+                                    )}
+                                </div>
+
                                 {/* Delivery or pickup */}
                                 <div className="bg-white rounded-xl p-4 mb-6">
                                     <h3 className="font-semibold text-gray-700 mb-3">Delivery or pickup</h3>
@@ -226,6 +274,12 @@ export default function CheckoutPage({ initialCartItems = MOCK_CART_ITEMS }: Che
                                             <span className="text-gray-600">Shipping Subtotal</span>
                                             <span className="font-semibold">${shippingCost.toFixed(2)}</span>
                                         </div>
+                                        {discount > 0 && (
+                                            <div className="flex justify-between text-[#146041]">
+                                                <span className="font-medium font-brand">Promo Discount ({discount}%)</span>
+                                                <span className="font-bold">-${discountAmount.toFixed(2)}</span>
+                                            </div>
+                                        )}
                                         <div className="border-t border-gray-200 pt-2 mt-2">
                                             <div className="flex justify-between">
                                                 <span className="font-semibold text-gray-900">Total :</span>

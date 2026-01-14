@@ -1,17 +1,21 @@
+import CategoryIcons from "@/components/user/home/CategoryIcons";
+import PromotionalBanners from "@/components/user/home/PromotionalBanners";
+import FeaturedProducts from "@/components/user/home/FeaturedProducts";
+import OfferBanners from "@/components/user/home/OfferBanners";
+import BuyItAgain from "@/components/user/home/BuyItAgain";
 import AppMockUpBanner from "@/components/user/home/AppMockUpBanner";
-import Categories from "@/components/user/home/Categories";
-import HeroSection from "@/components/user/home/HeroSection";
 import HowItWorks from "@/components/user/home/HowItWorks";
-import Products from "@/components/user/home/Products";
 import Review from "@/components/user/home/Review";
 
 export default function page() {
   return (
     <div>
-      <HeroSection />
-      <Categories />
-      <Products />
+      <CategoryIcons />
+      <PromotionalBanners />
+      <FeaturedProducts />
       <HowItWorks />
+      <BuyItAgain />
+      <OfferBanners />
       <AppMockUpBanner />
       <Review />
     </div>

@@ -1,201 +1,198 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Star, User } from "lucide-react";
+import { Star, User, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 const reviews = [
   {
     id: 1,
-    name: "Holand Canals",
+    name: "Holland Canals",
+    role: "Regular Customer",
+    image: "/category-1.png",
     review:
-      "I found my rental condo within two days of browsing EasyRent.sg. The inquiry process was so simple, and I got a response from the agent almost instantly!",
+      "The quality of produce here is unmatched. I've been a regular for months now, and every delivery is as fresh as the first one. Truly a premium experience.",
     rating: 5,
   },
   {
     id: 2,
-    name: "Tolman Panels",
+    name: "Sarah Jenkins",
+    role: "Local Chef",
+    image: "/category-2.png",
     review:
-      "Listing my unit was incredibly easy. I received quality tenant inquiries without any hassle. Highly recommended for any landlord looking to rent fast.",
+      "As a chef, freshness is everything. Unified Produce has consistently provided the best greens and vegetables for my kitchen. Highly reliable and efficient.",
     rating: 5,
   },
   {
     id: 3,
-    name: "kalian Sandals",
+    name: "Mike Ross",
+    role: "Verified Buyer",
+    image: "/category-3.png",
     review:
-      "EasyRent.sg has helped me connect with serious tenants. The platform is well-organized, and I love receiving email inquiries from potential renters directly.",
+      "The selection is incredible. I love how I can find everything from exotic fruits to daily dairy essentials in one place. The service is top-notch!",
     rating: 5,
   },
   {
     id: 4,
-    name: "Sarah Jenkins",
+    name: "Elena Rodriguez",
+    role: "Health Enthusiast",
+    image: "/category-4.png",
     review:
-      "The best platform for finding reliable services. The interface is intuitive and the support team is always helpful.",
-    rating: 5,
-  },
-  {
-    id: 5,
-    name: "Mike Ross",
-    review:
-      "Simple, fast, and effective. I managed to rent out my property in record time thanks to the visibility this platform provides.",
-    rating: 5,
-  },
-  {
-    id: 6,
-    name: "Mike Ross",
-    review:
-      "Simple, fast, and effective. I managed to rent out my property in record time thanks to the visibility this platform provides.",
-    rating: 5,
-  },
-  {
-    id: 7,
-    name: "Mike Ross",
-    review:
-      "Simple, fast, and effective. I managed to rent out my property in record time thanks to the visibility this platform provides.",
-    rating: 5,
-  },
-  {
-    id: 8,
-    name: "Mike Ross",
-    review:
-      "Simple, fast, and effective. I managed to rent out my property in record time thanks to the visibility this platform provides.",
-    rating: 5,
-  },
-  {
-    id: 9,
-    name: "Mike Ross",
-    review:
-      "Simple, fast, and effective. I managed to rent out my property in record time thanks to the visibility this platform provides.",
+      "I'm very particular about organic food, and this platform has never disappointed me. The convenience of fresh delivery right to my door is life-changing.",
     rating: 5,
   },
 ];
-const extendedReviews = [...reviews, ...reviews.slice(0, 4)];
+
+const extendedReviews = [...reviews, ...reviews, ...reviews];
+
 export default function Review() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(reviews.length);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
   const handleNext = () => {
-    if (currentIndex >= reviews.length) {
-      // If we somehow drifted, reset immediately
-      setIsTransitioning(false);
-      setCurrentIndex(0);
-      return;
-    }
-
     setIsTransitioning(true);
     setCurrentIndex((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       handleNext();
-    }, 2000);
-
+    }, 4000);
     return () => clearInterval(interval);
-  }, [currentIndex]); // Depend on currentIndex to handle the snap logic correctly
+  }, []);
 
   useEffect(() => {
-    if (currentIndex === reviews.length) {
-      const timeout = setTimeout(() => {
+    if (currentIndex >= reviews.length * 2) {
+      setTimeout(() => {
         setIsTransitioning(false);
-        setCurrentIndex(0);
+        setCurrentIndex(reviews.length);
       }, 700);
-
-      return () => clearTimeout(timeout);
+    }
+    if (currentIndex <= reviews.length - 1) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(reviews.length * 2 - 1);
+      }, 700);
     }
   }, [currentIndex]);
 
   return (
-    <section className="py-36 border bg-white overflow-hidden">
-      <div className="container mx-auto px-6 md:px-12 lg:px-24">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#0D1E32] mb-4">
-            Our Customers Reviews
-          </h2>
-          <p className="text-gray-500">
-            Here are a few sample traveler reviews that you can feature on our website
-          </p>
+    <section className="py-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+      <div className="container mx-auto px-6 md:px-12">
+        <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6 text-center md:text-left">
+          <div className="max-w-2xl">
+            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-bold tracking-wider uppercase mb-4">
+              Testimonials
+            </span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#1A2D42] leading-[1.1] tracking-tight">
+              What Our <span className="text-primary italic font-brand">Community</span> Says
+            </h2>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={handlePrev}
+              className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:border-primary hover:text-primary transition-all group"
+            >
+              <ChevronLeft className="w-6 h-6 group-active:scale-90 transition-transform" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="p-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-[#0e4b32] transition-all group"
+            >
+              <ChevronRight className="w-6 h-6 group-active:scale-90 transition-transform" />
+            </button>
+          </div>
         </div>
-        <div className="relative w-full overflow-hidden">
-          <CarouselDisplay
-            currentIndex={currentIndex}
-            isTransitioning={isTransitioning}
-            items={extendedReviews}
-          />
+
+        <div className="relative">
+          <div className="overflow-visible">
+            <div
+              className={`flex gap-6 md:gap-8 ${isTransitioning ? 'transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)' : ''}`}
+              style={{
+                transform: `translateX(calc(-${currentIndex} * (100% / 3 + 24px/3)))`,
+              } as React.CSSProperties}
+            >
+              <style jsx>{`
+                div {
+                  --slide-width: 100%;
+                }
+                @media (max-width: 768px) {
+                  div {
+                    transform: translateX(calc(-${currentIndex} * 100%)) !important;
+                  }
+                }
+              `}</style>
+              {extendedReviews.map((review, idx) => (
+                <div
+                  key={`${review.id}-${idx}`}
+                  className="flex-shrink-0 w-full md:w-[calc(33.333%-16px)]"
+                >
+                  <ReviewCard review={review} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="flex justify-center gap-2 mt-12">
+
+        <div className="flex justify-center gap-3 mt-16">
           {reviews.map((_, idx) => (
             <button
               key={idx}
               onClick={() => {
                 setIsTransitioning(true);
-                setCurrentIndex(idx);
+                setCurrentIndex(idx + reviews.length);
               }}
-              className={`h-2.5 rounded-full transition-all duration-300 ${idx === (currentIndex % reviews.length)
-                ? "w-8 bg-[#146041]"
-                : "w-2.5 bg-[#146041]/20"
+              className={`h-2 rounded-full transition-all duration-500 ${idx === (currentIndex % reviews.length)
+                ? "w-12 bg-primary shadow-[0_0_15px_rgba(20,96,65,0.4)]"
+                : "w-2 bg-gray-200 hover:bg-gray-300"
                 }`}
-              aria-label={`Go to slide ${idx + 1}`}
             />
           ))}
         </div>
-
       </div>
     </section>
   );
 }
 
-function CarouselDisplay({ currentIndex, isTransitioning, items }: { currentIndex: number, isTransitioning: boolean, items: typeof reviews }) {
-  return (
-    <div
-      className={`flex gap-6 lg:gap-8 overflow-hidden`}
-    >
-      <div
-        className={`flex w-full ease-in-out ${isTransitioning ? 'transition-transform duration-700' : ''}`}
-        style={{
-          transform: `translateX(calc(-${currentIndex} * var(--slide-width, 100%)))`,
-        } as React.CSSProperties}
-      >
-        <style jsx>{`
-             div {
-                --slide-width: 100%;
-             }
-             @media (min-width: 1024px) {
-                div {
-                    --slide-width: 33.333%;
-                }
-             }
-        `}</style>
-        {items.map((review, idx) => (
-          <div
-            key={`${review.id}-${idx}`}
-            className="flex-shrink-0 w-full lg:w-1/3 px-3"
-          >
-            <ReviewCard review={review} />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 function ReviewCard({ review }: { review: typeof reviews[0] }) {
   return (
-    <div className="bg-[#E6F4F1] rounded-3xl p-8 h-[380px] flex flex-col items-center text-center transition-all hover:shadow-lg">
-      <div className="w-20 h-20 bg-gray-300 rounded-full mb-6 flex items-center justify-center overflow-hidden">
-        <User className="w-10 h-10 text-white" />
+    <div className="group relative bg-white/80 backdrop-blur-sm p-10 rounded-[2.5rem] border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 flex flex-col h-full overflow-hidden">
+      {/* Quote Icon Accent */}
+      <div className="absolute top-8 right-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500">
+        <Quote className="w-24 h-24 rotate-12" />
       </div>
 
-      <h3 className="text-xl font-bold text-[#0D1E32] mb-3">{review.name}</h3>
-
       {/* Stars */}
-      <div className="flex gap-1 mb-6">
+      <div className="flex gap-1.5 mb-8">
         {[...Array(review.rating)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-[#FFB800] text-[#FFB800]" />
+          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
         ))}
       </div>
 
-      <p className="text-gray-600 leading-relaxed text-sm line-clamp-4">
-        {review.review}
+      {/* Review Text */}
+      <p className="text-lg text-gray-600 leading-[1.7] mb-10 flex-grow font-medium">
+        "{review.review}"
       </p>
+
+      {/* User profile */}
+      <div className="flex items-center gap-5 pt-8 border-t border-gray-50">
+        <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-primary/5">
+          {review.image ? (
+            <img src={review.image} alt={review.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+              <User className="w-8 h-8 text-primary/40" />
+            </div>
+          )}
+        </div>
+        <div>
+          <h4 className="text-xl font-bold text-[#1A2D42] tracking-tight">{review.name}</h4>
+          <p className="text-sm font-semibold text-primary/70">{review.role}</p>
+        </div>
+      </div>
     </div>
   );
 }
