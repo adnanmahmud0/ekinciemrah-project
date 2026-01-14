@@ -178,13 +178,15 @@ export default function Navbar() {
           <div className="hidden lg:grid grid-cols-3 items-center w-full">
             {/* Left: Search Input */}
             <div className="flex justify-start">
-              <div className="relative group w-full max-w-[280px]">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-white transition-colors" />
+              <div className="relative group w-full max-w-[220px] focus-within:max-w-[380px] transition-all duration-500 ease-in-out">
+                <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-all duration-300 ${copiedCode ? 'text-white/30' : 'text-white/50 group-focus-within:text-primary group-focus-within:scale-110'}`} />
                 <input
                   type="text"
-                  placeholder="Search products..."
-                  className="w-full bg-white/10 border border-white/20 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15 transition-all shadow-inner"
+                  placeholder="Search fresh produce..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:bg-white/15 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] focus:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
                 />
+                {/* Visual indicator for search field expansion */}
+                <div className="absolute inset-0 rounded-2xl border border-white/0 group-focus-within:border-white/20 pointer-events-none transition-all duration-500" />
               </div>
             </div>
 
@@ -233,11 +235,11 @@ export default function Navbar() {
         {/* Mobile Layout Wrapper */}
         <div className="flex lg:hidden items-center justify-between w-full">
           <div className="relative group flex-1 mr-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
             <input
               type="text"
-              placeholder="Search..."
-              className="w-full bg-white/10 border border-white/20 rounded-lg py-1.5 pl-9 pr-3 text-sm text-white placeholder:text-white/40 focus:outline-none"
+              placeholder="Search items..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:bg-white/10 transition-colors shadow-inner"
             />
           </div>
 
