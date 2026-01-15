@@ -1,3 +1,5 @@
+"use client";
+
 import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
 import { SectionCards } from "@/components/dashboard/section-cards";
 import { columns } from "@/components/datatable/columns";
@@ -5,13 +7,12 @@ import { DataTable } from "@/components/datatable/DataTable";
 import { PageHeader } from "@/components/page-header";
 import data from "./data.json";
 
-// app/page.tsx
 export default function Page() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="User Management"
-        description="Review & manage business user account"
+        title="Reporting & Analytics"
+        description="Overview of user approvals, orders, and credit usage."
       />
 
       <div className="flex flex-1 flex-col">
@@ -21,7 +22,6 @@ export default function Page() {
             <div className="px-4 lg:px-6">
               <ChartAreaInteractive />
             </div>
-            {/* <DataTable data={data} /> */}
             <DataTable columns={columns} data={data} searchKey="name" />
           </div>
         </div>

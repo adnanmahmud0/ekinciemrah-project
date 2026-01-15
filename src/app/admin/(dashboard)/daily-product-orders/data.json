@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "product": "Tomatoes",
+    "date": "2025-12-12",
+    "totalOrders": 3,
+    "totalQuantity": "150"
+  },
+  {
+    "id": 2,
+    "product": "Potatoes",
+    "date": "2025-12-12",
+    "totalOrders": 2,
+    "totalQuantity": "80"
+  },
+  {
+    "id": 3,
+    "product": "Tomatoes",
+    "date": "2026-01-02",
+    "totalOrders": 5,
+    "totalQuantity": "250"
+  },
+  {
+    "id": 4,
+    "product": "Onions",
+    "date": "2026-01-02",
+    "totalOrders": 4,
+    "totalQuantity": "120"
+  }
+]

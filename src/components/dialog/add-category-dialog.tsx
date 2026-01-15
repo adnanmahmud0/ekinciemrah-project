@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconPhoto, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,13 +15,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Category {
   id: number;
   name: string;
   products: number;
-  status: string;
+  image: string;
 }
 
 interface AddCategoryDialogProps {
@@ -34,12 +34,45 @@ export function AddCategoryDialog({
   trigger,
 }: AddCategoryDialogProps) {
   const [name, setName] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (category) {
       setName(category.name);
+      setPreviewUrl(category.image);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } else {
+      setName("");
+      setPreviewUrl("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   }, [category]);
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  };
+
+  const handleRemoveFile = () => {
+    setPreviewUrl("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <Dialog>
@@ -74,6 +107,47 @@ export function AddCategoryDialog({
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+          </div>
+          <div className="grid gap-3">
+            <Label>Category Image</Label>
+            <div
+              className={`relative flex flex-col items-center justify-center w-full h-32 rounded-xl border border-dashed transition-colors ${
+                previewUrl
+                  ? "bg-gray-100"
+                  : "bg-muted/40 hover:bg-muted/60 cursor-pointer"
+              }`}
+              onClick={!previewUrl ? handleUploadClick : undefined}
+            >
+              {previewUrl ? (
+                <>
+                  <div
+                    className="h-full w-full rounded-xl bg-cover bg-center"
+                    style={{ backgroundImage: `url(${previewUrl})` }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="absolute top-2 right-2 p-1 bg-white/80 rounded-full hover:bg-white text-red-500 transition-colors"
+                  >
+                    <IconX className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <IconPhoto className="h-8 w-8 mb-2 text-muted-foreground" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Upload category image
+                  </span>
+                </>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+            </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>

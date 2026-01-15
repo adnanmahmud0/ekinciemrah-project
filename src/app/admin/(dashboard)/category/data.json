@@ -3,24 +3,24 @@
     "id": 1,
     "name": "Vegetables",
     "products": 24,
-    "status": "Active"
+    "image": "/category-1.png"
   },
   {
     "id": 2,
     "name": "Fruits",
     "products": 18,
-    "status": "Active"
+    "image": "/category-2.png"
   },
   {
     "id": 3,
     "name": "Dairy",
     "products": 12,
-    "status": "Active"
+    "image": "/category-4.png"
   },
   {
     "id": 4,
     "name": "Bakery",
     "products": 8,
-    "status": "Inactive"
+    "image": "/category-5.png"
   }
 ]

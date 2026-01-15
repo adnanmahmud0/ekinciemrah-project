@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "name": "John b",
+    "email": "jhon@457@.com",
+    "business": "Restaurant",
+    "credit_limit": "$5,000",
+    "status": "Pending",
+    "customerType": "Catagory A"
+  },
+  {
+    "id": 2,
+    "name": "Sarah Connor",
+    "email": "sarah.c@sky.net",
+    "business": "Security",
+    "credit_limit": "$12,000",
+    "status": "Verified",
+    "customerType": "Catagory B"
+  },
+  {
+    "id": 3,
+    "name": "Mike Ross",
+    "email": "mike.ross@pearson.com",
+    "business": "Legal",
+    "credit_limit": "$8,500",
+    "status": "Pending",
+    "customerType": "Catagory C"
+  },
+  {
+    "id": 4,
+    "name": "Rachel Green",
+    "email": "r.green@fashion.co",
+    "business": "Fashion",
+    "credit_limit": "$4,200",
+    "status": "Rejected",
+    "customerType": "Catagory A"
+  },
+  {
+    "id": 5,
+    "name": "Bruce Wayne",
+    "email": "bruce@wayne.ent",
+    "business": "Technology",
+    "credit_limit": "$50,000",
+    "status": "Verified",
+    "customerType": "Catagory B"
+  },
+  {
+    "id": 6,
+    "name": "Peter Parker",
+    "email": "peter.parker@dailybugle.com",
+    "business": "Media",
+    "credit_limit": "$1,500",
+    "status": "Pending",
+    "customerType": "Catagory C"
+  },
+  {
+    "id": 7,
+    "name": "Tony Stark",
+    "email": "tony@stark.ind",
+    "business": "Defense",
+    "credit_limit": "$100,000",
+    "status": "Verified",
+    "customerType": "Catagory A"
+  },
+  {
+    "id": 8,
+    "name": "Clark Kent",
+    "email": "clark.kent@dailyplanet.com",
+    "business": "Media",
+    "credit_limit": "$2,000",
+    "status": "Pending",
+    "customerType": "Catagory B"
+  },
+  {
+    "id": 9,
+    "name": "Diana Prince",
+    "email": "diana@museum.org",
+    "business": "Art",
+    "credit_limit": "$7,500",
+    "status": "Verified",
+    "customerType": "Catagory C"
+  },
+  {
+    "id": 10,
+    "name": "Barry Allen",
+    "email": "barry.allen@csi.police",
+    "business": "Government",
+    "credit_limit": "$3,800",
+    "status": "Pending",
+    "customerType": "Catagory A"
+  }
+]
