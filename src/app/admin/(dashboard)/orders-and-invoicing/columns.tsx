@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDotsVertical } from "@tabler/icons-react";
+import { IconDotsVertical, IconDownload } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,7 @@ export type Order = {
     address: string;
     deliveryDate: string;
   };
+  paymentType?: "online pay" | "credit" | "cash on delevary" | string;
 };
 
 export const columns: ColumnDef<Order>[] = [
@@ -45,6 +46,16 @@ export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "customer",
     header: "Customer",
+  },
+  {
+    accessorKey: "paymentType",
+    header: "Payment Type",
+    cell: ({ row }) => {
+        const type = row.getValue("paymentType") as string;
+        return (
+            <div className="capitalize">{type}</div>
+        )
+    }
   },
   {
     accessorKey: "date",
@@ -66,15 +77,23 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const rawStatus = row.getValue("status") as string;
+      const status =
+        rawStatus === "Generated" || rawStatus === "Not-Generated"
+          ? "Pending"
+          : rawStatus;
       return (
         <div className="flex justify-center">
           <Badge
             variant="outline"
             className={
-              status === "Generated"
+              status === "Pending"
+                ? "border-yellow-500 text-yellow-600 bg-yellow-50"
+                : status === "Approved"
                 ? "border-green-500 text-green-600 bg-green-50"
-                : "border-transparent bg-green-600 text-white hover:bg-green-700"
+                : status === "Rejected"
+                ? "border-red-500 text-red-600 bg-red-50"
+                : "border-gray-300 text-gray-700 bg-gray-50"
             }
           >
             {status}
@@ -105,6 +124,12 @@ export const columns: ColumnDef<Order>[] = [
                 </DropdownMenuItem>
               }
             />
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <div className="flex items-center gap-2">
+                <IconDownload className="h-4 w-4" />
+                <span>Download Invoice</span>
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

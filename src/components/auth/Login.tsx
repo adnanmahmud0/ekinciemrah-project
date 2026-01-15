@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function Login({
@@ -20,6 +20,9 @@ export function Login({
 }: React.ComponentProps<"form"> & { showSignup?: boolean }) {
   const { login } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin");
+  const baseAuthPath = isAdminRoute ? "/admin" : "";
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,7 +59,7 @@ export function Login({
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <a
-              href="/reset-password"
+              href={`${baseAuthPath}/reset-password`}
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?
@@ -71,7 +74,10 @@ export function Login({
           <Field>
             <FieldDescription className="text-center">
               Don&apos;t have an account?{" "}
-              <a href="/register" className="underline underline-offset-4">
+              <a
+                href={`${baseAuthPath}/register`}
+                className="underline underline-offset-4"
+              >
                 Sign up
               </a>
             </FieldDescription>
