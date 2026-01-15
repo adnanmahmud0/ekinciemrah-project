@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ChartArea,
   User,
   Package,
   Layers,
@@ -12,6 +13,8 @@ import {
   Star,
   Settings,
   Bell,
+  CalendarArrowDown,
+  UserCog,
 } from "lucide-react";
 
 import {
@@ -25,8 +28,15 @@ import {
 } from "@/components/ui/sidebar";
 
 const menuItems = [
-  { title: "User Management", icon: User, url: "/admin" },
+  { title: "Reporting & Analytics", icon: ChartArea, url: "/admin" },
+  { title: "User Management", icon: User, url: "/admin/users" },
+  { title: "Customer Types", icon: UserCog, url: "/admin/customer-types" },
   { title: "Product Management", icon: Package, url: "/admin/product" },
+  {
+    title: "Daily Product Orders",
+    icon: CalendarArrowDown,
+    url: "/admin/daily-product-orders",
+  },
   { title: "Category Management", icon: Layers, url: "/admin/category" },
   {
     title: "Orders & Invoicing",

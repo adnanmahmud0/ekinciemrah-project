@@ -2,8 +2,8 @@
 
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
 
+import { AddCustomerTypeDialog } from "@/components/dialog/add-customer-type-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,54 +11,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AddCategoryDialog } from "@/components/dialog/add-category-dialog";
 
-export type Category = {
+export type CustomerTypeRow = {
   id: number;
   name: string;
-  products: number;
-  image: string;
 };
 
-export const columns: ColumnDef<Category>[] = [
-  {
-    accessorKey: "image",
-    header: "Image",
-    cell: ({ row }) => {
-      const category = row.original;
-      return (
-        <div className="flex justify-center">
-          <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-muted">
-            <Image
-              src={category.image}
-              alt={category.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
-      );
-    },
-  },
+export const columns: ColumnDef<CustomerTypeRow>[] = [
   {
     accessorKey: "name",
-    header: "Category Name",
+    header: "Customer Type",
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
-    ),
-  },
-  {
-    accessorKey: "products",
-    header: "Products",
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("products")}</div>
     ),
   },
   {
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
-      const category = row.original;
+      const customerType = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -68,10 +40,10 @@ export const columns: ColumnDef<Category>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <AddCategoryDialog
-              category={category}
+            <AddCustomerTypeDialog
+              customerType={customerType}
               trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
                   Edit
                 </DropdownMenuItem>
               }
@@ -83,3 +55,4 @@ export const columns: ColumnDef<Category>[] = [
     },
   },
 ];
+
