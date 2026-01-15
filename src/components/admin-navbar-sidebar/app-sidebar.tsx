@@ -15,6 +15,7 @@ import {
   Bell,
   CalendarArrowDown,
   UserCog,
+  Flag,
 } from "lucide-react";
 
 import {
@@ -48,6 +49,7 @@ const menuItems = [
     icon: CreditCard,
     url: "/admin/payment-and-credit",
   },
+  { title: "Banner Management", icon: Flag, url: "/admin/banner-management" },
   { title: "Reviews", icon: Star, url: "/admin/reviews" },
   { title: "Settings", icon: Settings, url: "/admin/settings" },
   { title: "Notifications", icon: Bell, url: "/admin/notifications" },
