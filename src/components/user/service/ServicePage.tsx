@@ -1075,7 +1075,7 @@ export default function ServicePage({
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search vegetables, fruits, dairy..."
+                  placeholder="Search fresh produce....."
                   className="w-full rounded-2xl bg-transparent py-2.5 pl-10 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
                 />
               </div>
