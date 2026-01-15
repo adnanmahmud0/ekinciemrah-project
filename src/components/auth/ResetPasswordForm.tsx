@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,8 +9,16 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { usePathname } from "next/navigation";
 
-export function ResetPasswordForm({ className, ...props }: React.ComponentProps<"form">) {
+export function ResetPasswordForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin");
+  const baseAuthPath = isAdminRoute ? "/admin" : "";
+
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
       <FieldGroup>
@@ -26,12 +36,15 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
           <Button type="submit">Send Reset Link</Button>
         </Field>
         <Field>
-            <FieldDescription className="text-center">
-              Remember your password?{" "}
-              <a href="/login" className="underline underline-offset-4">
-                Login
-              </a>
-            </FieldDescription>
+          <FieldDescription className="text-center">
+            Remember your password?{" "}
+            <a
+              href={`${baseAuthPath}/login`}
+              className="underline underline-offset-4"
+            >
+              Login
+            </a>
+          </FieldDescription>
         </Field>
       </FieldGroup>
     </form>

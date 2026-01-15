@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
@@ -42,6 +43,7 @@ export interface Order {
   status: string;
   orderItems?: OrderItem[];
   userInfo?: UserInfo;
+  paymentType?: "online pay" | "credit" | "cash on delevary" | string;
 }
 
 interface OrderDetailsDialogProps {
@@ -50,7 +52,6 @@ interface OrderDetailsDialogProps {
 }
 
 export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) {
-  // Mock data if missing to match the design image
   const orderItems = order.orderItems || [
     { product: "Tomatoes", quantity: "50/ Pound", price: "$2.50", total: "$125.00" }
   ];
@@ -62,6 +63,19 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
     address: "Dhaka Gulsan House #12",
     deliveryDate: "20/01/2026"
   };
+
+  const displayStatus =
+    order.status === "Generated" || order.status === "Not-Generated"
+      ? "Pending"
+      : order.status;
+
+  function handleApprove() {
+    (order as Order).status = "Approved";
+  }
+
+  function handleReject() {
+    (order as Order).status = "Rejected";
+  }
 
   return (
     <Dialog>
@@ -90,9 +104,24 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
                 </div>
                 <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Status</p>
-                    <Badge variant="outline" className="border-green-200 text-green-600 bg-green-50 px-3 py-1">
-                        {order.status === "Generated" ? "Pending" : order.status}
+                    <Badge
+                      variant="outline"
+                      className={
+                        displayStatus === "Pending"
+                          ? "border-yellow-500 text-yellow-600 bg-yellow-50 px-3 py-1"
+                          : displayStatus === "Approved"
+                          ? "border-green-500 text-green-600 bg-green-50 px-3 py-1"
+                          : displayStatus === "Rejected"
+                          ? "border-red-500 text-red-600 bg-red-50 px-3 py-1"
+                          : "border-gray-300 text-gray-700 bg-gray-50 px-3 py-1"
+                      }
+                    >
+                        {displayStatus}
                     </Badge>
+                </div>
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Payment Type</p>
+                    <p className="font-bold text-lg capitalize">{order.paymentType || "N/A"}</p>
                 </div>
             </div>
 
@@ -156,14 +185,25 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
         </div>
 
         <DialogFooter className="flex flex-row gap-4 w-full sm:justify-between">
-            <Button className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white h-11 text-base">
+            <DialogClose asChild>
+              <Button
+                className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white h-11 text-base"
+                onClick={handleApprove}
+              >
                 <IconCheck className="h-5 w-5 mr-2" />
                 Approve Order
-            </Button>
-            <Button variant="destructive" className="flex-1 bg-[#FF0000] hover:bg-[#CC0000] h-11 text-base">
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                variant="destructive"
+                className="flex-1 bg-[#FF0000] hover:bg-[#CC0000] h-11 text-base"
+                onClick={handleReject}
+              >
                 <IconX className="h-5 w-5 mr-2" />
                 Reject Order
-            </Button>
+              </Button>
+            </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
