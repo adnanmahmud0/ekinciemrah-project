@@ -13,6 +13,7 @@ interface Product {
   unit: string;
   rating: number;
   reviewCount: number;
+  availability: "in-stock" | "stock-out";
 }
 
 const PRODUCTS: Product[] = [
@@ -25,6 +26,7 @@ const PRODUCTS: Product[] = [
     unit: "Pound",
     rating: 4.5,
     reviewCount: 201,
+    availability: "in-stock",
   },
   {
     id: "3",
@@ -35,6 +37,7 @@ const PRODUCTS: Product[] = [
     unit: "Pound",
     rating: 4.5,
     reviewCount: 201,
+    availability: "in-stock",
   },
   {
     id: "4",
@@ -45,6 +48,7 @@ const PRODUCTS: Product[] = [
     unit: "Piece",
     rating: 4.5,
     reviewCount: 201,
+    availability: "in-stock",
   },
   {
     id: "8",
@@ -55,6 +59,7 @@ const PRODUCTS: Product[] = [
     unit: "Pound",
     rating: 4.5,
     reviewCount: 201,
+    availability: "stock-out",
   },
   {
     id: "7",
@@ -65,6 +70,7 @@ const PRODUCTS: Product[] = [
     unit: "Pound",
     rating: 4.5,
     reviewCount: 201,
+    availability: "in-stock",
   },
   {
     id: "7b",
@@ -75,6 +81,7 @@ const PRODUCTS: Product[] = [
     unit: "Pound",
     rating: 4.5,
     reviewCount: 201,
+    availability: "stock-out",
   },
 ];
 
@@ -127,6 +134,15 @@ export default function Products() {
                       $ {product.price.toFixed(2)}
                       <span className="text-sm font-normal text-gray-500"> /{product.unit}</span>
                     </div>
+                    <span
+                      className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                        product.availability === "in-stock"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-red-50 text-red-600"
+                      }`}
+                    >
+                      {product.availability === "in-stock" ? "In stock" : "Stock out"}
+                    </span>
                   </div>
 
                   <button

@@ -11,28 +11,29 @@ interface Product {
     description: string;
     price: number;
     image: string;
+    availability: "in-stock" | "stock-out";
 }
 
 const allProducts: Product[] = [
     // Row 1
-    { id: 1, name: "Fresh Tomatoes", description: "Organic red tomatoes, locally grown", price: 3.99, image: "/category-1.png" },
-    { id: 2, name: "Green Apples", description: "Crisp and sweet green apples", price: 4.49, image: "/category-2.png" },
-    { id: 3, name: "Whole Wheat Bread", description: "Freshly baked whole grain bread", price: 2.99, image: "/category-3.png" },
-    { id: 4, name: "Fresh Milk", description: "Organic whole milk, 1 gallon", price: 5.99, image: "/category-4.png" },
-    { id: 5, name: "Orange Juice", description: "100% pure orange juice", price: 6.49, image: "/category-5.png" },
-    { id: 6, name: "Carrots", description: "Fresh organic carrots bundle", price: 2.49, image: "/category-1.png" },
-    { id: 7, name: "Bananas", description: "Ripe yellow bananas", price: 1.99, image: "/category-2.png" },
-    { id: 8, name: "Pasta", description: "Premium Italian pasta", price: 3.49, image: "/category-3.png" },
+    { id: 1, name: "Fresh Tomatoes", description: "Organic red tomatoes, locally grown", price: 3.99, image: "/category-1.png", availability: "in-stock" },
+    { id: 2, name: "Green Apples", description: "Crisp and sweet green apples", price: 4.49, image: "/category-2.png", availability: "in-stock" },
+    { id: 3, name: "Whole Wheat Bread", description: "Freshly baked whole grain bread", price: 2.99, image: "/category-3.png", availability: "stock-out" },
+    { id: 4, name: "Fresh Milk", description: "Organic whole milk, 1 gallon", price: 5.99, image: "/category-4.png", availability: "in-stock" },
+    { id: 5, name: "Orange Juice", description: "100% pure orange juice", price: 6.49, image: "/category-5.png", availability: "in-stock" },
+    { id: 6, name: "Carrots", description: "Fresh organic carrots bundle", price: 2.49, image: "/category-1.png", availability: "in-stock" },
+    { id: 7, name: "Bananas", description: "Ripe yellow bananas", price: 1.99, image: "/category-2.png", availability: "in-stock" },
+    { id: 8, name: "Pasta", description: "Premium Italian pasta", price: 3.49, image: "/category-3.png", availability: "stock-out" },
 
     // Row 2
-    { id: 9, name: "Cheddar Cheese", description: "Aged cheddar cheese block", price: 7.99, image: "/category-4.png" },
-    { id: 10, name: "Sparkling Water", description: "Refreshing sparkling water", price: 4.99, image: "/category-5.png" },
-    { id: 11, name: "Bell Peppers", description: "Mixed color bell peppers", price: 5.49, image: "/category-1.png" },
-    { id: 12, name: "Strawberries", description: "Sweet fresh strawberries", price: 6.99, image: "/category-2.png" },
-    { id: 13, name: "Rice", description: "Premium long grain rice", price: 8.99, image: "/category-3.png" },
-    { id: 14, name: "Greek Yogurt", description: "Creamy Greek yogurt", price: 4.49, image: "/category-4.png" },
-    { id: 15, name: "Coffee", description: "Premium roasted coffee beans", price: 12.99, image: "/category-5.png" },
-    { id: 16, name: "Spinach", description: "Fresh organic spinach", price: 3.99, image: "/category-1.png" },
+    { id: 9, name: "Cheddar Cheese", description: "Aged cheddar cheese block", price: 7.99, image: "/category-4.png", availability: "in-stock" },
+    { id: 10, name: "Sparkling Water", description: "Refreshing sparkling water", price: 4.99, image: "/category-5.png", availability: "in-stock" },
+    { id: 11, name: "Bell Peppers", description: "Mixed color bell peppers", price: 5.49, image: "/category-1.png", availability: "in-stock" },
+    { id: 12, name: "Strawberries", description: "Sweet fresh strawberries", price: 6.99, image: "/category-2.png", availability: "stock-out" },
+    { id: 13, name: "Rice", description: "Premium long grain rice", price: 8.99, image: "/category-3.png", availability: "in-stock" },
+    { id: 14, name: "Greek Yogurt", description: "Creamy Greek yogurt", price: 4.49, image: "/category-4.png", availability: "in-stock" },
+    { id: 15, name: "Coffee", description: "Premium roasted coffee beans", price: 12.99, image: "/category-5.png", availability: "in-stock" },
+    { id: 16, name: "Spinach", description: "Fresh organic spinach", price: 3.99, image: "/category-1.png", availability: "in-stock" },
 ];
 
 export default function BuyItAgain() {
@@ -81,10 +82,19 @@ export default function BuyItAgain() {
                                     {product.description}
                                 </p>
 
-                                {/* Price */}
-                                <div className="mb-2">
+                                {/* Price & Availability */}
+                                <div className="mb-2 flex items-center justify-between">
                                     <span className="text-lg font-bold" style={{ color: '#004F3B' }}>
                                         ${product.price.toFixed(2)}
+                                    </span>
+                                    <span
+                                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                                            product.availability === "in-stock"
+                                                ? "bg-emerald-50 text-emerald-700"
+                                                : "bg-red-50 text-red-600"
+                                        }`}
+                                    >
+                                        {product.availability === "in-stock" ? "In stock" : "Stock out"}
                                     </span>
                                 </div>
 
