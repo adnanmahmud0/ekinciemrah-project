@@ -14,6 +14,7 @@ export interface Product {
     price: number;
     unit: string; // e.g., "Pound", "Kg"
     description: string;
+    availability?: "in-stock" | "stock-out";
 }
 
 interface FavouriteCardProps {
@@ -61,9 +62,20 @@ export default function FavouriteCard({ product }: FavouriteCardProps) {
                         {product.description}
                     </p>
 
-                    <div className="flex items-center gap-1 mb-4">
-                        <span className="text-lg font-bold text-[#146041]">$ {product.price.toFixed(2)}</span>
-                        <span className="text-gray-400 text-sm">/{product.unit}</span>
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1">
+                            <span className="text-lg font-bold text-[#146041]">$ {product.price.toFixed(2)}</span>
+                            <span className="text-gray-400 text-sm">/{product.unit}</span>
+                        </div>
+                        <span
+                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                                (product.availability ?? "in-stock") === "in-stock"
+                                    ? "bg-emerald-50 text-emerald-700"
+                                    : "bg-red-50 text-red-600"
+                            }`}
+                        >
+                            {(product.availability ?? "in-stock") === "in-stock" ? "In stock" : "Stock out"}
+                        </span>
                     </div>
 
                     <button
