@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { Star, Minus, Plus, MapPin, Truck } from "lucide-react";
+import { Star, Minus, Plus, MapPin, Truck, Tag } from "lucide-react";
+import { toast } from "sonner";
 import { Product } from "../service/ServiceCard";
 import LocationModal, { PurchaseDetails } from "./LocationModal";
 
@@ -13,6 +14,22 @@ export default function PurchasePage({ product }: PurchasePageProps) {
     const [quantity, setQuantity] = useState(2);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [purchaseDetails, setPurchaseDetails] = useState<PurchaseDetails | null>(null);
+    const [promoCode, setPromoCode] = useState("");
+    const [discount, setDiscount] = useState(0); // Store as percentage
+
+    const handleApplyPromo = () => {
+        const code = promoCode.toUpperCase().trim();
+        if (code === "FRESH25") {
+            setDiscount(25);
+            toast.success("Promo code applied! 25% discount added.");
+        } else if (code === "UNIFIED10") {
+            setDiscount(10);
+            toast.success("Promo code applied! 10% discount added.");
+        } else {
+            setDiscount(0);
+            toast.error("Invalid promo code. Please try again.");
+        }
+    };
 
     const handleQuantityChange = (delta: number) => {
         setQuantity((prev) => Math.max(1, prev + delta));
@@ -20,7 +37,8 @@ export default function PurchasePage({ product }: PurchasePageProps) {
 
     const merchandiseSubtotal = product.price * quantity;
     const shippingCost = 5.00;
-    const total = merchandiseSubtotal + shippingCost;
+    const discountAmount = (merchandiseSubtotal * discount) / 100;
+    const total = merchandiseSubtotal + shippingCost - discountAmount;
 
     // Calculate delivery date (10-13 days from now)
     const deliveryStartDate = new Date();
@@ -66,8 +84,8 @@ export default function PurchasePage({ product }: PurchasePageProps) {
                                         <Star
                                             key={i}
                                             className={`w-5 h-5 ${i < Math.floor(product.rating)
-                                                    ? "fill-yellow-400 text-yellow-400"
-                                                    : "text-gray-300"
+                                                ? "fill-yellow-400 text-yellow-400"
+                                                : "text-gray-300"
                                                 }`}
                                         />
                                     ))}
@@ -146,6 +164,35 @@ export default function PurchasePage({ product }: PurchasePageProps) {
                                     </div>
                                 </div>
 
+                                {/* Promo Code */}
+                                <div className="mb-6 p-6 bg-white rounded-2xl border-2 border-dashed border-[#146041]/20">
+                                    <h3 className="text-sm font-bold text-[#0D1E32] mb-3 flex items-center gap-2">
+                                        <Tag className="w-4 h-4 text-[#146041]" />
+                                        Have a Promo Code?
+                                    </h3>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={promoCode}
+                                            onChange={(e) => setPromoCode(e.target.value)}
+                                            placeholder="Enter your code"
+                                            className="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#146041] focus:border-transparent uppercase font-bold text-sm"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleApplyPromo}
+                                            className="px-6 py-3 bg-[#146041] text-white rounded-xl font-bold hover:bg-[#0e4b32] transition-colors text-sm"
+                                        >
+                                            Apply
+                                        </button>
+                                    </div>
+                                    {discount > 0 && (
+                                        <p className="mt-2 text-xs font-medium text-[#146041]">
+                                            🎉 {discount}% discount applied!
+                                        </p>
+                                    )}
+                                </div>
+
                                 {/* Price Summary */}
                                 <div className="bg-white rounded-xl p-4 mb-6 space-y-3">
                                     <div className="flex justify-between text-gray-700">
@@ -156,6 +203,12 @@ export default function PurchasePage({ product }: PurchasePageProps) {
                                         <span>Shipping Subtotal</span>
                                         <span className="font-semibold">${shippingCost.toFixed(2)}</span>
                                     </div>
+                                    {discount > 0 && (
+                                        <div className="flex justify-between text-[#146041]">
+                                            <span className="font-medium">Promo Discount ({discount}%)</span>
+                                            <span className="font-bold">-${discountAmount.toFixed(2)}</span>
+                                        </div>
+                                    )}
                                     <div className="border-t border-gray-200 pt-3">
                                         <div className="flex justify-between text-gray-900">
                                             <span className="font-semibold">Total :</span>

@@ -4,10 +4,9 @@ import ServiceCard, { Product } from "./ServiceCard";
 
 interface ServiceGridProps {
     products: Product[];
-    activeTier?: "high" | "medium" | "low";
 }
 
-export default function ServiceGrid({ products, activeTier = "high" }: ServiceGridProps) {
+export default function ServiceGrid({ products }: ServiceGridProps) {
     if (products.length === 0) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] text-gray-500">
@@ -20,7 +19,7 @@ export default function ServiceGrid({ products, activeTier = "high" }: ServiceGr
     return (
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {products.map((product) => (
-                <ServiceCard key={product.id} product={product} activeTier={activeTier} />
+                <ServiceCard key={product.id} product={product} />
             ))}
         </div>
     );
