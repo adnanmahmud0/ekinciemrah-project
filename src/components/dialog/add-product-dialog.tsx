@@ -5,6 +5,7 @@
 import { useRef, useState, useEffect } from "react";
 import { IconPhoto, IconPlus, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import customerTypes from "@/app/admin/(dashboard)/customer-types/data.json";
 import {
   Dialog,
   DialogClose,
@@ -30,6 +31,9 @@ interface Product {
   image: string;
   category: string;
   price: string;
+  priceHigh?: string;
+  priceMedium?: string;
+  priceLow?: string;
   stock: string;
   status: string;
 }
@@ -166,22 +170,47 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="main-price">Main Price ($)</Label>
-              <Input
-                id="main-price"
-                placeholder="$3.50"
-                className="bg-gray-50 border-gray-200"
-              />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="selling-price">Selling Price ($)</Label>
-              <Input
-                id="selling-price"
-                placeholder="$2.50"
-                className="bg-gray-50 border-gray-200"
-              />
+          <div className="grid gap-3">
+            <Label htmlFor="main-price">Base Price ($)</Label>
+            <Input
+              id="main-price"
+              defaultValue={product?.price}
+              placeholder="$3.50"
+              className="bg-gray-50 border-gray-200"
+            />
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Label className="text-sm font-medium">Customer Type Pricing</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {customerTypes
+                .filter((type) => type.id !== 0)
+                .map((type) => (
+                  <div key={type.id} className="grid gap-2">
+                    <Label
+                      htmlFor={`price-type-${type.id}`}
+                      className="text-xs text-muted-foreground"
+                    >
+                      {type.name}
+                    </Label>
+                    <Input
+                      id={`price-type-${type.id}`}
+                      placeholder="$0.00"
+                      className="bg-gray-50 border-gray-200"
+                      defaultValue={
+                        product
+                          ? type.name === "Catagory A"
+                            ? product.priceHigh
+                            : type.name === "Catagory B"
+                            ? product.priceMedium
+                            : type.name === "Catagory C"
+                            ? product.priceLow
+                            : ""
+                          : ""
+                      }
+                    />
+                  </div>
+                ))}
             </div>
           </div>
 
@@ -197,6 +226,34 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
                 <SelectItem value="piece">Piece</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="stock">Stock Quantity</Label>
+              <Input
+                id="stock"
+                type="number"
+                defaultValue={product?.stock}
+                placeholder="0"
+                className="bg-gray-50 border-gray-200"
+              />
+            </div>
+            <div className="grid gap-3">
+              <Label htmlFor="status">Availability</Label>
+              <Select
+                defaultValue={product?.status?.toLowerCase() || "in stock"}
+              >
+                <SelectTrigger className="w-full bg-gray-50 border-gray-200 text-gray-500">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="in stock">In Stock</SelectItem>
+                  <SelectItem value="low stock">Low Stock</SelectItem>
+                  <SelectItem value="out of stock">Out of Stock</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <DialogFooter className="">
