@@ -18,19 +18,15 @@ export interface Product {
     priceLow: number;
     unit: string; // e.g., "Pound", "Kg"
     description: string;
+    availability?: "in-stock" | "stock-out";
 }
 
 interface ServiceCardProps {
     product: Product;
-    activeTier?: "high" | "medium" | "low";
 }
 
-export default function ServiceCard({ product, activeTier = "high" }: ServiceCardProps) {
-    const displayPrice = activeTier === "high"
-        ? product.priceHigh
-        : activeTier === "medium"
-            ? product.priceMedium
-            : product.priceLow;
+export default function ServiceCard({ product }: ServiceCardProps) {
+    const displayPrice = product.price;
 
     return (
         <Link href={`/service/${product.id}`} className="block">
