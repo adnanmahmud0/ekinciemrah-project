@@ -171,13 +171,20 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
           </div>
 
           <div className="grid gap-3">
-            <Label htmlFor="main-price">Base Price ($)</Label>
-            <Input
-              id="main-price"
-              defaultValue={product?.price}
-              placeholder="$3.50"
-              className="bg-gray-50 border-gray-200"
-            />
+            <Label htmlFor="main-price">Base Price</Label>
+            <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-2">
+              <Input
+                id="main-price"
+                defaultValue={product?.price}
+                placeholder="$0.00"
+                className="bg-gray-50 border-gray-200"
+              />
+              <Input
+                id="unit"
+                placeholder="kg, lb, piece..."
+                className="bg-gray-50 border-gray-200"
+              />
+            </div>
           </div>
 
           <div className="space-y-3 pt-2">
@@ -202,30 +209,16 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
                           ? type.name === "Catagory A"
                             ? product.priceHigh
                             : type.name === "Catagory B"
-                            ? product.priceMedium
-                            : type.name === "Catagory C"
-                            ? product.priceLow
-                            : ""
+                              ? product.priceMedium
+                              : type.name === "Catagory C"
+                                ? product.priceLow
+                                : ""
                           : ""
                       }
                     />
                   </div>
                 ))}
             </div>
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="unit">Unit</Label>
-            <Select>
-              <SelectTrigger className="w-full bg-gray-50 border-gray-200 text-gray-500">
-                <SelectValue placeholder="Pound" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pound">Pound</SelectItem>
-                <SelectItem value="kg">Kg</SelectItem>
-                <SelectItem value="piece">Piece</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

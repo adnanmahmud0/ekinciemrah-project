@@ -9,9 +9,10 @@ interface BannerCardProps {
   label: string;
   helper?: string;
   tall?: boolean;
+  dimensions?: string;
 }
 
-function BannerCard({ label, helper, tall }: BannerCardProps) {
+function BannerCard({ label, helper, tall, dimensions }: BannerCardProps) {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -79,6 +80,11 @@ function BannerCard({ label, helper, tall }: BannerCardProps) {
             <span className="text-xs md:text-sm font-medium text-[#1B8057]">
               Click to upload banner
             </span>
+            {dimensions && (
+              <span className="mt-1 text-[11px] text-gray-400">
+                Recommended: {dimensions}
+              </span>
+            )}
             <span className="mt-1 text-[11px] text-gray-500">
               JPG, PNG up to 5MB
             </span>
@@ -104,8 +110,7 @@ export default function BannerUpload() {
           Banner upload
         </h2>
         <p className="text-sm md:text-base text-gray-500">
-          Manage homepage and promotional banners. Upload images and review them
-          before saving.
+          Manage homepage and promotional banners.
         </p>
       </div>
 
@@ -146,6 +151,45 @@ export default function BannerUpload() {
             <BannerCard
               label="Banner 6"
               helper="Seasonal or campaign banner"
+              tall
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-base md:text-lg text-gray-600">
+                Mobile banners (4 slots) for app and small-screen views.
+              </p>
+              <p className="text-sm md:text-base text-gray-400">
+                Recommended size: 1080px width × 540px height (2:1 ratio).
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <BannerCard
+              label="Mobile banner 1"
+              helper="Top mobile hero"
+              dimensions="1080 × 540 px"
+              tall
+            />
+            <BannerCard
+              label="Mobile banner 2"
+              helper="Mid-page promo"
+              dimensions="1080 × 540 px"
+              tall
+            />
+            <BannerCard
+              label="Mobile banner 3"
+              helper="Bottom promo"
+              dimensions="1080 × 540 px"
+              tall
+            />
+            <BannerCard
+              label="Mobile banner 4"
+              helper="Extra mobile creative"
+              dimensions="1080 × 540 px"
               tall
             />
           </div>
