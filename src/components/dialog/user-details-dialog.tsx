@@ -60,7 +60,7 @@ export function UserDetailsDialog({ user, trigger }: UserDetailsDialogProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-137.5">
         <DialogHeader>
           <DialogTitle>User details</DialogTitle>
         </DialogHeader>
