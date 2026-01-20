@@ -42,7 +42,7 @@ export const useApi = <T = any>(
   const query = useQuery({
     queryKey: queryKey || [],
     queryFn: async () => {
-      if (!resourcePath) return null;
+      if (!resourcePath) throw new Error("Resource path is required");
       const res = await api.get<T>(resourcePath);
       return res.data;
     },
