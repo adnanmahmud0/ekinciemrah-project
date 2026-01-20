@@ -24,11 +24,30 @@ export function Login({
   const isAdminRoute = pathname?.startsWith("/admin");
   const baseAuthPath = isAdminRoute ? "/admin" : "";
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email);
-    router.push("/");
+    setError("");
+    setIsLoading(true);
+    try {
+      const response = await login({ email, password }, isAdminRoute || false);
+      if (response.success) {
+        if (isAdminRoute) {
+            router.push("/admin/dashboard"); // Assuming admin dashboard is here
+        } else {
+            router.push("/");
+        }
+      } else {
+        setError(response.message || "Login failed");
+      }
+    } catch (err: any) {
+        setError(err.response?.data?.message || err.message || "Something went wrong");
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -44,6 +63,7 @@ export function Login({
             Enter your email below to login to your account
           </p>
         </div>
+        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
@@ -65,10 +85,18 @@ export function Login({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input 
+            id="password" 
+            type="password" 
+            required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Field>
         <Field>
-          <Button type="submit">Login</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </Button>
         </Field>
         {showSignup && (
           <Field>
