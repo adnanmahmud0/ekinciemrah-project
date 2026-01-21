@@ -176,18 +176,28 @@ const UserActions = ({ user }: { user: User }) => {
             </DropdownMenuItem>
           }
         />
-        <DropdownMenuItem onClick={() => handleStatusUpdate("approve")}>
-          Approve
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleStatusUpdate("reject")}>
-          Reject
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleStatusUpdate("block")}>
-          Block
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleStatusUpdate("approve")}>
-          Unblock
-        </DropdownMenuItem>
+        {/* Toggle between Approve/Reject */}
+        {user.status === "approve" || user.status === "active" ? (
+          <DropdownMenuItem onClick={() => handleStatusUpdate("reject")}>
+            Reject
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => handleStatusUpdate("approve")}>
+            Approve
+          </DropdownMenuItem>
+        )}
+
+        {/* Toggle between Block/Unblock */}
+        {user.status === "blocked" || user.status === "block" ? (
+          <DropdownMenuItem onClick={() => handleStatusUpdate("approve")}>
+            Unblock
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => handleStatusUpdate("block")}>
+            Block
+          </DropdownMenuItem>
+        )}
+
         <ChangeCustomerTypeDialog
           user={user}
           trigger={
