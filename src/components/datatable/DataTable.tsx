@@ -43,6 +43,12 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   toolbarAction,
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = React.useState(() => initialData);
+
+  // Update internal state when initialData changes (e.g. from API)
+  React.useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
+
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

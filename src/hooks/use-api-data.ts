@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions, MutateOptions } from '@tanstack/react-query';
 import { privateApi } from '@/lib/api-client';
 
 /**
@@ -116,15 +116,15 @@ export const useApi = <T = any>(
     refetch: query.refetch,
 
     // Resource Actions
-    create: (data: any) => postMutation.mutate({ data }),
-    update: (id: string | number, data: any) => putMutation.mutate({ url: `${resourcePath}/${id}`, data }),
-    remove: (id: string | number) => deleteMutation.mutate(`${resourcePath}/${id}`),
+    create: (data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => postMutation.mutate({ data }, options),
+    update: (id: string | number, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => putMutation.mutate({ url: `${resourcePath}/${id}`, data }, options),
+    remove: (id: string | number, options?: MutateOptions<any, Error, string | undefined, unknown>) => deleteMutation.mutate(`${resourcePath}/${id}`, options),
 
     // Custom Actions (Any URL)
-    post: (url: string, data: any) => postMutation.mutate({ url, data }),
-    put: (url: string, data: any) => putMutation.mutate({ url, data }),
-    patch: (url: string, data: any) => patchMutation.mutate({ url, data }),
-    del: (url: string) => deleteMutation.mutate(url),
+    post: (url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => postMutation.mutate({ url, data }, options),
+    put: (url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => putMutation.mutate({ url, data }, options),
+    patch: (url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => patchMutation.mutate({ url, data }, options),
+    del: (url: string, options?: MutateOptions<any, Error, string | undefined, unknown>) => deleteMutation.mutate(url, options),
     
     // Loading States
     isCreating: postMutation.isPending,

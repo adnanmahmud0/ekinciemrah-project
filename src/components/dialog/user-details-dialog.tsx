@@ -11,13 +11,22 @@ import {
 } from "@/components/ui/dialog";
 
 export interface UserRecord {
-  id: number;
+  _id: string;
   name: string;
   email: string;
-  business: string;
-  credit_limit: string;
+  businessName: string;
+  businessType: string;
+  role: string;
+  contact: string;
+  businessAddress: string;
+  image: string;
   status: string;
-  customerType?: string;
+  customerType: string;
+  isActive: string;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  credit_limit?: string;
 }
 
 interface OrderRecord {
@@ -48,7 +57,7 @@ export function UserDetailsDialog({ user, trigger }: UserDetailsDialogProps) {
     if (order.userInfo?.email) {
       return order.userInfo.email === user.email;
     }
-    return order.customer === user.business;
+    return order.customer === user.businessName;
   });
 
   return (
@@ -81,7 +90,7 @@ export function UserDetailsDialog({ user, trigger }: UserDetailsDialogProps) {
                 Business name
               </span>
               <span className="font-semibold text-foreground">
-                {user.business}
+                {user.businessName}
               </span>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-2">
@@ -89,6 +98,14 @@ export function UserDetailsDialog({ user, trigger }: UserDetailsDialogProps) {
                 Business type
               </span>
               <span className="text-foreground">
+                {user.businessType ?? "Not set"}
+              </span>
+            </div>
+            <div className="grid grid-cols-[150px_1fr] gap-2">
+              <span className="font-medium text-muted-foreground">
+                Customer Type
+              </span>
+              <span className="text-foreground capitalize">
                 {user.customerType ?? "Not set"}
               </span>
             </div>
@@ -97,7 +114,9 @@ export function UserDetailsDialog({ user, trigger }: UserDetailsDialogProps) {
                 Business address
               </span>
               <span className="text-foreground">
-                {orders[0]?.userInfo?.address ?? "Not available"}
+                {user.businessAddress ||
+                  orders[0]?.userInfo?.address ||
+                  "Not available"}
               </span>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-2">
@@ -105,7 +124,9 @@ export function UserDetailsDialog({ user, trigger }: UserDetailsDialogProps) {
                 Business phone
               </span>
               <span className="text-foreground">
-                {orders[0]?.userInfo?.phone ?? "Not available"}
+                {user.contact ||
+                  orders[0]?.userInfo?.phone ||
+                  "Not available"}
               </span>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-2">
