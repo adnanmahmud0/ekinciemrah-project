@@ -1,7 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authService, LoginPayload, RegisterPayload, ApiResponse } from "@/services/auth.service";
+import {
+  authService,
+  LoginPayload,
+  RegisterPayload,
+  ApiResponse,
+} from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import { publicApi, privateApi } from "@/lib/api-client";
 
@@ -56,58 +62,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (payload: LoginPayload, isAdmin = false) => {
     try {
       setIsLoading(true);
-      const response = isAdmin 
-        ? await authService.adminLogin(payload) 
+      const response = isAdmin
+        ? await authService.adminLogin(payload)
         : await authService.login(payload);
 
       if (response.success && response.data) {
         // Assuming response.data contains the token or user + token
         // The user example output for login was just "data": "..." which might be the token string
         // or an object with token. Let's handle both.
-        
+
         let token = "";
         let userData = null;
 
-        if (typeof response.data === 'string') {
+        if (typeof response.data === "string") {
           token = response.data;
-        } else if (typeof response.data === 'object') {
-            // @ts-ignore
-            token = response.data.token || response.data.accessToken;
-            // @ts-ignore
-            userData = response.data.user;
+        } else if (typeof response.data === "object") {
+          token = response.data.token || response.data.accessToken;
+
+          userData = response.data.user;
         }
 
         if (token) {
           localStorage.setItem("token", token);
-          
+
           // If we didn't get user data in login response, fetch it
           if (!userData) {
-             const profileResponse = await authService.getProfile();
-             if (profileResponse.success) {
-               userData = profileResponse.data;
-             }
+            const profileResponse = await authService.getProfile();
+            if (profileResponse.success) {
+              userData = profileResponse.data;
+            }
           }
-          
+
           setUser(userData);
           return response;
         } else {
-             // If data is just the token string as per user example "data": "..."
-             // wait, user said `output- { "success": true, ..., "data": "..." }`
-             // If data IS the token.
-             if (typeof response.data === 'string') {
-                 localStorage.setItem("token", response.data);
-                  const profileResponse = await authService.getProfile();
-                  if (profileResponse.success) {
-                    setUser(profileResponse.data);
-                  }
-                  return response;
-             }
+          // If data is just the token string as per user example "data": "..."
+          // wait, user said `output- { "success": true, ..., "data": "..." }`
+          // If data IS the token.
+          if (typeof response.data === "string") {
+            localStorage.setItem("token", response.data);
+            const profileResponse = await authService.getProfile();
+            if (profileResponse.success) {
+              setUser(profileResponse.data);
+            }
+            return response;
+          }
         }
       }
       return response;
     } catch (error: any) {
-        // Re-throw or return error format
-        throw error;
+      // Re-throw or return error format
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         publicApi,
-        privateApi
+        privateApi,
       }}
     >
       {children}

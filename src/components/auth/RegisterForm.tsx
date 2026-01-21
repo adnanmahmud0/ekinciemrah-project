@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -50,20 +51,22 @@ export function RegisterForm({
         // Redirect to login or verification page
         // User didn't specify, but usually login or verify-email
         // Let's assume login for now or verify-code if that page exists
-        router.push(`${baseAuthPath}/login`); 
+        router.push(`${baseAuthPath}/login`);
       } else {
         setError(response.message || "Registration failed");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Something went wrong");
+      setError(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form 
-      className={cn("mx-auto flex-col gap-6", className)} 
+    <form
+      className={cn("mx-auto flex-col gap-6", className)}
       onSubmit={handleSubmit}
       {...props}
     >
@@ -74,7 +77,9 @@ export function RegisterForm({
             Enter your details below to create your account
           </p>
         </div>
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
+        )}
         <div className="grid gap-4 md:grid-cols-2">
           <Field>
             <FieldLabel htmlFor="businessName">Business Name</FieldLabel>
@@ -122,11 +127,11 @@ export function RegisterForm({
           </Field>
           <Field>
             <FieldLabel htmlFor="name">Name</FieldLabel>
-            <Input 
-              id="name" 
-              type="text" 
-              placeholder="John Doe" 
-              required 
+            <Input
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              required
               value={formData.name}
               onChange={handleChange}
             />
@@ -144,10 +149,10 @@ export function RegisterForm({
           </Field>
           <Field className="md:col-span-2">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Input 
-              id="password" 
-              type="password" 
-              required 
+            <Input
+              id="password"
+              type="password"
+              required
               value={formData.password}
               onChange={handleChange}
             />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { publicApi, privateApi } from '@/lib/api-client';
 import axios from 'axios';
 
