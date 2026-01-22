@@ -32,11 +32,6 @@ export default function ProductPage() {
 
   const products = response?.data?.data || [];
 
-  // The search API returns data in a slightly different structure based on the user's example
-  // List: { data: { meta: {...}, data: [...] } }
-  // Search: { data: { meta: {...}, data: [...] } }
-  // It seems consistent actually.
-
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pr-6">
@@ -58,6 +53,7 @@ export default function ProductPage() {
               searchKey="productName"
               searchValue={search}
               onSearchValueChange={setSearch}
+              searchPlaceholder="Search by product name"
               initialColumnVisibility={{
                 basePrice: true,
                 categoryPrice: true,

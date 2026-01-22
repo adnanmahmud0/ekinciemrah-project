@@ -12,6 +12,7 @@ interface DataTableToolbarProps<TData> {
   searchValue?: string;
   onSearchValueChange?: (value: string) => void;
   action?: React.ReactNode;
+  placeholder?: string;
 }
 
 export function DataTableToolbar<TData>({
@@ -20,6 +21,7 @@ export function DataTableToolbar<TData>({
   searchValue,
   onSearchValueChange,
   action,
+  placeholder,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -29,7 +31,7 @@ export function DataTableToolbar<TData>({
         <div className="flex flex-1 items-center space-x-2">
           {searchKey && (
             <Input
-              placeholder="Filter..."
+              placeholder={placeholder || "Filter..."}
               value={
                 onSearchValueChange !== undefined
                   ? searchValue

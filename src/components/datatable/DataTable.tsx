@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -37,6 +38,7 @@ interface DataTableProps<TData, TValue> {
   onSearchValueChange?: (value: string) => void;
   toolbarAction?: React.ReactNode | ((table: any) => React.ReactNode);
   initialColumnVisibility?: VisibilityState;
+  searchPlaceholder?: string;
 }
 
 export function DataTable<
@@ -50,6 +52,7 @@ export function DataTable<
   onSearchValueChange,
   toolbarAction,
   initialColumnVisibility = {},
+  searchPlaceholder,
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -134,6 +137,7 @@ export function DataTable<
         searchKey={searchKey}
         searchValue={searchValue}
         onSearchValueChange={onSearchValueChange}
+        placeholder={searchPlaceholder}
         action={
           typeof toolbarAction === "function"
             ? toolbarAction(table)
