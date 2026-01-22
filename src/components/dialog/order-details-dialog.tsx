@@ -70,11 +70,11 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
       : order.status;
 
   function handleApprove() {
-    (order as Order).status = "Approved";
+    // Logic to approve order
   }
 
   function handleReject() {
-    (order as Order).status = "Rejected";
+    // Logic to reject order
   }
 
   return (

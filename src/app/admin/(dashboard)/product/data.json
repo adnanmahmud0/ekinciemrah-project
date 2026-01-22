@@ -3,8 +3,9 @@
     "id": 1,
     "product": "Tomatoes",
     "image": "https://placehold.co/40x40?text=T",
-    "category": "Vegetables",
+    "category": "Category A",
     "price": "$2.50/kg",
+    "categoryPrice": "$3.00/kg",
     "stock": "500 lb",
     "status": "Available"
   },
@@ -12,8 +13,9 @@
     "id": 2,
     "product": "Apple",
     "image": "https://placehold.co/40x40?text=A",
-    "category": "Fruits",
+    "category": "Category B",
     "price": "$2.50/kg",
+    "categoryPrice": "$3.50/kg",
     "stock": "500 lb",
     "status": "Available"
   },
@@ -21,8 +23,9 @@
     "id": 3,
     "product": "Tomatoes",
     "image": "https://placehold.co/40x40?text=T",
-    "category": "Vegetables",
+    "category": "Category C",
     "price": "$2.50/kg",
+    "categoryPrice": "$4.00/kg",
     "stock": "500 lb",
     "status": "Available"
   },
@@ -30,8 +33,9 @@
     "id": 4,
     "product": "Tomatoes",
     "image": "https://placehold.co/40x40?text=T",
-    "category": "Vegetables",
+    "category": "Category A",
     "price": "$2.50/kg",
+    "categoryPrice": "$3.00/kg",
     "stock": "500 lb",
     "status": "Available"
   },
@@ -39,8 +43,9 @@
     "id": 5,
     "product": "Tomatoes",
     "image": "https://placehold.co/40x40?text=T",
-    "category": "Vegetables",
+    "category": "Category B",
     "price": "$2.50/kg",
+    "categoryPrice": "$3.50/kg",
     "stock": "500 lb",
     "status": "Available"
   },
@@ -48,8 +53,9 @@
     "id": 6,
     "product": "Tomatoes",
     "image": "https://placehold.co/40x40?text=T",
-    "category": "Vegetables",
+    "category": "Category C",
     "price": "$2.50/kg",
+    "categoryPrice": "$4.00/kg",
     "stock": "500 lb",
     "status": "Available"
   },
@@ -57,8 +63,9 @@
     "id": 7,
     "product": "Tomatoes",
     "image": "https://placehold.co/40x40?text=T",
-    "category": "Vegetables",
+    "category": "Category A",
     "price": "$2.50/kg",
+    "categoryPrice": "$3.00/kg",
     "stock": "500 lb",
     "status": "Available"
   }

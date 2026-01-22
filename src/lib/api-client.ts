@@ -3,17 +3,11 @@ import axios from 'axios';
 // Create a public axios instance (for login, register, etc.)
 export const publicApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Create a private axios instance (for authenticated requests)
 export const privateApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Add a request interceptor to the private instance to attach the token

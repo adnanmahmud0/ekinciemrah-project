@@ -119,7 +119,7 @@ export default function CheckoutPage({ initialCartItems = MOCK_CART_ITEMS }: Che
                                     <div className="grid grid-cols-1 gap-4">
                                         <div>
                                             <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                                Recipient's Name*
+                                                Recipient&apos;s Name*
                                             </label>
                                             <input
                                                 type="text"

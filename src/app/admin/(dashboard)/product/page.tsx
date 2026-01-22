@@ -1,3 +1,5 @@
+"use client";
+
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/datatable/DataTable";
 import {
@@ -9,9 +11,32 @@ import {
 } from "@/components/ui/select";
 import { AddProductDialog } from "@/components/dialog/add-product-dialog";
 import { columns } from "./columns";
-import data from "./data.json";
+import { useApi } from "@/hooks/use-api-data";
+import { ProductResponse, Product } from "@/types/product";
+import { useState } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function ProductPage() {
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+
+  // Construct the API URL based on search
+  const apiUrl = debouncedSearch
+    ? `/product&catelog?search=${debouncedSearch}`
+    : "/product&catelog";
+
+  const { data: response, isLoading } = useApi<ProductResponse>(apiUrl, [
+    "products",
+    debouncedSearch,
+  ]);
+
+  const products = response?.data?.data || [];
+
+  // The search API returns data in a slightly different structure based on the user's example
+  // List: { data: { meta: {...}, data: [...] } }
+  // Search: { data: { meta: {...}, data: [...] } }
+  // It seems consistent actually.
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pr-6">
@@ -29,20 +54,32 @@ export default function ProductPage() {
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
             <DataTable
               columns={columns}
-              data={data}
-              searchKey="product"
-              toolbarAction={
-                <Select defaultValue="all">
+              data={products}
+              searchKey="productName"
+              searchValue={search}
+              onSearchValueChange={setSearch}
+              initialColumnVisibility={{
+                basePrice: true,
+                categoryPrice: true,
+                priceTier: false,
+              }}
+              toolbarAction={(table) => (
+                <Select
+                  defaultValue="Category A"
+                  onValueChange={(value) => {
+                    table.getColumn("priceTier")?.setFilterValue(value);
+                  }}
+                >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="All Categories" />
+                    <SelectValue placeholder="Category A" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="vegetables">Vegetables</SelectItem>
-                    <SelectItem value="fruits">Fruits</SelectItem>
+                    <SelectItem value="Category A">Category A</SelectItem>
+                    <SelectItem value="Category B">Category B</SelectItem>
+                    <SelectItem value="Category C">Category C</SelectItem>
                   </SelectContent>
                 </Select>
-              }
+              )}
             />
           </div>
         </div>

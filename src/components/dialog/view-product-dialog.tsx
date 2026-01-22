@@ -8,32 +8,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import customerTypes from "@/app/admin/(dashboard)/customer-types/data.json";
-
-export interface Product {
-  id: number;
-  product: string;
-  image: string;
-  category: string;
-  price: string;
-  priceHigh?: string;
-  priceMedium?: string;
-  priceLow?: string;
-  stock: string;
-  status: string;
-  description?: string;
-  unit?: string;
-}
+import { Product } from "@/types/product";
 
 interface ViewProductDialogProps {
   product: Product;
   trigger?: React.ReactNode;
 }
 
+// Helper to get image URL
+const getImageUrl = (path: string | undefined) => {
+  if (!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/"))
+    return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}${path}`;
+  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
+};
+
 export function ViewProductDialog({
   product,
   trigger,
 }: ViewProductDialogProps) {
+  const imageUrl = getImageUrl(product.image);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -52,12 +48,12 @@ export function ViewProductDialog({
           {/* Image and Basic Info */}
           <div className="flex items-start gap-4">
             <img
-              src={product.image}
-              alt={product.product}
+              src={imageUrl}
+              alt={product.productName}
               className="h-24 w-24 rounded-lg object-cover bg-gray-100 border"
             />
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg">{product.product}</h3>
+              <h3 className="font-semibold text-lg">{product.productName}</h3>
               <p className="text-sm text-muted-foreground">
                 {product.category}
               </p>
@@ -89,7 +85,7 @@ export function ViewProductDialog({
                   Availability
                 </span>
                 <span className="text-foreground capitalize">
-                  {product.status}
+                  {product.status || "Available"}
                 </span>
               </div>
             </div>
@@ -98,7 +94,7 @@ export function ViewProductDialog({
               <span className="font-medium text-muted-foreground">
                 Base Price
               </span>
-              <span className="text-foreground">{product.price}</span>
+              <span className="text-foreground">${product.basePrice}</span>
             </div>
           </div>
 
@@ -108,29 +104,24 @@ export function ViewProductDialog({
               Customer Type Pricing
             </p>
             <div className="grid grid-cols-3 gap-3">
-              {customerTypes
-                .filter((type) => type.id !== 0)
-                .map((type) => {
-                  let price = "-";
-                  if (type.name === "Catagory A")
-                    price = product.priceHigh || "-";
-                  else if (type.name === "Catagory B")
-                    price = product.priceMedium || "-";
-                  else if (type.name === "Catagory C")
-                    price = product.priceLow || "-";
-
-                  return (
-                    <div
-                      key={type.id}
-                      className="bg-gray-50 p-2 rounded border"
-                    >
-                      <p className="text-xs text-muted-foreground mb-1">
-                        {type.name}
-                      </p>
-                      <p className="font-medium text-sm">{price}</p>
-                    </div>
-                  );
-                })}
+              {product.customerTypePrice &&
+              product.customerTypePrice.length > 0 ? (
+                product.customerTypePrice.map((cp, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-50 p-2 rounded border"
+                  >
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {cp.categoryName}
+                    </p>
+                    <p className="font-medium text-sm">${cp.price}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground col-span-3">
+                  No tiered pricing available.
+                </p>
+              )}
             </div>
           </div>
         </div>

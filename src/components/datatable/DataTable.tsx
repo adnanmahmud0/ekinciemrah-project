@@ -33,14 +33,23 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string;
-  toolbarAction?: React.ReactNode;
+  searchValue?: string;
+  onSearchValueChange?: (value: string) => void;
+  toolbarAction?: React.ReactNode | ((table: any) => React.ReactNode);
+  initialColumnVisibility?: VisibilityState;
 }
 
-export function DataTable<TData extends { id: string | number }, TValue>({
+export function DataTable<
+  TData extends { id: string | number } | { _id: string },
+  TValue,
+>({
   columns,
   data: initialData,
   searchKey,
+  searchValue,
+  onSearchValueChange,
   toolbarAction,
+  initialColumnVisibility = {},
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -51,7 +60,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>(initialColumnVisibility);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -77,7 +86,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => data?.map(({ id }) => id) || [],
+    () => data?.map((row) => ("id" in row ? row.id : (row as any)._id)) || [],
     [data],
   );
 
@@ -92,7 +101,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
       columnFilters,
       pagination,
     },
-    getRowId: (row) => row.id.toString(),
+    getRowId: (row) => ("id" in row ? row.id.toString() : (row as any)._id),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -120,9 +129,17 @@ export function DataTable<TData extends { id: string | number }, TValue>({
 
   return (
     <div className="w-full flex flex-col justify-start gap-6">
-      <DataTableToolbar table={table} searchKey={searchKey}>
-        {toolbarAction}
-      </DataTableToolbar>
+      <DataTableToolbar
+        table={table}
+        searchKey={searchKey}
+        searchValue={searchValue}
+        onSearchValueChange={onSearchValueChange}
+        action={
+          typeof toolbarAction === "function"
+            ? toolbarAction(table)
+            : toolbarAction
+        }
+      />
       <div className="relative flex flex-col gap-4">
         <DataTableView
           table={table}

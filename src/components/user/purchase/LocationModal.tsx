@@ -55,7 +55,7 @@ export default function LocationModal({ isOpen, onClose, onSave, initialDetails 
                             {/* Recipient's Name */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Recipient's Name*
+                                    Recipient&apos;s Name*
                                 </label>
                                 <input
                                     type="text"

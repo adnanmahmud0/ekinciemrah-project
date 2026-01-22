@@ -13,35 +13,45 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AddProductDialog } from "@/components/dialog/add-product-dialog";
 import { ViewProductDialog } from "@/components/dialog/view-product-dialog";
+import { Product } from "@/types/product";
+import { useApi } from "@/hooks/use-api-data";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-export type Product = {
-  id: number;
-  product: string;
-  image: string;
-  category: string;
-  price: string;
-  priceHigh?: string;
-  priceMedium?: string;
-  priceLow?: string;
-  stock: string;
-  status: string;
-  description?: string;
-  unit?: string;
+// Helper to get image URL (assuming this logic is needed as per previous tasks)
+const getImageUrl = (path: string | undefined) => {
+  if (!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/"))
+    return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}${path}`;
+  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
 };
 
 export const columns: ColumnDef<Product>[] = [
   {
-    accessorKey: "product",
+    accessorKey: "productName",
     header: "Product",
     cell: ({ row }) => {
+      const imageUrl = getImageUrl(row.original.image);
       return (
         <div className="flex items-center gap-3">
           <img
-            src={row.original.image}
-            alt={row.getValue("product")}
+            src={imageUrl}
+            alt={row.getValue("productName")}
             className="h-10 w-10 rounded-lg object-cover bg-gray-100"
           />
-          <span className="font-medium">{row.getValue("product")}</span>
+          <span className="font-medium">{row.getValue("productName")}</span>
         </div>
       );
     },
@@ -51,47 +61,133 @@ export const columns: ColumnDef<Product>[] = [
     header: "Category",
   },
   {
-    accessorKey: "price",
+    accessorKey: "basePrice",
     header: "Price",
+    cell: ({ row }) => `$${row.original.basePrice}`,
+  },
+  {
+    id: "priceTier",
+    header: "Price Tier",
+    enableHiding: true,
+    filterFn: () => true, // Always match so we don't filter rows
+  },
+  {
+    id: "categoryPrice",
+    header: ({ table }) => {
+      const filterValue = table
+        .getColumn("priceTier")
+        ?.getFilterValue() as string;
+      const targetCategory = filterValue || "Category A";
+      return `${targetCategory} Price`;
+    },
+    cell: ({ row, table }) => {
+      // Get the filter value from the table state
+      const filterValue = table
+        .getColumn("priceTier")
+        ?.getFilterValue() as string;
+      // Default to "Category A" if no filter is set
+      const targetCategory = filterValue || "Category A";
+
+      // Check if customerTypePrice exists
+      if (!row.original.customerTypePrice) return "-";
+
+      // Find the price for the selected category
+      const categoryPrice = row.original.customerTypePrice.find(
+        (cp) => cp.categoryName === targetCategory,
+      );
+
+      return categoryPrice ? `$${categoryPrice.price}` : "-";
+    },
   },
   {
     accessorKey: "stock",
     header: "Stock",
+    cell: ({ row }) => `${row.original.stock}`,
   },
   {
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
       const product = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <IconDotsVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <ViewProductDialog
-              product={product}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  View
-                </DropdownMenuItem>
-              }
-            />
-            <AddProductDialog
-              product={product}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  Edit
-                </DropdownMenuItem>
-              }
-            />
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <ActionCell product={product} />;
     },
   },
 ];
+
+const ActionCell = ({ product }: { product: Product }) => {
+  const { del } = useApi();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await del(`/product&catelog/${product._id}`);
+      toast.success("Product deleted successfully");
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete product");
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <IconDotsVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <ViewProductDialog
+            product={product}
+            trigger={
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                View
+              </DropdownMenuItem>
+            }
+          />
+          <AddProductDialog
+            product={product}
+            trigger={
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                Edit
+              </DropdownMenuItem>
+            }
+          />
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setOpen(true);
+            }}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              product.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};

@@ -38,6 +38,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
                         alt={product.name}
                         fill
                         className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
+                        unoptimized={product.image.includes("localhost")}
                     />
                     {/* Badge for Tier (Optional UI flair) */}
                     <div className="absolute top-4 left-4">

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,27 +10,58 @@ import {
   Headphones,
   TrendingDown,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useApi } from "@/hooks/use-api-data";
+import { BannerResponse } from "@/types/banner";
 
-const carouselSlides = [
-  {
-    id: 1,
-    image: "/promotion-1.png",
-  },
-  {
-    id: 2,
-    image: "/promotion-1.1.png",
-  },
-];
+const getImageUrl = (path: string | undefined) => {
+  if (!path) return "/promotion-1.png"; // Fallback to a default
+  if (path.startsWith("http")) return path;
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+  const baseUrl = apiUrl.includes("/api") ? new URL(apiUrl).origin : apiUrl;
+
+  if (path.startsWith("/")) return `${baseUrl}${path}`;
+  return `${baseUrl}/${path}`;
+};
 
 export default function PromotionalBanners() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  const nextSlide = () => {
+  const { data: bannerData } = useApi<BannerResponse>("/banner", ["banners"]);
+  const webBanners = useMemo(
+    () => bannerData?.data?.webBanners || [],
+    [bannerData],
+  );
+
+  const isLocalImage = (url: string) => url.includes("localhost");
+
+  const carouselSlides = useMemo(
+    () =>
+      webBanners.length > 0
+        ? webBanners.slice(0, 2).map((b, i) => ({
+            id: i + 1,
+            image: getImageUrl(b.image),
+          }))
+        : [
+            { id: 1, image: "/promotion-1.png" },
+            { id: 2, image: "/promotion-1.1.png" },
+          ],
+    [webBanners],
+  );
+
+  const rightBanner1 = webBanners[2]
+    ? getImageUrl(webBanners[2].image)
+    : "/promotion-2.png";
+  const rightBanner2 = webBanners[3]
+    ? getImageUrl(webBanners[3].image)
+    : "/promotion-3.png";
+
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
-  };
+  }, [carouselSlides]);
 
   const prevSlide = () => {
     setCurrentSlide(
@@ -45,7 +75,7 @@ export default function PromotionalBanners() {
       nextSlide();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [nextSlide]);
 
   // Swipe handlers
   const minSwipeDistance = 50;
@@ -91,6 +121,7 @@ export default function PromotionalBanners() {
                   alt="Promotional Banner"
                   fill
                   className="object-cover"
+                  unoptimized={isLocalImage(carouselSlides[currentSlide].image)}
                 />
               </div>
 
@@ -131,20 +162,22 @@ export default function PromotionalBanners() {
             {/* Side Banner 1 */}
             <div className="relative flex-1 rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
               <Image
-                src="/promotion-2.png"
+                src={rightBanner1}
                 alt="Promotion 2"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
+                unoptimized={isLocalImage(rightBanner1)}
               />
             </div>
 
             {/* Side Banner 2 */}
             <div className="relative flex-1 rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
               <Image
-                src="/promotion-3.png"
+                src={rightBanner2}
                 alt="Promotion 3"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
+                unoptimized={isLocalImage(rightBanner2)}
               />
             </div>
           </div>
@@ -301,8 +334,6 @@ export default function PromotionalBanners() {
           </div>
         </div>
       </div>
-
-      {/* CSS Animations */}
     </section>
   );
 }

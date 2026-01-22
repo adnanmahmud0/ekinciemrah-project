@@ -9,13 +9,17 @@ import { Input } from "@/components/ui/input";
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   searchKey?: string;
-  children?: React.ReactNode;
+  searchValue?: string;
+  onSearchValueChange?: (value: string) => void;
+  action?: React.ReactNode;
 }
 
 export function DataTableToolbar<TData>({
   table,
   searchKey,
-  children,
+  searchValue,
+  onSearchValueChange,
+  action,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -27,10 +31,17 @@ export function DataTableToolbar<TData>({
             <Input
               placeholder="Filter..."
               value={
-                (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+                onSearchValueChange !== undefined
+                  ? searchValue
+                  : ((table.getColumn(searchKey)?.getFilterValue() as string) ??
+                    "")
               }
               onChange={(event) =>
-                table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                onSearchValueChange !== undefined
+                  ? onSearchValueChange(event.target.value)
+                  : table
+                      .getColumn(searchKey)
+                      ?.setFilterValue(event.target.value)
               }
               className="h-10 w-37.5 lg:w-96"
             />
@@ -46,7 +57,7 @@ export function DataTableToolbar<TData>({
             </Button>
           )}
         </div>
-        {children}
+        {action}
       </div>
     </div>
   );

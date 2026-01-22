@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ClipboardCheck, Search, CalendarCheck, Pin } from "lucide-react";
+import { ClipboardCheck, Search, CalendarCheck } from "lucide-react";
 
 const steps = [
   {

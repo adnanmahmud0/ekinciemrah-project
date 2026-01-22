@@ -5,7 +5,6 @@
 import { useRef, useState, useEffect } from "react";
 import { IconPhoto, IconPlus, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import customerTypes from "@/app/admin/(dashboard)/customer-types/data.json";
 import {
   Dialog,
   DialogClose,
@@ -24,19 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Product {
-  id: number;
-  product: string;
-  image: string;
-  category: string;
-  price: string;
-  priceHigh?: string;
-  priceMedium?: string;
-  priceLow?: string;
-  stock: string;
-  status: string;
-}
+import { useApi } from "@/hooks/use-api-data";
+import { Product } from "@/types/product";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface AddProductDialogProps {
   product?: Product;
@@ -46,13 +36,65 @@ interface AddProductDialogProps {
 export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    productName: "",
+    description: "",
+    category: "",
+    unit: "",
+    basePrice: "",
+    stock: "",
+    status: "Available",
+  });
+  const [categoryPrices, setCategoryPrices] = useState<{
+    [key: string]: string;
+  }>({});
+  const { post, patch } = useApi();
+  const queryClient = useQueryClient();
 
   // Initialize form data if product exists
   useEffect(() => {
     if (product) {
-      setPreviewUrl(product.image);
+      setPreviewUrl(
+        product.image.startsWith("http")
+          ? product.image
+          : `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}${product.image}`,
+      );
+      setFormData({
+        productName: product.productName,
+        description: product.description,
+        category: product.category,
+        unit: product.unit,
+        basePrice: product.basePrice.toString(),
+        stock: product.stock.toString(),
+        status: product.status || "Available",
+      });
+
+      const prices: { [key: string]: string } = {};
+      product.customerTypePrice.forEach((cp) => {
+        prices[cp.categoryName] = cp.price;
+      });
+      setCategoryPrices(prices);
+      setSelectedFile(null); // Reset selected file when editing existing product
+    } else {
+      // Reset form when dialog opens in "Add" mode
+      if (open && !product) {
+        setFormData({
+          productName: "",
+          description: "",
+          category: "",
+          unit: "",
+          basePrice: "",
+          stock: "",
+          status: "Available",
+        });
+        setCategoryPrices({});
+        setPreviewUrl(null);
+        setSelectedFile(null);
+      }
     }
-  }, [product]);
+  }, [product, open]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -61,6 +103,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
@@ -69,13 +112,79 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const handleRemoveFile = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPreviewUrl(null);
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!product && !selectedFile) {
+      toast.error("Product image is required");
+      return;
+    }
+
+    const submitData = new FormData();
+    submitData.append("productName", formData.productName);
+    submitData.append("description", formData.description);
+    submitData.append("category", formData.category);
+    submitData.append("unit", formData.unit);
+    submitData.append("basePrice", formData.basePrice);
+    submitData.append("stock", formData.stock);
+    submitData.append("status", formData.status);
+
+    const customerTypePrice = Object.entries(categoryPrices).map(
+      ([categoryName, price]) => ({
+        categoryName,
+        price,
+      }),
+    );
+
+    if (product) {
+      // The backend UPDATE controller likely doesn't manually parse JSON strings for FormData.
+      // So we send it as individual fields (which body-parser expands into an array of objects).
+      customerTypePrice.forEach((item, index) => {
+        submitData.append(
+          `customerTypePrice[${index}][categoryName]`,
+          item.categoryName,
+        );
+        submitData.append(`customerTypePrice[${index}][price]`, item.price);
+      });
+    } else {
+      // The backend CREATE controller manually calls JSON.parse() on this field.
+      // We MUST send a JSON string, otherwise the backend receives [object Object]
+      // and throws "SyntaxError: Unexpected token o".
+      submitData.append("customerTypePrice", JSON.stringify(customerTypePrice));
+    }
+
+    if (selectedFile) {
+      submitData.append("image", selectedFile);
+    }
+
+    try {
+      if (product) {
+        // Edit mode - PATCH
+        await patch(`/product&catelog/${product._id}`, submitData);
+        toast.success("Product updated successfully");
+      } else {
+        // Create mode - POST
+        await post("/product&catelog", submitData);
+        toast.success("Product created successfully");
+      }
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        product ? "Failed to update product" : "Failed to create product",
+      );
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ? (
           trigger
@@ -86,181 +195,183 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {product ? "Edit Product" : "Add New Product"}
           </DialogTitle>
         </DialogHeader>
-        <form className="grid gap-6 py-4">
+        <form onSubmit={handleSubmit} className="grid gap-6 py-4">
           <div className="grid gap-3">
             <Label>Upload Product Image</Label>
             <div
               className={`relative flex flex-col items-center justify-center w-full h-32 rounded-xl transition-colors ${
                 previewUrl
-                  ? "bg-gray-100"
-                  : "bg-primary hover:bg-primary/80 cursor-pointer"
+                  ? "bg-gray-100 border-none"
+                  : "bg-gray-50 border-2 border-dashed border-gray-200 hover:bg-gray-100"
               }`}
-              onClick={!previewUrl ? handleUploadClick : undefined}
+              onClick={handleUploadClick}
             >
               {previewUrl ? (
                 <>
                   <img
                     src={previewUrl}
                     alt="Preview"
-                    className="h-full w-full object-contain rounded-xl"
+                    className="w-full h-full object-contain rounded-xl"
                   />
-                  <button
-                    type="button"
+                  <div
+                    className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm cursor-pointer hover:bg-gray-100"
                     onClick={handleRemoveFile}
-                    className="absolute top-2 right-2 p-1 bg-white/80 rounded-full hover:bg-white text-red-500 transition-colors"
                   >
-                    <IconX className="h-4 w-4" />
-                  </button>
+                    <IconX className="w-4 h-4 text-gray-500" />
+                  </div>
                 </>
               ) : (
-                <>
-                  <IconPhoto className="h-8 w-8 mb-2 text-white" />
-                  <span className="text-sm font-medium text-white">
-                    Select File
+                <div className="flex flex-col items-center gap-2 cursor-pointer">
+                  <div className="p-3 bg-white rounded-full shadow-sm">
+                    <IconPhoto className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    Click to upload image
                   </span>
-                </>
+                </div>
               )}
               <input
-                type="file"
                 ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                id="image"
                 className="hidden"
                 onChange={handleFileChange}
-                accept="image/*"
               />
-            </div>
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="name">Product Name</Label>
-            <Input
-              id="name"
-              defaultValue={product?.product}
-              placeholder="e.g., Vegetables"
-              className="bg-gray-50 border-gray-200"
-            />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              placeholder="Type..."
-              className="bg-gray-50 border-gray-200"
-            />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="category">Category</Label>
-            <Select defaultValue={product?.category?.toLowerCase()}>
-              <SelectTrigger className="w-full bg-gray-50 border-gray-200 text-gray-500">
-                <SelectValue placeholder="Select Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="vegetables">Vegetables</SelectItem>
-                <SelectItem value="fruits">Fruits</SelectItem>
-                <SelectItem value="dairy">Dairy</SelectItem>
-                <SelectItem value="bakery">Bakery</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="main-price">Base Price</Label>
-            <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-2">
-              <Input
-                id="main-price"
-                defaultValue={product?.price}
-                placeholder="$0.00"
-                className="bg-gray-50 border-gray-200"
-              />
-              <Input
-                id="unit"
-                placeholder="kg, lb, piece..."
-                className="bg-gray-50 border-gray-200"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <Label className="text-sm font-medium">Customer Type Pricing</Label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {customerTypes
-                .filter((type) => type.id !== 0)
-                .map((type) => (
-                  <div key={type.id} className="grid gap-2">
-                    <Label
-                      htmlFor={`price-type-${type.id}`}
-                      className="text-xs text-muted-foreground"
-                    >
-                      {type.name}
-                    </Label>
-                    <Input
-                      id={`price-type-${type.id}`}
-                      placeholder="$0.00"
-                      className="bg-gray-50 border-gray-200"
-                      defaultValue={
-                        product
-                          ? type.name === "Catagory A"
-                            ? product.priceHigh
-                            : type.name === "Catagory B"
-                              ? product.priceMedium
-                              : type.name === "Catagory C"
-                                ? product.priceLow
-                                : ""
-                          : ""
-                      }
-                    />
-                  </div>
-                ))}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="stock">Stock Quantity</Label>
+            <div className="grid gap-2">
+              <Label htmlFor="productName">Product Name</Label>
               <Input
-                id="stock"
-                type="number"
-                defaultValue={product?.stock}
-                placeholder="0"
-                className="bg-gray-50 border-gray-200"
+                id="productName"
+                placeholder="Enter product name"
+                value={formData.productName}
+                onChange={(e) =>
+                  setFormData({ ...formData, productName: e.target.value })
+                }
+                required
               />
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="status">Availability</Label>
+            <div className="grid gap-2">
+              <Label htmlFor="category">Category</Label>
               <Select
-                defaultValue={product?.status?.toLowerCase() || "in stock"}
+                value={formData.category}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, category: value })
+                }
+                required
               >
-                <SelectTrigger className="w-full bg-gray-50 border-gray-200 text-gray-500">
-                  <SelectValue placeholder="Select Status" />
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="in stock">In Stock</SelectItem>
-                  <SelectItem value="low stock">Low Stock</SelectItem>
-                  <SelectItem value="out of stock">Out of Stock</SelectItem>
+                  <SelectItem value="vegetable">Vegetable</SelectItem>
+                  <SelectItem value="Dairy">Dairy</SelectItem>
+                  <SelectItem value="Fruits">Fruits</SelectItem>
+                  <SelectItem value="Meat">Meat</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <DialogFooter className="">
-            <Button
-              type="submit"
-              className="bg-primary hover:bg-primary/80 text-white"
-            >
-              {product ? "Save Changes" : "Add Product"}
-            </Button>
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              placeholder="Enter product description"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="price">Base Price</Label>
+              <Input
+                id="price"
+                type="number"
+                placeholder="0.00"
+                value={formData.basePrice}
+                onChange={(e) =>
+                  setFormData({ ...formData, basePrice: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="stock">Stock</Label>
+              <Input
+                id="stock"
+                type="number"
+                placeholder="0"
+                value={formData.stock}
+                onChange={(e) =>
+                  setFormData({ ...formData, stock: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="unit">Unit</Label>
+              <Input
+                id="unit"
+                placeholder="e.g. kg, lb"
+                value={formData.unit}
+                onChange={(e) =>
+                  setFormData({ ...formData, unit: e.target.value })
+                }
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-base">Customer Type Pricing</Label>
+            <div className="grid grid-cols-3 gap-4">
+              {["Category A", "Category B", "Category C"].map((cat) => (
+                <div key={cat} className="grid gap-2">
+                  <Label
+                    htmlFor={`price-${cat}`}
+                    className="text-xs text-muted-foreground"
+                  >
+                    {cat} Price
+                  </Label>
+                  <Input
+                    id={`price-${cat}`}
+                    type="number"
+                    placeholder="0.00"
+                    value={categoryPrices[cat] || ""}
+                    onChange={(e) =>
+                      setCategoryPrices({
+                        ...categoryPrices,
+                        [cat]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline" className="">
+              <Button type="button" variant="outline">
                 Cancel
               </Button>
             </DialogClose>
+            <Button type="submit">
+              {product ? "Update Product" : "Add Product"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

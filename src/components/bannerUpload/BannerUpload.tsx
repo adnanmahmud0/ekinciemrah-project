@@ -1,19 +1,32 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { IconPhoto, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { useApi } from "@/hooks/use-api-data";
+import { BannerResponse } from "@/types/banner";
+import { toast } from "sonner";
 
 interface BannerCardProps {
   label: string;
   helper?: string;
   tall?: boolean;
   dimensions?: string;
+  previewUrl: string;
+  onFileChange: (file: File | null) => void;
+  onRemove: () => void;
 }
 
-function BannerCard({ label, helper, tall, dimensions }: BannerCardProps) {
-  const [previewUrl, setPreviewUrl] = useState<string>("");
+function BannerCard({
+  label,
+  helper,
+  tall,
+  dimensions,
+  previewUrl,
+  onFileChange,
+  onRemove,
+}: BannerCardProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadClick = () => {
@@ -25,13 +38,12 @@ function BannerCard({ label, helper, tall, dimensions }: BannerCardProps) {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
+    onFileChange(file);
   };
 
   const handleRemoveFile = (event: React.MouseEvent) => {
     event.stopPropagation();
-    setPreviewUrl("");
+    onRemove();
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -102,12 +114,184 @@ function BannerCard({ label, helper, tall, dimensions }: BannerCardProps) {
   );
 }
 
+interface BannerState {
+  file: File | null;
+  preview: string;
+  originalUrl?: string;
+}
+
 export default function BannerUpload() {
+  const {
+    data: bannerData,
+    isLoading,
+    post,
+    put,
+  } = useApi<BannerResponse>("/banner", ["banners"]);
+  const [banners, setBanners] = useState<BannerState[]>(
+    Array(6).fill({ file: null, preview: "" }),
+  );
+  const [mobileBanners, setMobileBanners] = useState<BannerState[]>(
+    Array(4).fill({ file: null, preview: "" }),
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (bannerData?.data) {
+      // Handle Web Banners
+      const webBannersList = bannerData.data.webBanners;
+      if (Array.isArray(webBannersList)) {
+        const newBanners = Array.from({ length: 6 }, () => ({
+          file: null,
+          preview: "",
+        }));
+        webBannersList.forEach((banner, index) => {
+          if (index < 6 && banner.image) {
+            const apiUrl =
+              process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+            // Use origin to avoid appending /api/v1 to image paths if they are served from root
+            const baseUrl = apiUrl.includes("/api")
+              ? new URL(apiUrl).origin
+              : apiUrl;
+
+            const imageUrl = banner.image.startsWith("http")
+              ? banner.image
+              : banner.image.startsWith("/")
+                ? `${baseUrl}${banner.image}`
+                : `${baseUrl}/${banner.image}`;
+            newBanners[index] = {
+              file: null,
+              preview: imageUrl,
+              originalUrl: banner.image,
+            } as BannerState;
+          }
+        });
+        setBanners(newBanners);
+      }
+
+      // Handle Mobile Banners
+      const mobileBannersList = bannerData.data.mobileBanners;
+      if (Array.isArray(mobileBannersList)) {
+        const newMobileBanners = Array.from({ length: 4 }, () => ({
+          file: null,
+          preview: "",
+        }));
+        mobileBannersList.forEach((banner, index) => {
+          if (index < 4 && banner.image) {
+            const apiUrl =
+              process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+            // Use origin to avoid appending /api/v1 to image paths if they are served from root
+            const baseUrl = apiUrl.includes("/api")
+              ? new URL(apiUrl).origin
+              : apiUrl;
+
+            const imageUrl = banner.image.startsWith("http")
+              ? banner.image
+              : banner.image.startsWith("/")
+                ? `${baseUrl}${banner.image}`
+                : `${baseUrl}/${banner.image}`;
+            newMobileBanners[index] = {
+              file: null,
+              preview: imageUrl,
+              originalUrl: banner.image,
+            } as BannerState;
+          }
+        });
+        setMobileBanners(newMobileBanners);
+      }
+    }
+  }, [bannerData]);
+
+  const handleFileChange = (index: number, file: File | null) => {
+    const newBanners = [...banners];
+    if (file) {
+      newBanners[index] = {
+        file,
+        preview: URL.createObjectURL(file),
+      };
+    }
+    setBanners(newBanners);
+  };
+
+  const handleRemove = (index: number) => {
+    const newBanners = [...banners];
+    newBanners[index] = { file: null, preview: "" };
+    setBanners(newBanners);
+  };
+
+  const handleMobileFileChange = (index: number, file: File | null) => {
+    const newBanners = [...mobileBanners];
+    if (file) {
+      newBanners[index] = {
+        file,
+        preview: URL.createObjectURL(file),
+      };
+    }
+    setMobileBanners(newBanners);
+  };
+
+  const handleMobileRemove = (index: number) => {
+    const newBanners = [...mobileBanners];
+    newBanners[index] = { file: null, preview: "" };
+    setMobileBanners(newBanners);
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+
+      // Web Banners
+      banners.forEach((banner) => {
+        if (banner.file) {
+          formData.append("webBanners", banner.file);
+        } else if (banner.originalUrl) {
+          // If keeping existing image, send the URL as a string.
+          // The backend should detect this is a string (not a file) and keep the old path.
+          formData.append("webBanners", banner.originalUrl);
+        } else {
+          // If empty, send an empty string so the index is preserved
+          // but the backend knows there's no image here.
+          formData.append("webBanners", "null");
+        }
+      });
+
+      // Mobile Banners
+      mobileBanners.forEach((banner) => {
+        if (banner.file) {
+          formData.append("mobileBanners", banner.file);
+        } else if (banner.originalUrl) {
+          formData.append("mobileBanners", banner.originalUrl);
+        } else {
+          formData.append("mobileBanners", "null");
+        }
+      });
+
+      await post("/banner/create-update", formData, {
+        onSuccess: () => {
+          toast.success("Banners saved successfully");
+        },
+        onError: (err: unknown) => {
+          console.error(err);
+          toast.error("Failed to save banners");
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div>Loading banners...</div>;
+  }
+
   return (
     <section className="w-full rounded-3xl border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
       <div className="mb-8 flex flex-col gap-2">
         <h2 className="text-2xl md:text-3xl font-semibold text-[#061019]">
-          Banner upload
+          Banner Management
         </h2>
         <p className="text-sm md:text-base text-gray-500">
           Manage homepage and promotional banners.
@@ -115,90 +299,148 @@ export default function BannerUpload() {
       </div>
 
       <div className="space-y-10">
+        {/* Section 1: Promotional Banners (Slider) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm md:text-base text-gray-600">
-                Primary banners (4 slots) shown on main promotional areas.
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <BannerCard label="Banner 1" helper="Main hero banner" />
-            <BannerCard label="Banner 2" helper="Secondary hero banner" />
-            <BannerCard label="Banner 3" helper="Sidebar or strip banner" />
-            <BannerCard
-              label="Banner 4"
-              helper="Additional promotional banner"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm md:text-base text-gray-600">
-                Secondary banners (2 slots) for offers or seasonal promotions.
+              <h3 className="text-lg font-medium text-gray-900">
+                Promotional Slider
+              </h3>
+              <p className="text-sm text-gray-600">
+                First 2 banners shown in the main slider.
               </p>
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <BannerCard
-              label="Banner 5"
-              helper="Offer or discount banner"
-              tall
+              label="Slider Banner 1"
+              helper="First slide"
+              previewUrl={banners[0].preview}
+              onFileChange={(file) => handleFileChange(0, file)}
+              onRemove={() => handleRemove(0)}
             />
             <BannerCard
-              label="Banner 6"
-              helper="Seasonal or campaign banner"
-              tall
+              label="Slider Banner 2"
+              helper="Second slide"
+              previewUrl={banners[1].preview}
+              onFileChange={(file) => handleFileChange(1, file)}
+              onRemove={() => handleRemove(1)}
             />
           </div>
         </div>
 
+        {/* Section 2: Right Side Banners */}
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-base md:text-lg text-gray-600">
-                Mobile banners (4 slots) for app and small-screen views.
-              </p>
-              <p className="text-sm md:text-base text-gray-400">
-                Recommended size: 1080px width × 540px height (2:1 ratio).
+              <h3 className="text-lg font-medium text-gray-900">
+                Right Side Banners
+              </h3>
+              <p className="text-sm text-gray-600">
+                Vertical banners shown to the right of the slider.
               </p>
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <BannerCard
-              label="Mobile banner 1"
-              helper="Top mobile hero"
-              dimensions="1080 × 540 px"
-              tall
+              label="Right Top"
+              helper="Top right banner"
+              previewUrl={banners[2].preview}
+              onFileChange={(file) => handleFileChange(2, file)}
+              onRemove={() => handleRemove(2)}
             />
             <BannerCard
-              label="Mobile banner 2"
-              helper="Mid-page promo"
-              dimensions="1080 × 540 px"
-              tall
+              label="Right Bottom"
+              helper="Bottom right banner"
+              previewUrl={banners[3].preview}
+              onFileChange={(file) => handleFileChange(3, file)}
+              onRemove={() => handleRemove(3)}
+            />
+          </div>
+        </div>
+
+        {/* Section 3: Offer Banners */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">
+                Offer Banners
+              </h3>
+              <p className="text-sm text-gray-600">
+                Two column banners shown below featured products.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <BannerCard
+              label="Offer Left"
+              helper="Left offer banner"
+              previewUrl={banners[4].preview}
+              onFileChange={(file) => handleFileChange(4, file)}
+              onRemove={() => handleRemove(4)}
             />
             <BannerCard
-              label="Mobile banner 3"
-              helper="Bottom promo"
-              dimensions="1080 × 540 px"
-              tall
+              label="Offer Right"
+              helper="Right offer banner"
+              previewUrl={banners[5].preview}
+              onFileChange={(file) => handleFileChange(5, file)}
+              onRemove={() => handleRemove(5)}
+            />
+          </div>
+        </div>
+
+        {/* Section 4: Mobile Banners */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">
+                Mobile Banners
+              </h3>
+              <p className="text-sm text-gray-600">
+                Banners optimized for mobile devices.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <BannerCard
+              label="Mobile Banner 1"
+              helper="First mobile banner"
+              previewUrl={mobileBanners[0].preview}
+              onFileChange={(file) => handleMobileFileChange(0, file)}
+              onRemove={() => handleMobileRemove(0)}
             />
             <BannerCard
-              label="Mobile banner 4"
-              helper="Extra mobile creative"
-              dimensions="1080 × 540 px"
-              tall
+              label="Mobile Banner 2"
+              helper="Second mobile banner"
+              previewUrl={mobileBanners[1].preview}
+              onFileChange={(file) => handleMobileFileChange(1, file)}
+              onRemove={() => handleMobileRemove(1)}
+            />
+            <BannerCard
+              label="Mobile Banner 3"
+              helper="Third mobile banner"
+              previewUrl={mobileBanners[2].preview}
+              onFileChange={(file) => handleMobileFileChange(2, file)}
+              onRemove={() => handleMobileRemove(2)}
+            />
+            <BannerCard
+              label="Mobile Banner 4"
+              helper="Fourth mobile banner"
+              previewUrl={mobileBanners[3].preview}
+              onFileChange={(file) => handleMobileFileChange(3, file)}
+              onRemove={() => handleMobileRemove(3)}
             />
           </div>
         </div>
       </div>
 
       <div className="mt-10 flex justify-end">
-        <Button className="rounded-full bg-[#1B8057] px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#146041]">
-          Submit banners
+        <Button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="rounded-full bg-[#1B8057] px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#146041]"
+        >
+          {isSubmitting ? "Saving..." : "Save Changes"}
         </Button>
       </div>
     </section>
