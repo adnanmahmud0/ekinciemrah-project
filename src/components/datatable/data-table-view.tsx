@@ -76,7 +76,7 @@ export function DataTableView<TData extends { id: string | number }>({
   sortableId,
 }: DataTableViewProps<TData>) {
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="rounded-lg border">
       <DndContext
         collisionDetection={closestCenter}
         modifiers={[restrictToVerticalAxis]}
@@ -95,7 +95,7 @@ export function DataTableView<TData extends { id: string | number }>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );

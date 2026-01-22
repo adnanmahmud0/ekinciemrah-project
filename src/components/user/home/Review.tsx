@@ -88,7 +88,9 @@ export default function Review() {
               Testimonials
             </span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#1A2D42] leading-[1.1] tracking-tight">
-              What Our <span className="text-primary italic font-brand">Community</span> Says
+              What Our{" "}
+              <span className="text-primary italic font-brand">Community</span>{" "}
+              Says
             </h2>
           </div>
           <div className="flex gap-4">
@@ -110,21 +112,13 @@ export default function Review() {
         <div className="relative">
           <div className="overflow-visible">
             <div
-              className={`flex gap-6 md:gap-8 ${isTransitioning ? 'transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)' : ''}`}
-              style={{
-                transform: `translateX(calc(-${currentIndex} * (100% / 3 + 24px/3)))`,
-              } as React.CSSProperties}
+              className={`flex gap-6 md:gap-8 [--slide-step:100%] md:[--slide-step:calc(100%_/_3_+_8px)] ${isTransitioning ? "transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)" : ""}`}
+              style={
+                {
+                  transform: `translateX(calc(-${currentIndex} * var(--slide-step)))`,
+                } as React.CSSProperties
+              }
             >
-              <style jsx>{`
-                div {
-                  --slide-width: 100%;
-                }
-                @media (max-width: 768px) {
-                  div {
-                    transform: translateX(calc(-${currentIndex} * 100%)) !important;
-                  }
-                }
-              `}</style>
               {extendedReviews.map((review, idx) => (
                 <div
                   key={`${review.id}-${idx}`}
@@ -145,10 +139,11 @@ export default function Review() {
                 setIsTransitioning(true);
                 setCurrentIndex(idx + reviews.length);
               }}
-              className={`h-2 rounded-full transition-all duration-500 ${idx === (currentIndex % reviews.length)
-                ? "w-12 bg-primary shadow-[0_0_15px_rgba(20,96,65,0.4)]"
-                : "w-2 bg-gray-200 hover:bg-gray-300"
-                }`}
+              className={`h-2 rounded-full transition-all duration-500 ${
+                idx === currentIndex % reviews.length
+                  ? "w-12 bg-primary shadow-[0_0_15px_rgba(20,96,65,0.4)]"
+                  : "w-2 bg-gray-200 hover:bg-gray-300"
+              }`}
             />
           ))}
         </div>
@@ -157,40 +152,51 @@ export default function Review() {
   );
 }
 
-function ReviewCard({ review }: { review: typeof reviews[0] }) {
+function ReviewCard({ review }: { review: (typeof reviews)[0] }) {
   return (
-    <div className="group relative bg-white/80 backdrop-blur-sm p-10 rounded-[2.5rem] border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 flex flex-col h-full overflow-hidden">
+    <div className="group relative bg-white/80 backdrop-blur-sm p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 flex flex-col h-full overflow-hidden">
       {/* Quote Icon Accent */}
-      <div className="absolute top-8 right-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500">
-        <Quote className="w-24 h-24 rotate-12" />
+      <div className="absolute top-4 right-6 md:top-8 md:right-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500">
+        <Quote className="w-16 h-16 md:w-24 md:h-24 rotate-12" />
       </div>
 
       {/* Stars */}
-      <div className="flex gap-1.5 mb-8">
+      <div className="flex gap-1.5 mb-4 md:mb-8">
         {[...Array(review.rating)].map((_, i) => (
-          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
+          <Star
+            key={i}
+            className="w-4 h-4 md:w-5 md:h-5 fill-yellow-400 text-yellow-400 drop-shadow-sm"
+          />
         ))}
       </div>
 
       {/* Review Text */}
-      <p className="text-lg text-gray-600 leading-[1.7] mb-10 flex-grow font-medium">
-        "{review.review}"
+      <p className="text-base md:text-lg text-gray-600 leading-[1.6] md:leading-[1.7] mb-6 md:mb-10 flex-grow font-medium">
+        {review.review}
       </p>
 
       {/* User profile */}
-      <div className="flex items-center gap-5 pt-8 border-t border-gray-50">
-        <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-primary/5">
+      <div className="flex items-center gap-3 md:gap-5 pt-4 md:pt-8 border-t border-gray-50">
+        <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-primary/5">
           {review.image ? (
-            <img src={review.image} alt={review.name} className="w-full h-full object-cover" />
+            <img
+              src={review.image}
+              alt={review.name}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-              <User className="w-8 h-8 text-primary/40" />
+              <User className="w-6 h-6 md:w-8 md:h-8 text-primary/40" />
             </div>
           )}
         </div>
         <div>
-          <h4 className="text-xl font-bold text-[#1A2D42] tracking-tight">{review.name}</h4>
-          <p className="text-sm font-semibold text-primary/70">{review.role}</p>
+          <h4 className="text-lg md:text-xl font-bold text-[#1A2D42] tracking-tight">
+            {review.name}
+          </h4>
+          <p className="text-xs md:text-sm font-semibold text-primary/70">
+            {review.role}
+          </p>
         </div>
       </div>
     </div>

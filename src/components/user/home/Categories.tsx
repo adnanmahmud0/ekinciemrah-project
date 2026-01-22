@@ -30,7 +30,7 @@ export default function Categories() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-8 justify-center">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
@@ -46,7 +46,7 @@ function CategoryCard({
   category: { id: number; title: string; image: string };
 }) {
   return (
-    <div className="group relative h-[300px] rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <div className="group relative h-[180px] md:h-[300px] rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -54,8 +54,8 @@ function CategoryCard({
       />
 
       {/* Content */}
-      <div className="relative z-10 h-full border-2 border-[#E6F4F1] rounded-3xl flex flex-col items-center justify-center p-6">
-        <div className="relative w-48 h-48 mb-4 transition-transform duration-300 group-hover:scale-100">
+      <div className="relative z-10 h-full border-2 border-[#E6F4F1] rounded-3xl flex flex-col items-center justify-center p-2 md:p-6">
+        <div className="relative w-24 h-24 md:w-48 md:h-48 mb-2 md:mb-4 transition-transform duration-300 group-hover:scale-100">
           <Image
             src={category.image}
             alt={category.title}
@@ -63,7 +63,7 @@ function CategoryCard({
             className="object-contain drop-shadow-lg"
           />
         </div>
-        <h3 className="text-xl font-bold text-[#0D1E32] mt-auto">
+        <h3 className="text-xs md:text-xl font-bold text-[#0D1E32] mt-auto text-center">
           {category.title}
         </h3>
       </div>

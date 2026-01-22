@@ -53,7 +53,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState({
@@ -62,14 +62,23 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   });
   const sortableId = React.useId();
   const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {}),
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ id }) => id) || [],
-    [data]
+    [data],
   );
 
   /* eslint-disable react-hooks/incompatible-library */
@@ -114,7 +123,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
       <DataTableToolbar table={table} searchKey={searchKey}>
         {toolbarAction}
       </DataTableToolbar>
-      <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
+      <div className="relative flex flex-col gap-4">
         <DataTableView
           table={table}
           dataIds={dataIds}

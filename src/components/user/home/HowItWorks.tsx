@@ -54,7 +54,7 @@ export default function HowItWorks() {
         </div>
 
         {/* Steps Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 relative">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 md:gap-6 relative">
           {steps.map((step, index) => (
             <StepCard key={step.id} step={step} index={index} />
           ))}
@@ -69,21 +69,21 @@ function StepCard({ step, index }: { step: { id: number; title: string; descript
   const stepNumber = (index + 1).toString().padStart(2, '0');
 
   return (
-    <div className="group relative bg-white h-[280px] rounded-[32px] p-6 border border-emerald-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,79,59,0.08)] hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center">
+    <div className="group relative bg-white min-h-[200px] md:h-[280px] rounded-[24px] md:rounded-[32px] p-4 md:p-6 border border-emerald-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,79,59,0.08)] hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center">
       {/* Step Badge */}
-      <div className="absolute top-6 right-6 text-[40px] font-black text-emerald-50/70 group-hover:text-emerald-100 transition-colors pointer-events-none">
+      <div className="absolute top-3 right-3 md:top-6 md:right-6 text-2xl md:text-[40px] font-black text-emerald-50/70 group-hover:text-emerald-100 transition-colors pointer-events-none">
         {stepNumber}
       </div>
 
       {/* Icon Container */}
-      <div className="w-14 h-14 mb-6 rounded-2xl bg-emerald-50 text-[#004F3B] flex items-center justify-center group-hover:bg-[#004F3B] group-hover:text-white transition-all duration-500 shadow-sm">
-        <Icon className="w-6 h-6" />
+      <div className="w-10 h-10 md:w-14 md:h-14 mb-4 md:mb-6 rounded-2xl bg-emerald-50 text-[#004F3B] flex items-center justify-center group-hover:bg-[#004F3B] group-hover:text-white transition-all duration-500 shadow-sm">
+        <Icon className="w-5 h-5 md:w-6 md:h-6" />
       </div>
 
       {/* Content */}
       <div className="flex flex-col flex-grow items-center">
-        <h3 className="text-base font-bold text-[#0D1E32] mb-3 leading-tight group-hover:text-[#004F3B] transition-colors">{step.title}</h3>
-        <p className="text-[13px] text-gray-500 leading-relaxed font-medium">
+        <h3 className="text-xs md:text-base font-bold text-[#0D1E32] mb-2 md:mb-3 leading-tight group-hover:text-[#004F3B] transition-colors">{step.title}</h3>
+        <p className="text-[10px] md:text-[13px] text-gray-500 leading-relaxed font-medium">
           {step.description}
         </p>
       </div>
