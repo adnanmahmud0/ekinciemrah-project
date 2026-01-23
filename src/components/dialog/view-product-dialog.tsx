@@ -53,9 +53,11 @@ export function ViewProductDialog({
               className="h-24 w-24 rounded-lg object-cover bg-gray-100 border"
             />
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg">{product.productName}</h3>
+              <h3 className="font-semibold text-lg">
+                Name: {product.productName}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                {product.category}
+                Category: {product.category}
               </p>
             </div>
           </div>
@@ -107,10 +109,7 @@ export function ViewProductDialog({
               {product.customerTypePrice &&
               product.customerTypePrice.length > 0 ? (
                 product.customerTypePrice.map((cp, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-50 p-2 rounded border"
-                  >
+                  <div key={index} className="bg-gray-50 p-2 rounded border">
                     <p className="text-xs text-muted-foreground mb-1">
                       {cp.categoryName}
                     </p>
