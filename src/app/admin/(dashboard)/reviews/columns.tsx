@@ -13,19 +13,48 @@ import {
 export type Review = {
   id: string;
   customer: string;
+  email: string;
   product: string;
+  productId: string;
   rating: number;
   date: string;
+  comment: string;
 };
 
 export const columns: ColumnDef<Review>[] = [
   {
     accessorKey: "customer",
     header: "Customer",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">{row.original.customer}</span>
+          <span className="text-sm text-gray-500">{row.original.email}</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "productId",
+    header: "Product ID",
   },
   {
     accessorKey: "product",
     header: "Product",
+  },
+  {
+    accessorKey: "comment",
+    header: "Comment",
+    cell: ({ row }) => (
+      <div className="flex justify-center">
+        <div
+          className="max-w-[300px] truncate text-center"
+          title={row.original.comment}
+        >
+          {row.original.comment}
+        </div>
+      </div>
+    ),
   },
   {
     accessorKey: "rating",
@@ -58,7 +87,7 @@ export const columns: ColumnDef<Review>[] = [
   {
     id: "actions",
     header: "Action",
-    cell: ({ }) => {
+    cell: ({}) => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

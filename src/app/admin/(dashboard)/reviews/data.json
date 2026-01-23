@@ -2,50 +2,71 @@
     {
         "id": "1",
         "customer": "Rahim Uddin",
+        "email": "rahim@example.com",
+        "productId": "PROD-001",
         "product": "Apple",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Great quality apples, very fresh!"
     },
     {
         "id": "2",
         "customer": "Korim",
+        "email": "korim@example.com",
+        "productId": "PROD-002",
         "product": "Fruits",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Excellent variety of fruits."
     },
     {
         "id": "3",
         "customer": "Jhon",
+        "email": "jhon@example.com",
+        "productId": "PROD-003",
         "product": "Vegetables",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Fresh vegetables, quick delivery."
     },
     {
         "id": "4",
         "customer": "Zara",
+        "email": "zara@example.com",
+        "productId": "PROD-004",
         "product": "Tomato",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Tomatoes were ripe and juicy."
     },
     {
         "id": "5",
         "customer": "Ranju",
+        "email": "ranju@example.com",
+        "productId": "PROD-003",
         "product": "Vegetables",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Good packaging and service."
     },
     {
         "id": "6",
         "customer": "Krish",
+        "email": "krish@example.com",
+        "productId": "PROD-003",
         "product": "Vegetables",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Will order again."
     },
     {
         "id": "7",
         "customer": "Jack",
+        "email": "jack@example.com",
+        "productId": "PROD-003",
         "product": "Vegetables",
         "rating": 5.0,
-        "date": "April 18,2025"
+        "date": "April 18,2025",
+        "comment": "Highly recommended!"
     }
 ]
