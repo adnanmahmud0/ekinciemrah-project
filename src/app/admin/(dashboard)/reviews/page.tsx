@@ -1,10 +1,30 @@
+"use client";
+
 import { DataTable } from "@/components/datatable/DataTable";
 import { PageHeader } from "@/components/page-header";
 import { columns, Review } from "./columns";
-import data from "./data.json";
+import { useEffect, useState } from "react";
+import { privateApi } from "@/lib/api-client";
 
 export default function page() {
-  const reviewsData: Review[] = data as Review[];
+  const [reviewsData, setReviewsData] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await privateApi.get("/review");
+        if (res.data.success) {
+          setReviewsData(res.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch reviews", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
@@ -12,7 +32,11 @@ export default function page() {
         title="Reviews"
         description="Manage customer reviews and ratings"
       />
-      <DataTable columns={columns} data={reviewsData} searchKey="customer" />
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <DataTable columns={columns} data={reviewsData} searchKey="customer" />
+      )}
     </div>
   );
 }

@@ -1,44 +1,127 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { publicApi } from "@/lib/api-client";
 
-const categories = [
-    { id: 1, name: "Vegetables", icon: "/category-1.png" },
-    { id: 2, name: "Fruits", icon: "/category-2.png" },
-    { id: 3, name: "Dry Groceries", icon: "/category-3.png" },
-    { id: 4, name: "Dairy", icon: "/category-4.png" },
-    { id: 5, name: "Dry Groceries", icon: "/category-5.png" },
-    { id: 6, name: "Beverages", icon: "/category-1.png" },
-];
+interface Category {
+  _id: string;
+  categoryName: string;
+  image: string;
+}
 
 export default function CategoryIcons() {
-    return (
-        <section className="bg-white border-b border-gray-200">
-            <div className="container mx-auto px-4 py-4">
-                {/* Categories Container */}
-                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide md:justify-center">
-                    {categories.map((category) => (
-                        <div
-                            key={category.id}
-                            className="flex flex-col items-center min-w-[90px] cursor-pointer group flex-shrink-0"
-                        >
-                            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 group-hover:bg-gray-200 transition-colors">
-                                <div className="relative w-12 h-12">
-                                    <Image
-                                        src={category.icon}
-                                        alt={category.name}
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </div>
-                            </div>
-                            <p className="text-xs text-center text-gray-700 whitespace-pre-line leading-tight">
-                                {category.name}
-                            </p>
-                        </div>
-                    ))}
+  const [categories, setCategories] = useState<Category[]>([]);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await publicApi.get("/category");
+        if (res.data.success) {
+          setCategories(res.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const { scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowRightArrow(scrollWidth > clientWidth);
+    }
+  }, [categories]);
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      // Tolerance of 1px for float calculation differences
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollAmount = container.clientWidth / 2;
+      if (direction === "left") {
+        container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    }
+  };
+
+  if (categories.length === 0) return null;
+
+  return (
+    <section className="bg-white border-b border-gray-200 relative group">
+      <div className="container mx-auto px-4 py-4 relative">
+        <div className="flex items-center justify-center gap-4">
+          {/* Left Arrow */}
+          {showLeftArrow && (
+            <button
+              onClick={() => scroll("left")}
+              className="flex-none z-10 bg-[#004F3B] shadow-md rounded-full p-2 hover:bg-[#003d2e] hidden md:flex border border-[#004F3B] transition-colors"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+          )}
+
+          {/* Categories Container */}
+          <div
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="flex gap-6 overflow-x-auto pb-4 pt-2 scrollbar-custom max-w-full"
+          >
+            {categories.map((category) => (
+              <div
+                key={category._id}
+                className="flex flex-col items-center min-w-[90px] cursor-pointer group flex-shrink-0"
+              >
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">
+                  <div className="relative w-12 h-12">
+                    <Image
+                      src={
+                        category.image
+                          ? `${process.env.NEXT_PUBLIC_IMAGE_API}${category.image}`
+                          : "/placeholder.png"
+                      }
+                      alt={category.categoryName}
+                      fill
+                      unoptimized
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
-            </div>
-        </section>
-    );
+                <p className="text-xs text-center text-gray-700 whitespace-pre-line leading-tight group-hover:text-green-700 font-medium transition-colors">
+                  {category.categoryName}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Right Arrow */}
+          {showRightArrow && (
+            <button
+              onClick={() => scroll("right")}
+              className="flex-none z-10 bg-[#004F3B] shadow-md rounded-full p-2 hover:bg-[#003d2e] hidden md:flex border border-[#004F3B] transition-colors"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 }

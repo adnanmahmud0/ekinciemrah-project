@@ -27,10 +27,16 @@ import { useApi } from "@/hooks/use-api-data";
 import { Product } from "@/types/product";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { privateApi } from "@/lib/api-client";
 
 interface AddProductDialogProps {
   product?: Product;
   trigger?: React.ReactNode;
+}
+
+interface Category {
+  _id: string;
+  categoryName: string;
 }
 
 export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
@@ -38,6 +44,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     productName: "",
     description: "",
@@ -52,6 +59,24 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   }>({});
   const { post, patch } = useApi();
   const queryClient = useQueryClient();
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await privateApi.get("/category");
+        if (res.data.success) {
+          setCategories(res.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+        toast.error("Failed to fetch categories");
+      }
+    };
+    if (open) {
+      fetchCategories();
+    }
+  }, [open]);
 
   // Initialize form data if product exists
   useEffect(() => {
@@ -129,7 +154,21 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
     const submitData = new FormData();
     submitData.append("productName", formData.productName);
     submitData.append("description", formData.description);
-    submitData.append("category", formData.category);
+    // Find the selected category object to get its name
+    const selectedCategory = categories.find(
+      (c) => c._id === formData.category,
+    );
+
+    // Append 'category' with the Name (as shown in your screenshot)
+    if (selectedCategory) {
+      submitData.append("category", selectedCategory.categoryName);
+    } else {
+      submitData.append("category", formData.category); // Fallback
+    }
+
+    // Append 'categoryId' with the ID (to fix the validation error)
+    submitData.append("categoryId", formData.category);
+
     submitData.append("unit", formData.unit);
     submitData.append("basePrice", formData.basePrice);
     submitData.append("stock", formData.stock);
@@ -273,10 +312,11 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="vegetable">Vegetable</SelectItem>
-                  <SelectItem value="Dairy">Dairy</SelectItem>
-                  <SelectItem value="Fruits">Fruits</SelectItem>
-                  <SelectItem value="Meat">Meat</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category._id} value={category._id}>
+                      {category.categoryName}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

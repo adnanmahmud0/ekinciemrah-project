@@ -16,11 +16,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useRef, useState } from "react";
+import { privateApi } from "@/lib/api-client";
+import { toast } from "sonner"; // Assuming sonner is used, or I'll use alert/console if not found.
+// I'll check if toast/sonner is available. If not, I'll stick to simple alerts or just log.
+// Checking imports in other files... columns.tsx uses window.location.reload().
+// I'll stick to basic alert for error and reload for success.
 
 interface Category {
-  id: number;
-  name: string;
-  products: number;
+  _id: string;
+  categoryName: string;
   image: string;
 }
 
@@ -35,23 +39,28 @@ export function AddCategoryDialog({
 }: AddCategoryDialogProps) {
   const [name, setName] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (category) {
-      setName(category.name);
+      setName(category.categoryName);
       setPreviewUrl(category.image);
+      setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     } else {
       setName("");
       setPreviewUrl("");
+      setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
-  }, [category]);
+  }, [category, open]);
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -63,19 +72,56 @@ export function AddCategoryDialog({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
   };
 
   const handleRemoveFile = () => {
     setPreviewUrl("");
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("categoryName", name);
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
+
+      let res;
+      if (category) {
+        res = await privateApi.patch(`category/${category._id}`, formData);
+      } else {
+        res = await privateApi.post("/category", formData);
+      }
+
+      if (res.data.success) {
+        toast.success(
+          category
+            ? "Category updated successfully"
+            : "Category created successfully",
+        );
+        setOpen(false);
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Failed to save category:", error);
+      toast.error("Failed to save category");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
           <Button
@@ -98,7 +144,7 @@ export function AddCategoryDialog({
               : "Create a new category for your products. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
-        <form className="grid gap-4 py-4">
+        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-3">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -106,6 +152,7 @@ export function AddCategoryDialog({
               placeholder="e.g., Electronics"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
             />
           </div>
           <div className="grid gap-3">
@@ -151,9 +198,13 @@ export function AddCategoryDialog({
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" type="button">
+                Cancel
+              </Button>
             </DialogClose>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save changes"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

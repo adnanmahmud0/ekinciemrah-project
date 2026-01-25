@@ -12,12 +12,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddCategoryDialog } from "@/components/dialog/add-category-dialog";
+import { privateApi } from "@/lib/api-client";
+import { toast } from "sonner";
 
 export type Category = {
-  id: number;
-  name: string;
-  products: number;
+  _id: string;
+  categoryName: string;
   image: string;
+  productCount: number;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
+const handleDelete = async (id: string) => {
+  if (!confirm("Are you sure you want to delete this category?")) return;
+  try {
+    const res = await privateApi.delete(`category/${id}`);
+    if (res.data.success) {
+      toast.success("Category deleted successfully");
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error("Failed to delete category:", error);
+    toast.error("Failed to delete category");
+  }
 };
 
 export const columns: ColumnDef<Category>[] = [
@@ -30,9 +49,10 @@ export const columns: ColumnDef<Category>[] = [
         <div className="flex justify-center">
           <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-muted">
             <Image
-              src={category.image}
-              alt={category.name}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_API}${category.image}`}
+              alt={category.categoryName}
               fill
+              unoptimized
               className="object-cover"
             />
           </div>
@@ -41,17 +61,17 @@ export const columns: ColumnDef<Category>[] = [
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "categoryName",
     header: "Category Name",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
+      <div className="font-medium">{row.getValue("categoryName")}</div>
     ),
   },
   {
-    accessorKey: "products",
+    accessorKey: "productCount",
     header: "Products",
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("products")}</div>
+      <div className="text-center">{row.getValue("productCount")}</div>
     ),
   },
   {
@@ -76,7 +96,9 @@ export const columns: ColumnDef<Category>[] = [
                 </DropdownMenuItem>
               }
             />
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDelete(category._id)}>
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

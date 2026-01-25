@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuButton
                 asChild
                 isActive={pathname === item.url}
-                className="w-full px-5 py-5 my-1 justify-start text-bas text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground"
+                className="w-full px-5 py-5 my-1 justify-start text-bas text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
               >
                 <Link href={item.url}>
                   <item.icon className="size-6" />

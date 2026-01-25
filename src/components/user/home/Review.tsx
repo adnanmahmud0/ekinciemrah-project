@@ -1,70 +1,74 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Star, User, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { publicApi } from "@/lib/api-client";
 
-const reviews = [
-  {
-    id: 1,
-    name: "Holland Canals",
-    role: "Regular Customer",
-    image: "/category-1.png",
-    review:
-      "The quality of produce here is unmatched. I've been a regular for months now, and every delivery is as fresh as the first one. Truly a premium experience.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Sarah Jenkins",
-    role: "Local Chef",
-    image: "/category-2.png",
-    review:
-      "As a chef, freshness is everything. Unified Produce has consistently provided the best greens and vegetables for my kitchen. Highly reliable and efficient.",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Mike Ross",
-    role: "Verified Buyer",
-    image: "/category-3.png",
-    review:
-      "The selection is incredible. I love how I can find everything from exotic fruits to daily dairy essentials in one place. The service is top-notch!",
-    rating: 5,
-  },
-  {
-    id: 4,
-    name: "Elena Rodriguez",
-    role: "Health Enthusiast",
-    image: "/category-4.png",
-    review:
-      "I'm very particular about organic food, and this platform has never disappointed me. The convenience of fresh delivery right to my door is life-changing.",
-    rating: 5,
-  },
-];
-
-const extendedReviews = [...reviews, ...reviews, ...reviews];
+type ReviewType = {
+  id: string;
+  name: string;
+  role: string;
+  image: string;
+  review: string;
+  rating: number;
+};
 
 export default function Review() {
-  const [currentIndex, setCurrentIndex] = useState(reviews.length);
+  const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await publicApi.get("/review");
+        if (res.data.success) {
+          const mappedReviews = res.data.data.map((r: any) => ({
+            id: r._id,
+            name: r.userId.name,
+            role: "Customer", // Static role or derived if available
+            image: r.userId.image || "/placeholder-user.jpg",
+            review: r.comment,
+            rating: r.rating,
+          }));
+          setReviews(mappedReviews);
+          // Initialize index to the start of the first set of duplicated reviews
+          setCurrentIndex(mappedReviews.length);
+        }
+      } catch (error) {
+        console.error("Failed to fetch reviews", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  const extendedReviews =
+    reviews.length > 0 ? [...reviews, ...reviews, ...reviews] : [];
+
   const handleNext = () => {
+    if (reviews.length === 0) return;
     setIsTransitioning(true);
     setCurrentIndex((prev) => prev + 1);
   };
 
   const handlePrev = () => {
+    if (reviews.length === 0) return;
     setIsTransitioning(true);
     setCurrentIndex((prev) => prev - 1);
   };
 
   useEffect(() => {
+    if (reviews.length === 0) return;
     const interval = setInterval(() => {
       handleNext();
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [reviews]);
 
   useEffect(() => {
+    if (reviews.length === 0) return;
     if (currentIndex >= reviews.length * 2) {
       setTimeout(() => {
         setIsTransitioning(false);
@@ -77,7 +81,7 @@ export default function Review() {
         setCurrentIndex(reviews.length * 2 - 1);
       }, 700);
     }
-  }, [currentIndex]);
+  }, [currentIndex, reviews]);
 
   return (
     <section className="py-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
@@ -96,13 +100,15 @@ export default function Review() {
           <div className="flex gap-4">
             <button
               onClick={handlePrev}
-              className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:border-primary hover:text-primary transition-all group"
+              disabled={loading || reviews.length === 0}
+              className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:border-primary hover:text-primary transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-6 h-6 group-active:scale-90 transition-transform" />
             </button>
             <button
               onClick={handleNext}
-              className="p-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-[#0e4b32] transition-all group"
+              disabled={loading || reviews.length === 0}
+              className="p-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-[#0e4b32] transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-6 h-6 group-active:scale-90 transition-transform" />
             </button>
@@ -111,48 +117,64 @@ export default function Review() {
 
         <div className="relative">
           <div className="overflow-visible">
-            <div
-              className={`flex gap-6 md:gap-8 [--slide-step:100%] md:[--slide-step:calc(100%_/_3_+_8px)] ${isTransitioning ? "transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)" : ""}`}
-              style={
-                {
-                  transform: `translateX(calc(-${currentIndex} * var(--slide-step)))`,
-                } as React.CSSProperties
-              }
-            >
-              {extendedReviews.map((review, idx) => (
-                <div
-                  key={`${review.id}-${idx}`}
-                  className="flex-shrink-0 w-full md:w-[calc(33.333%-16px)]"
-                >
-                  <ReviewCard review={review} />
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : reviews.length > 0 ? (
+              <div
+                className={`flex gap-6 md:gap-8 [--slide-step:100%] md:[--slide-step:calc(100%_/_3_+_8px)] ${
+                  isTransitioning
+                    ? "transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)"
+                    : ""
+                }`}
+                style={
+                  {
+                    transform: `translateX(calc(-${currentIndex} * var(--slide-step)))`,
+                  } as React.CSSProperties
+                }
+              >
+                {extendedReviews.map((review, idx) => (
+                  <div
+                    key={`${review.id}-${idx}`}
+                    className="flex-shrink-0 w-full md:w-[calc(33.333%-16px)]"
+                  >
+                    <ReviewCard review={review} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 text-gray-500">
+                No reviews available at the moment.
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="flex justify-center gap-3 mt-16">
-          {reviews.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setIsTransitioning(true);
-                setCurrentIndex(idx + reviews.length);
-              }}
-              className={`h-2 rounded-full transition-all duration-500 ${
-                idx === currentIndex % reviews.length
-                  ? "w-12 bg-primary shadow-[0_0_15px_rgba(20,96,65,0.4)]"
-                  : "w-2 bg-gray-200 hover:bg-gray-300"
-              }`}
-            />
-          ))}
-        </div>
+        {reviews.length > 0 && (
+          <div className="flex justify-center gap-3 mt-16">
+            {reviews.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setIsTransitioning(true);
+                  setCurrentIndex(idx + reviews.length);
+                }}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  idx === currentIndex % reviews.length
+                    ? "w-12 bg-primary shadow-[0_0_15px_rgba(20,96,65,0.4)]"
+                    : "w-2 bg-gray-200 hover:bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
-function ReviewCard({ review }: { review: (typeof reviews)[0] }) {
+function ReviewCard({ review }: { review: ReviewType }) {
   return (
     <div className="group relative bg-white/80 backdrop-blur-sm p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 flex flex-col h-full overflow-hidden">
       {/* Quote Icon Accent */}
