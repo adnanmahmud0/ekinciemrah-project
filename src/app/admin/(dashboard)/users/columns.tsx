@@ -5,7 +5,6 @@
 import { useState } from "react";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
-import customerTypesData from "@/app/admin/(dashboard)/customer-types/data.json";
 import { UserDetailsDialog } from "@/components/dialog/user-details-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,8 +67,19 @@ function ChangeCustomerTypeDialog({
   const [value, setValue] = useState(user.customerType ?? "");
   const { patch } = useApi("/user", ["users"]);
 
+  // Fetch customer types from API
+  const { data: customerTypesData } = useApi("/customer-type", [
+    "customer-types",
+  ]);
+
+  // Extract the array from the response structure
   const customerTypes =
-    (customerTypesData as { id: number; name: string }[]) ?? [];
+    (customerTypesData?.data as { _id: string; customerType: string }[]) ?? [];
+
+  // Sort customer types alphabetically
+  const sortedCustomerTypes = [...customerTypes].sort((a, b) =>
+    a.customerType.localeCompare(b.customerType),
+  );
 
   function handleSave() {
     const targetUrl = `/user/${user._id.trim()}/status`;
@@ -108,9 +118,12 @@ function ChangeCustomerTypeDialog({
               <SelectValue placeholder="Select customer type" />
             </SelectTrigger>
             <SelectContent>
-              {customerTypes.map((type) => (
-                <SelectItem key={type.id} value={type.name.toLowerCase()}>
-                  {type.name}
+              {sortedCustomerTypes.map((type) => (
+                <SelectItem
+                  key={type._id}
+                  value={type.customerType.toLowerCase()}
+                >
+                  {type.customerType}
                 </SelectItem>
               ))}
             </SelectContent>

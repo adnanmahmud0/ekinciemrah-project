@@ -1,11 +1,30 @@
+"use client";
+
 import { DataTable } from "@/components/datatable/DataTable";
 import { AddCustomerTypeDialog } from "@/components/dialog/add-customer-type-dialog";
 import { PageHeader } from "@/components/page-header";
-import data from "./data.json";
-import { columns, type CustomerTypeRow } from "./columns";
+import { columns } from "./columns";
+import { useApi } from "@/hooks/use-api-data";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CustomerTypesPage() {
-  const customerTypes: CustomerTypeRow[] = data as CustomerTypeRow[];
+  const { data, isLoading } = useApi("/customer-type", ["customer-types"]);
+
+  // Backend response structure:
+  // {
+  //     "success": true,
+  //     "message": "...",
+  //     "data": [...]
+  // }
+  // useApi's `data` returns the full response object.
+  // We need data.data for the rows.
+
+  const customerTypes = data?.data || [];
+
+  // Sort customer types alphabetically
+  const sortedCustomerTypes = [...customerTypes].sort((a, b) =>
+    a.customerType.localeCompare(b.customerType),
+  );
 
   return (
     <div className="space-y-4">
@@ -22,15 +41,22 @@ export default function CustomerTypesPage() {
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <DataTable
-              columns={columns}
-              data={customerTypes}
-              searchKey="name"
-            />
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={sortedCustomerTypes}
+                searchKey="customerType"
+              />
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
-
