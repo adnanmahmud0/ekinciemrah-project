@@ -59,8 +59,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="">
+    <Sidebar
+      {...props}
+      className="bg-[#004F3B] text-white"
+      style={
+        {
+          "--sidebar-background": "#004F3B",
+          "--sidebar-foreground": "#ffffff",
+        } as React.CSSProperties
+      }
+    >
+      <SidebarHeader className="text-white">
         {/* Optional: Keep version switcher or replace with your logo */}
         {/* <VersionSwitcher versions={["1.0.0"]} defaultVersion="1.0.0" /> */}
         {/* Or just a logo/title */}
@@ -76,13 +85,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarMenu className="px-2 py-2">
+        <SidebarMenu className="px-2 py-2 ">
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
                 isActive={pathname === item.url}
-                className="w-full px-5 py-5 my-1 justify-start text-bas text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                className="w-full px-5 py-5 my-1 justify-start text-sm text-white  hover:bg-[#A99522] hover:text-black data-[active=true]:bg-[#A99522] data-[active=true]:text-black"
               >
                 <Link href={item.url}>
                   <item.icon className="size-6" />

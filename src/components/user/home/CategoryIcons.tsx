@@ -103,7 +103,7 @@ export default function CategoryIcons() {
                     />
                   </div>
                 </div>
-                <p className="text-xs text-center text-gray-700 whitespace-pre-line leading-tight group-hover:text-green-700 font-medium transition-colors">
+                <p className="text-xs text-center text-gray-700 whitespace-pre-line leading-tight group-hover:text-[#004F3B] font-medium transition-colors">
                   {category.categoryName}
                 </p>
               </div>
