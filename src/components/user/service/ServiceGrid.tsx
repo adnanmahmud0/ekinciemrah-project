@@ -9,7 +9,7 @@ interface ServiceGridProps {
 export default function ServiceGrid({ products }: ServiceGridProps) {
   if (products.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] text-gray-500">
+      <div className="flex-1 flex flex-col items-center justify-center min-h-100 text-gray-500">
         <p className="text-lg font-medium">
           No products found in this category.
         </p>

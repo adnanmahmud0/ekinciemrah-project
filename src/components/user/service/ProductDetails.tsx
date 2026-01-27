@@ -114,7 +114,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               >
                 <Minus className="w-5 h-5" />
               </button>
-              <span className="text-2xl font-bold text-[#0D1E32] min-w-[3rem] text-center">
+              <span className="text-2xl font-bold text-[#0D1E32] min-w-12 text-center">
                 {quantity}
               </span>
               <button
