@@ -4,9 +4,7 @@ import { notFound } from "next/navigation";
 import ProductDetails from "@/components/user/service/ProductDetails";
 import ProductReviews, { Review } from "@/components/user/service/ProductReviews";
 import ReviewForm from "@/components/user/service/ReviewForm";
-import { Product } from "@/components/user/service/ServiceCard";
-import { MOCK_PRODUCTS } from "@/data/mockProducts";
-
+import { useApi } from "@/hooks/use-api-data";
 
 const MOCK_REVIEWS: Review[] = [
   {
@@ -67,8 +65,18 @@ export default function ProductPage({ params }: ProductPageProps) {
   // Unwrap the params Promise using React.use() for Next.js 16
   const { id } = use(params);
 
-  // In a real app, fetch product by id from API
-  const product = MOCK_PRODUCTS.find((p) => p.id === id);
+  // Fetch product by id from API
+  const { data: productData, isLoading } = useApi(`/product&catelog/${id}`, ["product", id]);
+  const product = productData?.data;
+
+  // While loading, we can show a loader or null
+  if (isLoading) {
+      return (
+          <div className="flex justify-center items-center min-h-screen">
+              <div className="text-xl">Loading product details...</div>
+          </div>
+      );
+  }
 
   if (!product) {
     notFound();

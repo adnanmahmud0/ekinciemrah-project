@@ -2,153 +2,37 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import Link from "next/link";
+import { useApi } from "@/hooks/use-api-data";
 
 interface Product {
-  id: number;
-  name: string;
+  _id: string;
+  productName: string;
   description: string;
-  price: number;
+  basePrice: number;
   image: string;
-  availability: "in-stock" | "stock-out";
+  status: "Available" | "Unavailable";
+  category: string;
+  unit: string;
 }
 
-const allProducts: Product[] = [
-  // Row 1
-  {
-    id: 1,
-    name: "Fresh Tomatoes",
-    description: "Organic red tomatoes, locally grown",
-    price: 3.99,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-  {
-    id: 2,
-    name: "Green Apples",
-    description: "Crisp and sweet green apples",
-    price: 4.49,
-    image: "/category-2.png",
-    availability: "in-stock",
-  },
-  {
-    id: 3,
-    name: "Whole Wheat Bread",
-    description: "Freshly baked whole grain bread",
-    price: 2.99,
-    image: "/category-3.png",
-    availability: "stock-out",
-  },
-  {
-    id: 4,
-    name: "Fresh Milk",
-    description: "Organic whole milk, 1 gallon",
-    price: 5.99,
-    image: "/category-4.png",
-    availability: "in-stock",
-  },
-  {
-    id: 5,
-    name: "Orange Juice",
-    description: "100% pure orange juice",
-    price: 6.49,
-    image: "/category-5.png",
-    availability: "in-stock",
-  },
-  {
-    id: 6,
-    name: "Carrots",
-    description: "Fresh organic carrots bundle",
-    price: 2.49,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-  {
-    id: 7,
-    name: "Bananas",
-    description: "Ripe yellow bananas",
-    price: 1.99,
-    image: "/category-2.png",
-    availability: "in-stock",
-  },
-  {
-    id: 8,
-    name: "Pasta",
-    description: "Premium Italian pasta",
-    price: 3.49,
-    image: "/category-3.png",
-    availability: "stock-out",
-  },
-
-  // Row 2
-  {
-    id: 9,
-    name: "Cheddar Cheese",
-    description: "Aged cheddar cheese block",
-    price: 7.99,
-    image: "/category-4.png",
-    availability: "in-stock",
-  },
-  {
-    id: 10,
-    name: "Sparkling Water",
-    description: "Refreshing sparkling water",
-    price: 4.99,
-    image: "/category-5.png",
-    availability: "in-stock",
-  },
-  {
-    id: 11,
-    name: "Bell Peppers",
-    description: "Mixed color bell peppers",
-    price: 5.49,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-  {
-    id: 12,
-    name: "Strawberries",
-    description: "Sweet fresh strawberries",
-    price: 6.99,
-    image: "/category-2.png",
-    availability: "stock-out",
-  },
-  {
-    id: 13,
-    name: "Rice",
-    description: "Premium long grain rice",
-    price: 8.99,
-    image: "/category-3.png",
-    availability: "in-stock",
-  },
-  {
-    id: 14,
-    name: "Greek Yogurt",
-    description: "Creamy Greek yogurt",
-    price: 4.49,
-    image: "/category-4.png",
-    availability: "in-stock",
-  },
-  {
-    id: 15,
-    name: "Coffee",
-    description: "Premium roasted coffee beans",
-    price: 12.99,
-    image: "/category-5.png",
-    availability: "in-stock",
-  },
-  {
-    id: 16,
-    name: "Spinach",
-    description: "Fresh organic spinach",
-    price: 3.99,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-];
-
 export default function BuyItAgain() {
+  const { data: productsData } = useApi("/product&catelog", ["products"], {
+    enabled: true,
+  });
+
+  const allProducts: Product[] = productsData?.data?.data || [];
+  const displayProducts = allProducts.slice(0, 16);
+
+  const getImageUrl = (path: string | undefined) => {
+    if (!path) return "/placeholder.png";
+    if (path.startsWith("http")) return path;
+    if (path.startsWith("/"))
+      return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}${path}`;
+    return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
+  };
+
   return (
     <section className="bg-white py-8">
       <div className="container mx-auto px-4">
@@ -162,7 +46,7 @@ export default function BuyItAgain() {
               Browse our complete selection of quality products
             </p>
           </div>
-          <Link href="/products" className="hidden md:block">
+          <Link href="/service" className="hidden md:block">
             <Button
               className="text-white px-8 py-3 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all"
               style={{ backgroundColor: "#004F3B" }}
@@ -174,25 +58,36 @@ export default function BuyItAgain() {
 
         {/* Products Grid - 2 rows x 8 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-          {allProducts.map((product) => (
+          {displayProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col"
             >
               {/* Product Image */}
               <div className="relative h-40 bg-gray-100">
                 <Image
-                  src={product.image}
-                  alt={product.name}
+                  src={getImageUrl(product.image)}
+                  alt={product.productName}
                   fill
+                  unoptimized
                   className="object-contain p-4"
                 />
+                {/* Favourite Button */}
+                <button
+                  className="absolute top-2 right-2 p-1.5 bg-white/80 rounded-full hover:bg-white text-gray-400 hover:text-red-500 transition-colors shadow-sm"
+                  onClick={(e) => {
+                      e.preventDefault(); // Prevent navigation if wrapped in link
+                    // Handle favourite logic
+                  }}
+                  >
+                  <Heart className="w-4 h-4" />
+                </button>
               </div>
 
               {/* Product Info */}
               <div className="p-3 flex-1 flex flex-col">
                 <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-1">
-                  {product.name}
+                  {product.productName}
                 </h3>
                 <p className="text-xs text-gray-600 mb-2 line-clamp-2 flex-1">
                   {product.description}
@@ -204,18 +99,16 @@ export default function BuyItAgain() {
                     className="text-lg font-bold"
                     style={{ color: "#004F3B" }}
                   >
-                    ${product.price.toFixed(2)}
+                    ${product.basePrice.toFixed(2)}
                   </span>
                   <span
                     className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                      product.availability === "in-stock"
+                      product.status === "Available"
                         ? "bg-emerald-50 text-emerald-700"
                         : "bg-red-50 text-red-600"
                     }`}
                   >
-                    {product.availability === "in-stock"
-                      ? "In stock"
-                      : "Stock out"}
+                    {product.status === "Available" ? "In stock" : "Stock out"}
                   </span>
                 </div>
 
@@ -224,6 +117,7 @@ export default function BuyItAgain() {
                   className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
                   style={{ backgroundColor: "#004F3B" }}
                   size="sm"
+                  disabled={product.status !== "Available"}
                 >
                   <ShoppingCart className="w-3 h-3" />
                   Add to Cart
@@ -233,11 +127,11 @@ export default function BuyItAgain() {
           ))}
         </div>
 
-        {/* Mobile View Button - Bottom */}
-        <div className="mt-6 md:hidden">
-          <Link href="/products" className="block w-full">
+        {/* Mobile "See More" Button */}
+        <div className="mt-6 md:hidden flex justify-center">
+          <Link href="/service">
             <Button
-              className="w-full text-white px-6 py-3 rounded-full text-sm font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="text-white px-8 py-3 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all"
               style={{ backgroundColor: "#004F3B" }}
             >
               See More Products

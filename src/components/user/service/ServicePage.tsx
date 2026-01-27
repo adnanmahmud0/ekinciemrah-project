@@ -1,40 +1,45 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import ServiceSidebar from "./ServiceSidebar";
 import ServiceGrid from "./ServiceGrid";
 import { Product } from "./ServiceCard";
-import { MOCK_PRODUCTS } from "@/data/mockProducts";
+import { useApi } from "@/hooks/use-api-data";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface ServicePageProps {
   initialProducts?: Product[];
 }
 
 export default function ServicePage({
-  initialProducts = MOCK_PRODUCTS,
+  initialProducts = [],
 }: ServicePageProps) {
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const categories = ["All Categories", ...new Set(MOCK_PRODUCTS.map((p) => p.category))];
+  // Construct API URL based on filters
+  let apiUrl = "/product&catelog";
+  if (selectedCategory !== "All Categories") {
+      // Assuming backend supports filtering by category name directly or handle mapping if ID needed
+      // Based on user prompt: "product&catelog?category=Dry Grocery"
+      apiUrl += `?category=${encodeURIComponent(selectedCategory)}`;
+  } else if (debouncedSearchTerm) {
+      // Based on user prompt: "product&catelog?search=tomato"
+      apiUrl += `?search=${encodeURIComponent(debouncedSearchTerm)}`;
+  }
 
-  const filteredProducts = useMemo(() => {
-    const byCategory = initialProducts.filter(
-      (product) =>
-        selectedCategory === "All Categories" || product.category === selectedCategory
-    );
-
-    if (!searchTerm.trim()) {
-      return byCategory;
-    }
-
-    const term = searchTerm.toLowerCase();
-    return byCategory.filter(
-      (product) =>
-        product.name.toLowerCase().includes(term) ||
-        product.description.toLowerCase().includes(term)
-    );
-  }, [selectedCategory, initialProducts, searchTerm]);
+  const { data: productsData, isLoading } = useApi(apiUrl, ["products", selectedCategory, debouncedSearchTerm]);
+  const products: Product[] = productsData?.data?.data || [];
+  
+  // Extract unique categories from loaded products + "All Categories"
+  // Ideally, categories should be fetched from a separate category API endpoint for the sidebar
+  // But for now, we can try to extract from current products or use a separate call if needed.
+  // Let's fetch categories separately to populate the sidebar correctly.
+  const { data: categoryData } = useApi("/category", ["categories"]);
+  const categoriesList = categoryData?.data || [];
+  const categories = ["All Categories", ...categoriesList.map((c: any) => c.categoryName)];
 
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
@@ -80,7 +85,11 @@ export default function ServicePage({
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
-          <ServiceGrid products={filteredProducts} />
+          {isLoading ? (
+              <div className="w-full flex justify-center py-20">Loading products...</div>
+          ) : (
+            <ServiceGrid products={products} />
+          )}
         </div>
       </div>
     </section>
