@@ -44,13 +44,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await authService.getProfile();
+          const role = localStorage.getItem("role");
+          const response =
+            role === "admin"
+              ? await authService.getAdminProfile()
+              : await authService.getProfile();
+
           if (response.success && response.data) {
             setUser(response.data);
           }
         } catch (error) {
-          console.error("Failed to fetch profile", error);
           localStorage.removeItem("token");
+          localStorage.removeItem("role");
         }
       }
       setIsLoading(false);
@@ -66,11 +71,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ? await authService.adminLogin(payload)
         : await authService.login(payload);
 
-      if (response.success && response.data) {
-        // Assuming response.data contains the token or user + token
-        // The user example output for login was just "data": "..." which might be the token string
-        // or an object with token. Let's handle both.
+      // Assuming response.data contains the token or user + token
+      // The user example output for login was just "data": "..." which might be the token string
+      // or an object with token. Let's handle both.
 
+      if (response.success && response.data) {
         let token = "";
         let userData = null;
 
@@ -78,36 +83,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           token = response.data;
         } else if (typeof response.data === "object") {
           token = response.data.token || response.data.accessToken;
-
           userData = response.data.user;
         }
 
-        if (token) {
-          localStorage.setItem("token", token);
+        localStorage.setItem("token", token);
+        localStorage.setItem("role", isAdmin ? "admin" : "user");
 
-          // If we didn't get user data in login response, fetch it
-          if (!userData) {
-            const profileResponse = await authService.getProfile();
-            if (profileResponse.success) {
-              userData = profileResponse.data;
-            }
-          }
+        if (!userData) {
+          const profileResponse = isAdmin
+            ? await authService.getAdminProfile()
+            : await authService.getProfile();
 
-          setUser(userData);
-          return response;
-        } else {
-          // If data is just the token string as per user example "data": "..."
-          // wait, user said `output- { "success": true, ..., "data": "..." }`
-          // If data IS the token.
-          if (typeof response.data === "string") {
-            localStorage.setItem("token", response.data);
-            const profileResponse = await authService.getProfile();
-            if (profileResponse.success) {
-              setUser(profileResponse.data);
-            }
-            return response;
+          if (profileResponse.success) {
+            userData = profileResponse.data;
           }
         }
+
+        setUser(userData);
+      } else {
+        // If data is just the token string as per user example "data": "..."
+        // wait, user said `output- { "success": true, ..., "data": "..." }`
+        // If data IS the token.
+        if (typeof response.data === "string") {
+          const profileResponse = isAdmin
+            ? await authService.getAdminProfile()
+            : await authService.getProfile();
+          if (profileResponse.success) {
+            setUser(profileResponse.data);
+          }
+          return response;
+        }
+        return response;
       }
       return response;
     } catch (error: any) {
@@ -130,6 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setUser(null);
     router.push("/login");
   };

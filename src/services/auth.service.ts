@@ -105,4 +105,11 @@ export const authService = {
     const response = await privateApi.get<ApiResponse>('/user/profile');
     return response.data;
   },
+
+  // Get Admin Profile
+  getAdminProfile: async () => {
+    // specific endpoint for admin if needed, currently sharing user profile or need to find correct one
+    const response = await privateApi.get<ApiResponse>('/user/profile');
+    return response.data;
+  },
 };

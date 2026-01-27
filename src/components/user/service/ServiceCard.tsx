@@ -11,13 +11,14 @@ export interface Product {
   description: string;
   basePrice: number;
   image: string;
-  status: "Available" | "Unavailable";
+  status?: "Available" | "Unavailable";
   category: string;
   unit: string;
   stock: number;
   // Optional legacy fields if needed elsewhere, but mainly using API fields now
   rating?: number;
   reviewCount?: number;
+  stockStatus?: string;
 }
 
 interface ServiceCardProps {
@@ -26,6 +27,7 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ product }: ServiceCardProps) {
   const displayPrice = product.basePrice;
+  const isAvailable = product.stock > 0;
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";
@@ -95,12 +97,12 @@ export default function ServiceCard({ product }: ServiceCardProps) {
 
             <div
               className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
-                product.status === "Available"
+                isAvailable
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {product.status === "Available" ? "In Stock" : "Stock Out"}
+              {isAvailable ? "In Stock" : "Stock Out"}
             </div>
           </div>
 
@@ -108,7 +110,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
           <Button
             className="w-full bg-[#004F3B] hover:bg-[#003d2e] text-white text-xs font-bold py-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/20"
             size="sm"
-            disabled={product.status !== "Available"}
+            disabled={!isAvailable}
             onClick={(e) => {
               e.preventDefault();
               // Handle add to cart logic

@@ -11,6 +11,7 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
+  const isAvailable = product.stock > 0;
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
@@ -92,12 +93,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* Status Badge */}
             <div
               className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mt-2 ${
-                product.status === "Available"
+                isAvailable
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {product.status === "Available" ? "In Stock" : "Stock Out"}
+              {isAvailable ? "In Stock" : "Stock Out"}
             </div>
           </div>
 
@@ -130,14 +131,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <Link href={`/purchase/${product._id}`} className="flex-1">
               <button
                 className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={product.status !== "Available"}
+                disabled={!isAvailable}
               >
                 Buy Now
               </button>
             </Link>
             <button
               className="flex-1 py-4 bg-white hover:bg-gray-50 text-[#146041] border-2 border-[#146041] rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={product.status !== "Available"}
+              disabled={!isAvailable}
             >
               + Add to Cart
             </button>

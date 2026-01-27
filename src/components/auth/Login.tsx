@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -36,17 +37,19 @@ export function Login({
       const response = await login({ email, password }, isAdminRoute || false);
       if (response.success) {
         if (isAdminRoute) {
-            router.push("/admin/dashboard"); // Assuming admin dashboard is here
+          router.push("/admin/dashboard"); // Assuming admin dashboard is here
         } else {
-            router.push("/");
+          router.push("/");
         }
       } else {
         setError(response.message || "Login failed");
       }
     } catch (err: any) {
-        setError(err.response?.data?.message || err.message || "Something went wrong");
+      setError(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -63,7 +66,9 @@ export function Login({
             Enter your email below to login to your account
           </p>
         </div>
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
+        )}
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
@@ -85,10 +90,10 @@ export function Login({
               Forgot your password?
             </a>
           </div>
-          <Input 
-            id="password" 
-            type="password" 
-            required 
+          <Input
+            id="password"
+            type="password"
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
