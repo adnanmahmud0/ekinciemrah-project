@@ -2,15 +2,21 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Minus, Plus } from "lucide-react";
+import { Star, Minus, Plus, Heart } from "lucide-react";
 import { Product } from "./ServiceCard";
+import { useFavourite } from "@/hooks/use-favourite";
+import { useFlyAnimation } from "@/context/fly-animation-context";
 
 interface ProductDetailsProps {
   product: Product;
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
+  const { toggleFavourite, isFavourite } = useFavourite();
+  const { triggerFlyAnimation } = useFlyAnimation();
+  const isFav = isFavourite(product._id);
   const [quantity, setQuantity] = useState(1);
+  const [isAnimating, setIsAnimating] = useState(false);
   const isAvailable = product.stock > 0;
 
   const handleQuantityChange = (delta: number) => {
@@ -141,6 +147,27 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               disabled={!isAvailable}
             >
               + Add to Cart
+            </button>
+
+            <button
+              className={`w-14 h-14 rounded-xl flex items-center justify-center border-2 transition-all ${
+                isFav
+                  ? "bg-red-50 border-red-200 text-red-500"
+                  : "bg-white border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500"
+              } ${isAnimating ? "animate-pop" : ""}`}
+              onClick={(e) => {
+                if (!isFav) {
+                  setIsAnimating(true);
+                  const rect = (
+                    e.currentTarget as HTMLElement
+                  ).getBoundingClientRect();
+                  triggerFlyAnimation(rect);
+                  setTimeout(() => setIsAnimating(false), 400);
+                }
+                toggleFavourite(product._id);
+              }}
+            >
+              <Heart className={`w-6 h-6 ${isFav ? "fill-current" : ""}`} />
             </button>
           </div>
         </div>

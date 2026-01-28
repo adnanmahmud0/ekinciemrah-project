@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
 import Link from "next/link";
 import { useApi } from "@/hooks/use-api-data";
+import { useFavourite } from "@/hooks/use-favourite";
+import { useFlyAnimation } from "@/context/fly-animation-context";
 
 interface Product {
   _id: string;
@@ -18,6 +21,9 @@ interface Product {
 }
 
 export default function BuyItAgain() {
+  const { toggleFavourite, isFavourite } = useFavourite();
+  const { triggerFlyAnimation } = useFlyAnimation();
+  const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
   const { data: productsData } = useApi("/product&catelog", ["products"], {
     enabled: true,
   });
@@ -74,13 +80,40 @@ export default function BuyItAgain() {
                 />
                 {/* Favourite Button */}
                 <button
-                  className="absolute top-2 right-2 p-1.5 bg-white/80 rounded-full hover:bg-white text-gray-400 hover:text-red-500 transition-colors shadow-sm"
+                  className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors shadow-sm ${
+                    isFavourite(product._id)
+                      ? "bg-red-50 text-red-500 hover:bg-red-100"
+                      : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+                  } ${animatingIds.has(product._id) ? "animate-pop" : ""}`}
                   onClick={(e) => {
-                      e.preventDefault(); // Prevent navigation if wrapped in link
-                    // Handle favourite logic
+                    e.preventDefault();
+                    if (!isFavourite(product._id)) {
+                      setAnimatingIds((prev) => {
+                        const next = new Set(prev);
+                        next.add(product._id);
+                        return next;
+                      });
+
+                      // Trigger fly animation
+                      const rect = (
+                        e.currentTarget as HTMLElement
+                      ).getBoundingClientRect();
+                      triggerFlyAnimation(rect);
+
+                      setTimeout(() => {
+                        setAnimatingIds((prev) => {
+                          const next = new Set(prev);
+                          next.delete(product._id);
+                          return next;
+                        });
+                      }, 400);
+                    }
+                    toggleFavourite(product._id);
                   }}
-                  >
-                  <Heart className="w-4 h-4" />
+                >
+                  <Heart
+                    className={`w-4 h-4 ${isFavourite(product._id) ? "fill-current" : ""}`}
+                  />
                 </button>
               </div>
 

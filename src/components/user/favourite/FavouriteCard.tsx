@@ -46,6 +46,7 @@ export default function FavouriteCard({
               src={product.image}
               alt={product.name}
               fill
+              unoptimized
               className="object-contain"
             />
           </div>

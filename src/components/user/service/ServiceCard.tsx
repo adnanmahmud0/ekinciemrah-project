@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
+import { useFavourite } from "@/hooks/use-favourite";
+import { useFlyAnimation } from "@/context/fly-animation-context";
 
 export interface Product {
   _id: string;
@@ -26,6 +28,10 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ product }: ServiceCardProps) {
+  const { toggleFavourite, isFavourite } = useFavourite();
+  const { triggerFlyAnimation } = useFlyAnimation();
+  const [isAnimating, setIsAnimating] = React.useState(false);
+  const isFav = isFavourite(product._id);
   const displayPrice = product.basePrice;
   const isAvailable = product.stock > 0;
 
@@ -57,13 +63,27 @@ export default function ServiceCard({ product }: ServiceCardProps) {
           </div>
           {/* Favourite Button */}
           <button
-            className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-full hover:bg-white text-gray-400 hover:text-red-500 transition-colors shadow-sm z-10"
+            className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-colors shadow-sm z-10 ${
+              isFav
+                ? "bg-red-50 text-red-500 hover:bg-red-100"
+                : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+            } ${isAnimating ? "animate-pop" : ""}`}
             onClick={(e) => {
               e.preventDefault();
-              // Handle favourite logic
+              if (!isFav) {
+                setIsAnimating(true);
+                // Trigger fly animation
+                const rect = (
+                  e.currentTarget as HTMLElement
+                ).getBoundingClientRect();
+                triggerFlyAnimation(rect);
+
+                setTimeout(() => setIsAnimating(false), 400);
+              }
+              toggleFavourite(product._id);
             }}
           >
-            <Heart className="w-4 h-4" />
+            <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
           </button>
         </div>
 

@@ -1,0 +1,94 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { useApi } from "@/hooks/use-api-data";
+import { toast } from "sonner";
+import { useAuth } from "@/context/auth-context";
+
+// Define a minimal product interface for the favourite list
+export interface FavouriteProduct {
+  _id: string;
+  productName: string;
+  description: string;
+  categoryId: string;
+  category: string;
+  unit: string;
+  basePrice: number;
+  image: string;
+  stock: number;
+  stockStatus: string;
+  avgRating: number;
+  reviewCount: number;
+  // Add other fields as needed
+}
+
+interface FavouriteListResponse {
+  success: boolean;
+  message: string;
+  data: FavouriteProduct[];
+}
+
+export function useFavourite() {
+  const { isAuthenticated } = useAuth();
+
+  // Fetch favourite list
+  const {
+    data: response,
+    isLoading,
+    refetch,
+  } = useApi<FavouriteListResponse>(
+    isAuthenticated ? "/favourite" : undefined,
+    isAuthenticated ? ["favourites"] : undefined
+  );
+
+  const favouriteList = response?.data || [];
+  // Create a Set of IDs for O(1) lookup
+  const favouriteIds = new Set(favouriteList.map((item) => item._id));
+
+  // Get post method from useApi
+  const { post } = useApi();
+
+  const toggleFavourite = async (productId: string) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add favourites");
+      return;
+    }
+
+    try {
+      await post(
+        "/favourite",
+        { productId },
+        {
+          onSuccess: (res) => {
+            // Check the new state from response data
+            const isFav = res.data?.isFavourite;
+            if (isFav) {
+              toast.success("Added to your favorite list.");
+            } else {
+              toast.success("Removed from favorite list.");
+            }
+            refetch(); // Reload the list to ensure sync
+          },
+          onError: (err: any) => {
+            toast.error(
+              err.response?.data?.message || "Failed to update favourite"
+            );
+          },
+        }
+      );
+    } catch (error) {
+      // Error is handled in onError callback
+    }
+  };
+
+  const isFavourite = (productId: string) => {
+    return favouriteIds.has(productId);
+  };
+
+  return {
+    favouriteList,
+    isLoading,
+    toggleFavourite,
+    isFavourite,
+  };
+}

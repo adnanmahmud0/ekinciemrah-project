@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Ticket, Copy, Check, Search } from "lucide-react";
 import { toast } from "sonner";
+import { useFavourite } from "@/hooks/use-favourite";
 
 const SOCIAL_LINKS = [
   { icon: Facebook, href: "#" },
@@ -53,6 +54,31 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const { user, isAuthenticated, logout } = useAuth();
+  const { favouriteList, isLoading } = useFavourite();
+  const [isBumpAnimating, setIsBumpAnimating] = useState(false);
+  const prevCountRef = useRef(0);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    // Skip animation on initial load or if loading
+    if (isLoading) return;
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      prevCountRef.current = favouriteList.length;
+      return;
+    }
+
+    if (favouriteList.length > prevCountRef.current) {
+      const startTimer = setTimeout(() => setIsBumpAnimating(true), 0);
+      const endTimer = setTimeout(() => setIsBumpAnimating(false), 300);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
+    }
+    prevCountRef.current = favouriteList.length;
+  }, [favouriteList.length, isLoading]);
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -101,9 +127,26 @@ export default function Navbar() {
         <div className="lg:absolute lg:right-10 flex items-center ml-auto gap-6 sm:gap-8">
           <Link
             href="/favourite"
-            className="text-white hover:text-white/80 transition-colors"
+            className="text-white hover:text-white/80 transition-colors relative"
           >
-            <Heart className="h-5 w-5" />
+            <div id="navbar-wishlist-icon" className="relative">
+              <Heart
+                className={`h-5 w-5 transition-transform duration-300 ${
+                  isBumpAnimating
+                    ? "animate-bump text-red-500 fill-red-500"
+                    : ""
+                }`}
+              />
+              {favouriteList.length > 0 && (
+                <span
+                  className={`absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full transition-transform duration-300 ${
+                    isBumpAnimating ? "scale-125" : "scale-100"
+                  }`}
+                >
+                  {favouriteList.length}
+                </span>
+              )}
+            </div>
           </Link>
 
           <Link
