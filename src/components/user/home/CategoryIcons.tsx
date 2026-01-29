@@ -28,6 +28,7 @@ export default function CategoryIcons() {
         }
       } catch (error) {
         console.error("Failed to fetch categories", error);
+        // console.error("Failed to fetch categories", error);
       }
     };
     fetchCategories();
