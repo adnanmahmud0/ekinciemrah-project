@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Search } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
 import ServiceSidebar from "./ServiceSidebar";
 import ServiceGrid from "./ServiceGrid";
 import { Product } from "./ServiceCard";
@@ -15,31 +16,60 @@ interface ServicePageProps {
 export default function ServicePage({
   initialProducts = [],
 }: ServicePageProps) {
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const { data: categoryData, isLoading: isCategoriesLoading } = useApi(
+    "/category",
+    ["categories"],
+  );
+  const categoriesList = categoryData?.data || [];
+  const categories = [
+    "All Categories",
+    ...categoriesList.map((c: any) => c.categoryName),
+  ];
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const categoryParam = searchParams.get("category");
+  const selectedCategory = categoryParam || "All Categories";
+
+  const handleSelectCategory = (category: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (category === "All Categories") {
+      params.delete("category");
+    } else {
+      params.set("category", category);
+    }
+    router.push(`/service?${params.toString()}`);
+  };
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   // Construct API URL based on filters
   let apiUrl = "/product&catelog";
+  let shouldFetch = true;
+
   if (selectedCategory !== "All Categories") {
-      // Assuming backend supports filtering by category name directly or handle mapping if ID needed
-      // Based on user prompt: "product&catelog?category=Dry Grocery"
+    // Wait for categories to load before fetching products to avoid premature requests
+    if (isCategoriesLoading) {
+      shouldFetch = false;
+    } else {
+      // Use category name directly as requested by user
+      // Backend URL: product&catelog?category=Dry Grocery
       apiUrl += `?category=${encodeURIComponent(selectedCategory)}`;
+    }
   } else if (debouncedSearchTerm) {
-      // Based on user prompt: "product&catelog?search=tomato"
-      apiUrl += `?search=${encodeURIComponent(debouncedSearchTerm)}`;
+    // Based on user prompt: "product&catelog?search=tomato"
+    apiUrl += `?search=${encodeURIComponent(debouncedSearchTerm)}`;
   }
 
-  const { data: productsData, isLoading } = useApi(apiUrl, ["products", selectedCategory, debouncedSearchTerm]);
+  const { data: productsData, isLoading } = useApi(
+    apiUrl,
+    ["products", selectedCategory, debouncedSearchTerm],
+    {
+      enabled: shouldFetch,
+    },
+  );
   const products: Product[] = productsData?.data?.data || [];
-  
-  // Extract unique categories from loaded products + "All Categories"
-  // Ideally, categories should be fetched from a separate category API endpoint for the sidebar
-  // But for now, we can try to extract from current products or use a separate call if needed.
-  // Let's fetch categories separately to populate the sidebar correctly.
-  const { data: categoryData } = useApi("/category", ["categories"]);
-  const categoriesList = categoryData?.data || [];
-  const categories = ["All Categories", ...categoriesList.map((c: any) => c.categoryName)];
 
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
@@ -83,10 +113,12 @@ export default function ServicePage({
           <ServiceSidebar
             productCategories={categories}
             selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
+            onSelectCategory={handleSelectCategory}
           />
-          {isLoading ? (
-              <div className="w-full flex justify-center py-20">Loading products...</div>
+          {isLoading || !shouldFetch ? (
+            <div className="w-full flex justify-center py-20">
+              Loading products...
+            </div>
           ) : (
             <ServiceGrid products={products} />
           )}

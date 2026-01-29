@@ -27,6 +27,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Ticket, Copy, Check, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useFavourite } from "@/hooks/use-favourite";
@@ -52,6 +58,7 @@ const PROMO_CODES = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const { user, isAuthenticated, logout } = useAuth();
   const { favouriteList, isLoading } = useFavourite();
@@ -187,7 +194,13 @@ export default function Navbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    console.log("Opening profile dialog");
+                    setIsProfileOpen(true);
+                  }}
+                >
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
@@ -373,6 +386,38 @@ export default function Navbar() {
           </Sheet>
         </div>
       </div>
+
+      {/* Profile Modal */}
+      <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>User Profile</DialogTitle>
+          </DialogHeader>
+          {user && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="relative h-24 w-24 rounded-full overflow-hidden border-2 border-primary/20">
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-secondary flex items-center justify-center">
+                    <User className="h-12 w-12 text-primary" />
+                  </div>
+                )}
+              </div>
+              <div className="text-center space-y-1">
+                <h3 className="text-lg font-semibold text-[#0D1E32]">
+                  {user.name}
+                </h3>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }
