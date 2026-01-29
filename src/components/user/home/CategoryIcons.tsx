@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { publicApi } from "@/lib/api-client";
 
 interface Category {
@@ -12,6 +13,7 @@ interface Category {
 }
 
 export default function CategoryIcons() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -86,6 +88,14 @@ export default function CategoryIcons() {
             {categories.map((category) => (
               <div
                 key={category._id}
+                onClick={() => {
+                  console.log("Category clicked:", category);
+                  router.push(
+                    `/service?category=${encodeURIComponent(
+                      category.categoryName,
+                    )}`,
+                  );
+                }}
                 className="flex flex-col items-center min-w-[90px] cursor-pointer group flex-shrink-0"
               >
                 <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">

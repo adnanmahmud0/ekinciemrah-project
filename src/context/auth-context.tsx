@@ -81,13 +81,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (typeof response.data === "string") {
           token = response.data;
-        } else if (typeof response.data === "object") {
-          token = response.data.token || response.data.accessToken;
+        } else if (typeof response.data === "object" && response.data) {
+          token = response.data.token || response.data.accessToken || "";
           userData = response.data.user;
         }
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("role", isAdmin ? "admin" : "user");
+        if (token && token !== "undefined" && token !== "null") {
+          localStorage.setItem("token", token);
+          localStorage.setItem("role", isAdmin ? "admin" : "user");
+        }
 
         if (!userData) {
           const profileResponse = isAdmin
