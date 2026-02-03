@@ -63,8 +63,12 @@ export function AdminHeader() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                Dashboard
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/admin/settings" className="cursor-pointer">
                 Profile Settings

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
@@ -38,7 +39,54 @@ const getImageUrl = (path: string | undefined) => {
   return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
 };
 
+const Switch = ({
+  checked,
+  onCheckedChange,
+}: {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) => {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={(e) => {
+        e.stopPropagation();
+        onCheckedChange(!checked);
+      }}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#004F3B] ${
+        checked ? "bg-[#004F3B]" : "bg-gray-200"
+      }`}
+    >
+      <span
+        className={`${
+          checked ? "translate-x-6" : "translate-x-1"
+        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+      />
+    </button>
+  );
+};
+
+const ToggleCell = ({ row }: { row: any }) => {
+  const [isChecked, setIsChecked] = useState(false);
+  return (
+    <Switch
+      checked={isChecked}
+      onCheckedChange={(checked) => {
+        setIsChecked(checked);
+        console.log(checked, row.original._id);
+      }}
+    />
+  );
+};
+
 export const columns: ColumnDef<Product>[] = [
+  {
+    id: "toggle",
+    header: "Active",
+    cell: ({ row }) => <ToggleCell row={row} />,
+  },
   {
     accessorKey: "productName",
     header: "Product",

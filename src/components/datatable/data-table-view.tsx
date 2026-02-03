@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -39,13 +40,16 @@ interface DataTableViewProps<TData> {
   sortableId: string;
 }
 
-function DraggableRow<TData extends { id: string | number }>({
+function DraggableRow<TData extends { id: string | number } | { _id: string }>({
   row,
 }: {
   row: Row<TData>;
 }) {
+  const original = row.original as any;
+  const id = original.id ?? original._id;
+
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.id,
+    id: id,
   });
 
   return (
@@ -68,7 +72,9 @@ function DraggableRow<TData extends { id: string | number }>({
   );
 }
 
-export function DataTableView<TData extends { id: string | number }>({
+export function DataTableView<
+  TData extends { id: string | number } | { _id: string },
+>({
   table,
   dataIds,
   handleDragEnd,

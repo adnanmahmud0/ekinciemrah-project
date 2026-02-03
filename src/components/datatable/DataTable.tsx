@@ -24,6 +24,8 @@ import {
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
+  type PaginationState,
+  type OnChangeFn,
 } from "@tanstack/react-table";
 
 import { DataTablePagination } from "./data-table-pagination";
@@ -39,6 +41,10 @@ interface DataTableProps<TData, TValue> {
   toolbarAction?: React.ReactNode | ((table: any) => React.ReactNode);
   initialColumnVisibility?: VisibilityState;
   searchPlaceholder?: string;
+  pageCount?: number;
+  rowCount?: number;
+  pagination?: PaginationState;
+  onPaginationChange?: OnChangeFn<PaginationState>;
 }
 
 export function DataTable<
@@ -53,6 +59,10 @@ export function DataTable<
   toolbarAction,
   initialColumnVisibility = {},
   searchPlaceholder,
+  pageCount,
+  rowCount,
+  pagination: externalPagination,
+  onPaginationChange,
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = React.useState(() => initialData);
 
@@ -68,10 +78,14 @@ export function DataTable<
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [pagination, setPagination] = React.useState({
+  const [internalPagination, setInternalPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const pagination = externalPagination ?? internalPagination;
+  const setPagination = onPaginationChange ?? setInternalPagination;
+
   const sortableId = React.useId();
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -111,6 +125,9 @@ export function DataTable<
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
+    manualPagination: true,
+    pageCount: pageCount ?? -1,
+    rowCount: rowCount,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

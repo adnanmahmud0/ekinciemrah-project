@@ -17,6 +17,7 @@ import {
   Linkedin,
   LogOut,
   Settings,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import {
@@ -194,6 +195,14 @@ export default function Navbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {(user.role === "ADMIN" || user.role === "admin") && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onSelect={(e) => {
                     e.preventDefault();

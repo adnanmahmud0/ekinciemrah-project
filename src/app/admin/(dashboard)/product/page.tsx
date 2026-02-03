@@ -15,22 +15,31 @@ import { useApi } from "@/hooks/use-api-data";
 import { ProductResponse, Product } from "@/types/product";
 import { useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export default function ProductPage() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   // Construct the API URL based on search
   const apiUrl = debouncedSearch
-    ? `/product&catelog?search=${debouncedSearch}`
-    : "/product&catelog";
+    ? `/product&catelog?search=${debouncedSearch}&page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}`
+    : `/product&catelog?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}`;
 
-  const { data: response, isLoading } = useApi<ProductResponse>(apiUrl, [
-    "products",
-    debouncedSearch,
-  ]);
+  const { data: response, isLoading } = useApi<ProductResponse>(
+    apiUrl,
+    ["products", debouncedSearch, pagination.pageIndex, pagination.pageSize],
+    { placeholderData: keepPreviousData },
+  );
 
   const products = response?.data?.data || [];
+  const meta = response?.data?.meta;
+  const pageCount = meta ? Math.ceil(meta.total / meta.limit) : -1;
+  const totalRows = meta ? meta.total : 0;
 
   return (
     <div className="space-y-4">
@@ -50,6 +59,10 @@ export default function ProductPage() {
             <DataTable
               columns={columns}
               data={products}
+              pageCount={pageCount}
+              rowCount={totalRows}
+              pagination={pagination}
+              onPaginationChange={setPagination}
               searchKey="productName"
               searchValue={search}
               onSearchValueChange={setSearch}
