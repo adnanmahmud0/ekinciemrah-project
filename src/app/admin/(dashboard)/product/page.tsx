@@ -12,7 +12,7 @@ import {
 import { AddProductDialog } from "@/components/dialog/add-product-dialog";
 import { columns } from "./columns";
 import { useApi } from "@/hooks/use-api-data";
-import { ProductResponse, Product } from "@/types/product";
+import { ProductResponse } from "@/types/product";
 import { useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { keepPreviousData } from "@tanstack/react-query";
@@ -30,7 +30,7 @@ export default function ProductPage() {
     ? `/product&catelog?search=${debouncedSearch}&page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}`
     : `/product&catelog?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}`;
 
-  const { data: response, isLoading } = useApi<ProductResponse>(
+  const { data: response } = useApi<ProductResponse>(
     apiUrl,
     ["products", debouncedSearch, pagination.pageIndex, pagination.pageSize],
     { placeholderData: keepPreviousData },
@@ -79,7 +79,7 @@ export default function ProductPage() {
                     table.getColumn("priceTier")?.setFilterValue(value);
                   }}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-45">
                     <SelectValue placeholder="Category A" />
                   </SelectTrigger>
                   <SelectContent>
