@@ -3,8 +3,9 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import { useApi } from "@/hooks/use-api-data";
+import { useFavourite } from "@/hooks/use-favourite";
 
 // Helper to get image URL
 const getImageUrl = (path: string | undefined) => {
@@ -28,6 +29,7 @@ export default function FeaturedProducts() {
   const { data: featureData, isLoading } = useApi("/feature-product", [
     "feature-products",
   ]);
+  const { toggleFavourite, isFavourite } = useFavourite();
 
   const products: Product[] =
     featureData?.data
@@ -80,6 +82,23 @@ export default function FeaturedProducts() {
                   unoptimized
                   className="object-contain p-4"
                 />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleFavourite(product.id);
+                  }}
+                  className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors shadow-sm ${
+                    isFavourite(product.id)
+                      ? "bg-red-50 text-red-500 hover:bg-red-100"
+                      : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+                  }`}
+                >
+                  <Heart
+                    className={`w-4 h-4 ${
+                      isFavourite(product.id) ? "fill-current" : ""
+                    }`}
+                  />
+                </button>
               </div>
 
               {/* Product Info */}
