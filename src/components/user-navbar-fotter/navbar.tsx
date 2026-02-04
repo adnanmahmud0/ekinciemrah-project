@@ -101,7 +101,7 @@ export default function Navbar() {
   return (
     <header className="shadow-md bg-primary tracking-wide relative z-50">
       {/* Top bar */}
-      <section className="flex items-center flex-wrap lg:justify-center gap-4 py-2.5 sm:px-10 px-4 border-primary-foreground/20 border-b min-h-[70px]">
+      <section className="flex items-center flex-wrap lg:justify-center gap-4 py-2.5 sm:px-10 px-4 border-primary-foreground/20 border-b min-h-17.5">
         {/* Social Icons - desktop only */}
         <div className="absolute left-10 z-50 flex items-center gap-4 max-lg:hidden">
           {SOCIAL_LINKS.map((link, index) => {
@@ -243,7 +243,7 @@ export default function Navbar() {
           <div className="hidden lg:grid grid-cols-3 items-center w-full">
             {/* Left: Search Input */}
             <div className="flex justify-start">
-              <div className="relative group w-full max-w-[220px] focus-within:max-w-[380px] transition-all duration-500 ease-in-out">
+              <div className="relative group w-full max-w-55 focus-within:max-w-95 transition-all duration-500 ease-in-out">
                 <Search
                   className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-all duration-300 ${copiedCode ? "text-white/30" : "text-white/50 group-focus-within:text-primary group-focus-within:scale-110"}`}
                 />
@@ -328,7 +328,7 @@ export default function Navbar() {
                 <Menu className="h-7 w-7" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[380px] p-6">
+            <SheetContent side="left" className="w-75 sm:w-95 p-6">
               <div className="flex justify-between items-center mb-8">
                 <Link
                   href="/"
@@ -398,7 +398,7 @@ export default function Navbar() {
 
       {/* Profile Modal */}
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>User Profile</DialogTitle>
           </DialogHeader>
