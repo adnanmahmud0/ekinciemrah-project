@@ -1,11 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import { useApi } from "@/hooks/use-api-data";
+
+// Helper to get image URL
+const getImageUrl = (path: string | undefined) => {
+  if (!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/"))
+    return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}${path}`;
+  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
+};
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -13,141 +24,33 @@ interface Product {
   availability: "in-stock" | "stock-out";
 }
 
-const featuredProducts: Product[] = [
-  // Row 1
-  {
-    id: 1,
-    name: "Fresh Tomatoes",
-    description: "Organic red tomatoes, locally grown",
-    price: 3.99,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-  {
-    id: 2,
-    name: "Green Apples",
-    description: "Crisp and sweet green apples",
-    price: 4.49,
-    image: "/category-2.png",
-    availability: "in-stock",
-  },
-  {
-    id: 3,
-    name: "Whole Wheat Bread",
-    description: "Freshly baked whole grain bread",
-    price: 2.99,
-    image: "/category-3.png",
-    availability: "stock-out",
-  },
-  {
-    id: 4,
-    name: "Fresh Milk",
-    description: "Organic whole milk, 1 gallon",
-    price: 5.99,
-    image: "/category-4.png",
-    availability: "in-stock",
-  },
-  {
-    id: 5,
-    name: "Orange Juice",
-    description: "100% pure orange juice",
-    price: 6.49,
-    image: "/category-5.png",
-    availability: "in-stock",
-  },
-  {
-    id: 6,
-    name: "Carrots",
-    description: "Fresh organic carrots bundle",
-    price: 2.49,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-  {
-    id: 7,
-    name: "Bananas",
-    description: "Ripe yellow bananas",
-    price: 1.99,
-    image: "/category-2.png",
-    availability: "in-stock",
-  },
-  {
-    id: 8,
-    name: "Pasta",
-    description: "Premium Italian pasta",
-    price: 3.49,
-    image: "/category-3.png",
-    availability: "stock-out",
-  },
-
-  // Row 2
-  {
-    id: 9,
-    name: "Cheddar Cheese",
-    description: "Aged cheddar cheese block",
-    price: 7.99,
-    image: "/category-4.png",
-    availability: "in-stock",
-  },
-  {
-    id: 10,
-    name: "Sparkling Water",
-    description: "Refreshing sparkling water",
-    price: 4.99,
-    image: "/category-5.png",
-    availability: "in-stock",
-  },
-  {
-    id: 11,
-    name: "Bell Peppers",
-    description: "Mixed color bell peppers",
-    price: 5.49,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-  {
-    id: 12,
-    name: "Strawberries",
-    description: "Sweet fresh strawberries",
-    price: 6.99,
-    image: "/category-2.png",
-    availability: "stock-out",
-  },
-  {
-    id: 13,
-    name: "Rice",
-    description: "Premium long grain rice",
-    price: 8.99,
-    image: "/category-3.png",
-    availability: "in-stock",
-  },
-  {
-    id: 14,
-    name: "Greek Yogurt",
-    description: "Creamy Greek yogurt",
-    price: 4.49,
-    image: "/category-4.png",
-    availability: "in-stock",
-  },
-  {
-    id: 15,
-    name: "Coffee",
-    description: "Premium roasted coffee beans",
-    price: 12.99,
-    image: "/category-5.png",
-    availability: "in-stock",
-  },
-  {
-    id: 16,
-    name: "Spinach",
-    description: "Fresh organic spinach",
-    price: 3.99,
-    image: "/category-1.png",
-    availability: "in-stock",
-  },
-];
-
 export default function FeaturedProducts() {
+  const { data: featureData, isLoading } = useApi("/feature-product", [
+    "feature-products",
+  ]);
+
+  const products: Product[] =
+    featureData?.data
+      ?.filter((item: any) => item.product) // Filter out items with missing product data
+      .map((item: any) => ({
+        id: item.product._id,
+        name: item.product.productName,
+        description: item.product.description || "",
+        price: item.product.basePrice,
+        image: getImageUrl(item.product.image),
+        availability: item.product.stock > 0 ? "in-stock" : "stock-out",
+      })) || [];
+
+  if (isLoading) {
+    return (
+      <section className="bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-10">Loading featured products...</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -163,7 +66,7 @@ export default function FeaturedProducts() {
 
         {/* Products Grid - 2 rows x 8 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-          {featuredProducts.map((product) => (
+          {products.map((product) => (
             <div
               key={product.id}
               className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col"
@@ -174,6 +77,7 @@ export default function FeaturedProducts() {
                   src={product.image}
                   alt={product.name}
                   fill
+                  unoptimized
                   className="object-contain p-4"
                 />
               </div>

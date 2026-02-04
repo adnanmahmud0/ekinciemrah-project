@@ -26,6 +26,7 @@ export default function FavouriteCard({
   product,
   onRemove,
 }: FavouriteCardProps) {
+  console.log(product);
   return (
     <Link href={`/service/${product.id}`} className="block">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer">
@@ -44,6 +45,7 @@ export default function FavouriteCard({
           <div className="relative w-full h-full">
             <Image
               src={product.image}
+              // src={`${process.env.NEXT_PUBLIC_IMAGE_API}${product.image}`}
               alt={product.name}
               fill
               unoptimized
@@ -73,7 +75,7 @@ export default function FavouriteCard({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-1">
               <span className="text-lg font-bold text-[#146041]">
-                $ {product.price.toFixed(2)}
+                $ {product?.price?.toFixed(2) || 0}
               </span>
               <span className="text-gray-400 text-sm">/{product.unit}</span>
             </div>

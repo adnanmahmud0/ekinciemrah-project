@@ -69,31 +69,52 @@ const Switch = ({
 };
 
 const ToggleCell = ({ row }: { row: any }) => {
-  const [isChecked, setIsChecked] = useState(false);
-  return (
-    <Switch
-      checked={isChecked}
-      onCheckedChange={(checked) => {
-        setIsChecked(checked);
-        console.log(checked, row.original._id);
-      }}
-    />
-  );
+  const { data: featureData, post } = useApi("/feature-product", [
+    "feature-products",
+  ]);
+
+  // Check if the current product is in the featured list
+  // The API returns { data: [...] } where each item has a productId field
+  const isChecked =
+    featureData?.data?.some(
+      (item: any) => item.productId === row.original._id,
+    ) ?? false;
+
+  const handleToggle = async (checked: boolean) => {
+    try {
+      // The API endpoint is /feature-product and expects { productId: ... }
+      await post("/feature-product", { productId: row.original._id });
+      toast.success(
+        checked
+          ? "Added to featured products"
+          : "Removed from featured products",
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update featured status");
+    }
+  };
+
+  return <Switch checked={isChecked} onCheckedChange={handleToggle} />;
 };
 
 export const columns: ColumnDef<Product>[] = [
   {
     id: "toggle",
-    header: "Active",
-    cell: ({ row }) => <ToggleCell row={row} />,
+    header: "",
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        <ToggleCell row={row} />
+      </div>
+    ),
   },
   {
     accessorKey: "productName",
-    header: "Product",
+    header: () => <div className="text-left">Product</div>,
     cell: ({ row }) => {
       const imageUrl = getImageUrl(row.original.image);
       return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-left">
           <img
             src={imageUrl}
             alt={row.getValue("productName")}
@@ -106,7 +127,10 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "category",
-    header: "Category",
+    header: () => <div className="text-left">Category</div>,
+    cell: ({ row }) => (
+      <div className="text-left">{row.getValue("category")}</div>
+    ),
   },
   {
     accessorKey: "basePrice",
@@ -149,15 +173,19 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "stock",
-    header: "Stock",
-    cell: ({ row }) => `${row.original.stock}`,
+    header: () => <div className="text-center">Stock</div>,
+    cell: ({ row }) => <div className="text-center">{row.original.stock}</div>,
   },
   {
     id: "actions",
-    header: "Action",
+    header: () => <div className="text-center">Action</div>,
     cell: ({ row }) => {
       const product = row.original;
-      return <ActionCell product={product} />;
+      return (
+        <div className="flex justify-center">
+          <ActionCell product={product} />
+        </div>
+      );
     },
   },
 ];

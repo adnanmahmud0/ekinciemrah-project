@@ -12,6 +12,7 @@ export default function FavouritePage({
   initialProducts = [],
 }: FavouritePageProps) {
   const { favouriteList, toggleFavourite, isLoading } = useFavourite();
+  console.log(toggleFavourite);
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";
@@ -21,18 +22,21 @@ export default function FavouritePage({
     return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
   };
 
-  const products: Product[] = favouriteList.map((item) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const products: Product[] = favouriteList.map((item: any) => ({
     id: item._id,
-    name: item.productName,
-    category: item.category,
-    image: getImageUrl(item.image),
-    rating: item.avgRating || 0,
-    reviewCount: item.reviewCount || 0,
-    price: item.basePrice,
-    unit: item.unit,
-    description: item.description,
-    availability: item.stock > 0 ? "in-stock" : "stock-out",
+    name: item.product?.productName,
+    category: item.product?.category,
+    image: getImageUrl(item.product?.image),
+    rating: item.product?.avgRating || 0,
+    reviewCount: item.product?.reviewCount || 0,
+    price: item.product?.basePrice,
+    unit: item.product?.unit,
+    description: item.product?.description,
+    availability: item.product?.stock > 0 ? "in-stock" : "stock-out",
   }));
+
+  console.log(products);
 
   if (isLoading) {
     return (
