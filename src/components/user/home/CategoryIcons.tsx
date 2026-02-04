@@ -97,7 +97,7 @@ export default function CategoryIcons() {
                     )}`,
                   );
                 }}
-                className="flex flex-col items-center min-w-[90px] cursor-pointer group flex-shrink-0"
+                className="flex flex-col items-center min-w-22.5 cursor-pointer group shrink-0"
               >
                 <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">
                   <div className="relative w-12 h-12">
