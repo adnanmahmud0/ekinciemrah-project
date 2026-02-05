@@ -6,6 +6,7 @@ import { Star, Minus, Plus, Heart } from "lucide-react";
 import { Product } from "./ServiceCard";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
+import { useCart } from "@/hooks/use-cart";
 
 interface ProductDetailsProps {
   product: Product;
@@ -13,6 +14,7 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const { toggleFavourite, isFavourite } = useFavourite();
+  const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
   const isFav = isFavourite(product._id);
   const [quantity, setQuantity] = useState(1);
@@ -21,6 +23,20 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product._id, quantity);
+
+    // Get button position for animation
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const startPos = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+
+    triggerFlyAnimation(startPos);
   };
 
   const displayPrice = product.basePrice;

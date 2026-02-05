@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useApi } from "@/hooks/use-api-data";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
+import { useCart } from "@/hooks/use-cart";
 
 interface Product {
   _id: string;
@@ -22,6 +23,7 @@ interface Product {
 
 export default function BuyItAgain() {
   const { toggleFavourite, isFavourite } = useFavourite();
+  const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
   const { data: productsData } = useApi("/product&catelog", ["products"], {
@@ -151,6 +153,20 @@ export default function BuyItAgain() {
                   style={{ backgroundColor: "#004F3B" }}
                   size="sm"
                   disabled={product.status !== "Available"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(product._id, 1);
+
+                    // Trigger fly animation
+                    const rect = (
+                      e.currentTarget as HTMLElement
+                    ).getBoundingClientRect();
+                    const startPos = {
+                      x: rect.left + rect.width / 2,
+                      y: rect.top + rect.height / 2,
+                    };
+                    triggerFlyAnimation(startPos);
+                  }}
                 >
                   <ShoppingCart className="w-3 h-3" />
                   Add to Cart

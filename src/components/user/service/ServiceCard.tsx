@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
+import { useCart } from "@/hooks/use-cart";
 
 export interface Product {
   _id: string;
@@ -29,6 +30,7 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ product }: ServiceCardProps) {
   const { toggleFavourite, isFavourite } = useFavourite();
+  const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
   const [isAnimating, setIsAnimating] = React.useState(false);
   const isFav = isFavourite(product._id);
@@ -133,7 +135,17 @@ export default function ServiceCard({ product }: ServiceCardProps) {
             disabled={!isAvailable}
             onClick={(e) => {
               e.preventDefault();
-              // Handle add to cart logic
+              addToCart(product._id, 1);
+
+              // Trigger fly animation
+              const rect = (
+                e.currentTarget as HTMLElement
+              ).getBoundingClientRect();
+              const startPos = {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2,
+              };
+              triggerFlyAnimation(startPos);
             }}
           >
             <ShoppingCart className="w-4 h-4" />

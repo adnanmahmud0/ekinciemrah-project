@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useApi } from "@/hooks/use-api-data";
 import { useFavourite } from "@/hooks/use-favourite";
+import { useCart } from "@/hooks/use-cart";
+import { useFlyAnimation } from "@/context/fly-animation-context";
 
 // Helper to get image URL
 const getImageUrl = (path: string | undefined) => {
@@ -30,6 +32,8 @@ export default function FeaturedProducts() {
     "feature-products",
   ]);
   const { toggleFavourite, isFavourite } = useFavourite();
+  const { addToCart } = useCart();
+  const { triggerFlyAnimation } = useFlyAnimation();
 
   const products: Product[] =
     featureData?.data
@@ -136,6 +140,20 @@ export default function FeaturedProducts() {
                   className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
                   style={{ backgroundColor: "#004F3B" }}
                   size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(product.id, 1);
+
+                    // Trigger fly animation
+                    const rect = (
+                      e.currentTarget as HTMLElement
+                    ).getBoundingClientRect();
+                    const startPos = {
+                      x: rect.left + rect.width / 2,
+                      y: rect.top + rect.height / 2,
+                    };
+                    triggerFlyAnimation(startPos);
+                  }}
                 >
                   <ShoppingCart className="w-3 h-3" />
                   Add to Cart

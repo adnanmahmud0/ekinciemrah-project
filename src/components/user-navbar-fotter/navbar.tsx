@@ -37,6 +37,7 @@ import {
 import { Ticket, Copy, Check, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useFavourite } from "@/hooks/use-favourite";
+import { useCart } from "@/hooks/use-cart";
 
 const SOCIAL_LINKS = [
   { icon: Facebook, href: "#" },
@@ -63,9 +64,13 @@ export default function Navbar() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const { user, isAuthenticated, logout } = useAuth();
   const { favouriteList, isLoading } = useFavourite();
+  const { cartCount, isLoading: isCartLoading } = useCart();
   const [isBumpAnimating, setIsBumpAnimating] = useState(false);
+  const [isCartBumpAnimating, setIsCartBumpAnimating] = useState(false);
   const prevCountRef = useRef(0);
+  const prevCartCountRef = useRef(0);
   const isFirstRender = useRef(true);
+  const isFirstCartRender = useRef(true);
 
   useEffect(() => {
     // Skip animation on initial load or if loading
@@ -87,6 +92,27 @@ export default function Navbar() {
     }
     prevCountRef.current = favouriteList.length;
   }, [favouriteList.length, isLoading]);
+
+  useEffect(() => {
+    // Skip animation on initial load or if loading
+    if (isCartLoading) return;
+
+    if (isFirstCartRender.current) {
+      isFirstCartRender.current = false;
+      prevCartCountRef.current = cartCount;
+      return;
+    }
+
+    if (cartCount > prevCartCountRef.current) {
+      const startTimer = setTimeout(() => setIsCartBumpAnimating(true), 0);
+      const endTimer = setTimeout(() => setIsCartBumpAnimating(false), 300);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
+    }
+    prevCartCountRef.current = cartCount;
+  }, [cartCount, isCartLoading]);
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -159,9 +185,26 @@ export default function Navbar() {
 
           <Link
             href="/cart"
-            className="text-white hover:text-white/80 transition-colors"
+            className="text-white hover:text-white/80 transition-colors relative"
           >
-            <ShoppingCart className="h-5 w-5" />
+            <div id="navbar-cart-icon" className="relative">
+              <ShoppingCart
+                className={`h-5 w-5 transition-transform duration-300 ${
+                  isCartBumpAnimating
+                    ? "animate-bump text-[#146041] fill-[#146041]"
+                    : ""
+                }`}
+              />
+              {cartCount > 0 && (
+                <span
+                  className={`absolute -top-2 -right-2 bg-[#146041] text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full transition-transform duration-300 ${
+                    isCartBumpAnimating ? "scale-125" : "scale-100"
+                  }`}
+                >
+                  {cartCount}
+                </span>
+              )}
+            </div>
           </Link>
 
           {isAuthenticated && user ? (
