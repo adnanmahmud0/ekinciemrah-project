@@ -105,11 +105,7 @@ export default function FavouriteCard({
               const rect = (
                 e.currentTarget as HTMLElement
               ).getBoundingClientRect();
-              const startPos = {
-                x: rect.left + rect.width / 2,
-                y: rect.top + rect.height / 2,
-              };
-              triggerFlyAnimation(startPos);
+              triggerFlyAnimation(rect);
             }}
             className="w-full py-2.5 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
           >

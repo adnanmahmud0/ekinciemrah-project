@@ -141,11 +141,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
               const rect = (
                 e.currentTarget as HTMLElement
               ).getBoundingClientRect();
-              const startPos = {
-                x: rect.left + rect.width / 2,
-                y: rect.top + rect.height / 2,
-              };
-              triggerFlyAnimation(startPos);
+              triggerFlyAnimation(rect);
             }}
           >
             <ShoppingCart className="w-4 h-4" />
