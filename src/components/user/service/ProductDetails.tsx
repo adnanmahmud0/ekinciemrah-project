@@ -161,6 +161,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <button
               className="flex-1 py-4 bg-white hover:bg-gray-50 text-[#146041] border-2 border-[#146041] rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!isAvailable}
+              onClick={handleAddToCart}
             >
               + Add to Cart
             </button>
