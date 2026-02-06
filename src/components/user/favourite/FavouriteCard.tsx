@@ -2,7 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, ShoppingCart } from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
+import { useFlyAnimation } from "@/context/fly-animation-context";
 
 export interface Product {
   id: string;
@@ -26,7 +28,9 @@ export default function FavouriteCard({
   product,
   onRemove,
 }: FavouriteCardProps) {
-  console.log(product);
+  const { addToCart } = useCart();
+  const { triggerFlyAnimation } = useFlyAnimation();
+
   return (
     <Link href={`/service/${product.id}`} className="block">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer">
@@ -95,11 +99,22 @@ export default function FavouriteCard({
           <button
             onClick={(e) => {
               e.preventDefault(); // Prevent navigation when clicking add to cart
-              // Handle add to cart logic
+              addToCart(product.id, 1, { validateDuplicate: true });
+
+              // Trigger fly animation
+              const rect = (
+                e.currentTarget as HTMLElement
+              ).getBoundingClientRect();
+              const startPos = {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2,
+              };
+              triggerFlyAnimation(startPos);
             }}
             className="w-full py-2.5 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
           >
-            + Add to Cart
+            <ShoppingCart className="w-4 h-4" />
+            Add to Cart
           </button>
         </div>
       </div>

@@ -135,7 +135,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
             disabled={!isAvailable}
             onClick={(e) => {
               e.preventDefault();
-              addToCart(product._id, 1);
+              addToCart(product._id, 1, { validateDuplicate: true });
 
               // Trigger fly animation
               const rect = (

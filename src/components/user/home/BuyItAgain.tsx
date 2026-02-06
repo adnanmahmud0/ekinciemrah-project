@@ -155,7 +155,7 @@ export default function BuyItAgain() {
                   disabled={product.status !== "Available"}
                   onClick={(e) => {
                     e.preventDefault();
-                    addToCart(product._id, 1);
+                    addToCart(product._id, 1, { validateDuplicate: true });
 
                     // Trigger fly animation
                     const rect = (

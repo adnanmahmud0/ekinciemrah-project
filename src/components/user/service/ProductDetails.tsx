@@ -27,7 +27,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    addToCart(product._id, quantity);
+    addToCart(product._id, quantity, { validateDuplicate: true });
 
     // Get button position for animation
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();

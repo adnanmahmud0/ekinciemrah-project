@@ -43,7 +43,10 @@ export function useFavourite() {
 
   const favouriteList = response?.data || [];
   // Create a Set of IDs for O(1) lookup
-  const favouriteIds = new Set(favouriteList.map((item) => item._id));
+  // Handle both flat structure (if any) and nested structure (item.product._id)
+  const favouriteIds = new Set(
+    favouriteList.map((item: any) => item.product?._id || item._id)
+  );
 
   // Get post method from useApi
   const { post } = useApi();

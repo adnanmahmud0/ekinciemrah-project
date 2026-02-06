@@ -8,7 +8,8 @@ import { Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function CartPage() {
-  const { cartItems, addToCart, removeFromCart, clearCart, isLoading } = useCart();
+  const { cartItems, addToCart, removeFromCart, clearCart, isLoading } =
+    useCart();
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";
@@ -19,20 +20,22 @@ export default function CartPage() {
   };
 
   // Map API data to UI format
-  const uiCartItems: UICartItem[] = cartItems.map((item) => ({
-    id: item.product._id, // Map product ID to 'id' for removal
-    productId: item.product._id,
-    name: item.product.productName,
-    description: item.product.description,
-    image: getImageUrl(item.product.image),
-    price: item.product.basePrice,
-    unit: item.product.unit,
-    quantity: item.quantity,
-  }));
+  const uiCartItems: UICartItem[] = cartItems
+    .filter((item) => item && item.product) // Filter out items with null product
+    .map((item) => ({
+      id: item.product._id, // Map product ID to 'id' for removal
+      productId: item.product._id,
+      name: item.product.productName,
+      description: item.product.description,
+      image: getImageUrl(item.product.image),
+      price: item.product.basePrice,
+      unit: item.product.unit,
+      quantity: item.quantity,
+    }));
 
   const handleUpdateQuantity = (id: string, quantity: number) => {
     // Find current item to calculate delta
-    const currentItem = cartItems.find(item => item.product._id === id);
+    const currentItem = cartItems.find((item) => item.product?._id === id);
     if (!currentItem) return;
 
     const delta = quantity - currentItem.quantity;
@@ -82,8 +85,8 @@ export default function CartPage() {
       <div className="container mx-auto px-6 md:px-12 lg:px-24">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-[#0D1E32]">Shopping Cart</h1>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="text-red-500 hover:text-red-700 hover:bg-red-50 gap-2"
             onClick={() => clearCart()}
           >

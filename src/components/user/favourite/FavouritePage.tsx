@@ -24,7 +24,7 @@ export default function FavouritePage({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const products: Product[] = favouriteList.map((item: any) => ({
-    id: item._id,
+    id: item.product?._id || item._id,
     name: item.product?.productName,
     category: item.product?.category,
     image: getImageUrl(item.product?.image),

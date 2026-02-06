@@ -58,10 +58,24 @@ export function useCart() {
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   // 2. Add to Cart
-  const addToCart = async (productId: string, quantity: number = 1) => {
+  const addToCart = async (
+    productId: string,
+    quantity: number = 1,
+    options?: { validateDuplicate?: boolean }
+  ) => {
     if (!isAuthenticated) {
       toast.error("Please login to add items to cart");
       return;
+    }
+
+    if (options?.validateDuplicate) {
+      const exists = cartItems.some(
+        (item) => item.product?._id === productId || item._id === productId
+      );
+      if (exists) {
+        toast.error("Already added to the cart");
+        return;
+      }
     }
 
     try {

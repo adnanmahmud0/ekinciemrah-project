@@ -142,7 +142,7 @@ export default function FeaturedProducts() {
                   size="sm"
                   onClick={(e) => {
                     e.preventDefault();
-                    addToCart(product.id, 1);
+                    addToCart(product.id, 1, { validateDuplicate: true });
 
                     // Trigger fly animation
                     const rect = (
