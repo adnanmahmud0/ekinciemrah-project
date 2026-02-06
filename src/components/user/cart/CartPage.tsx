@@ -42,7 +42,7 @@ export default function CartPage() {
     if (delta === 0) return;
 
     // Use addToCart for both increase and decrease
-    addToCart(id, delta);
+    addToCart(id, delta, { suppressToast: true });
   };
 
   const handleRemoveItem = (id: string) => {

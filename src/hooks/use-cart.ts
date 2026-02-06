@@ -55,13 +55,14 @@ export function useCart() {
 
   const cart = response?.data;
   const cartItems = cart?.items || [];
-  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  // Use length instead of sum of quantities to show unique item count
+  const cartCount = cartItems.length;
 
   // 2. Add to Cart
   const addToCart = async (
     productId: string,
     quantity: number = 1,
-    options?: { validateDuplicate?: boolean }
+    options?: { validateDuplicate?: boolean; suppressToast?: boolean }
   ) => {
     if (!isAuthenticated) {
       toast.error("Please login to add items to cart");
@@ -84,7 +85,9 @@ export function useCart() {
         { productId, quantity },
         {
           onSuccess: () => {
-            toast.success("Product added to cart");
+            if (!options?.suppressToast) {
+              toast.success("Product added to cart");
+            }
             refetch(); // Refresh cart data
           },
           onError: (err: any) => {
