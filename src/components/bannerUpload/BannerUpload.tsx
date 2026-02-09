@@ -140,7 +140,7 @@ export default function BannerUpload() {
       // Handle Web Banners
       const webBannersList = bannerData.data.webBanners;
       if (Array.isArray(webBannersList)) {
-        const newBanners = Array.from({ length: 6 }, () => ({
+        const newBanners: BannerState[] = Array.from({ length: 6 }, () => ({
           file: null,
           preview: "",
         }));
@@ -171,10 +171,13 @@ export default function BannerUpload() {
       // Handle Mobile Banners
       const mobileBannersList = bannerData.data.mobileBanners;
       if (Array.isArray(mobileBannersList)) {
-        const newMobileBanners = Array.from({ length: 4 }, () => ({
-          file: null,
-          preview: "",
-        }));
+        const newMobileBanners: BannerState[] = Array.from(
+          { length: 4 },
+          () => ({
+            file: null,
+            preview: "",
+          }),
+        );
         mobileBannersList.forEach((banner, index) => {
           if (index < 4 && banner.image) {
             const apiUrl =

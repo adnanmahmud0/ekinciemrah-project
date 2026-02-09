@@ -63,7 +63,7 @@ export function DataTablePagination<TData>({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
+            disabled={table.getState().pagination.pageIndex === 0}
           >
             <span className="sr-only">Go to first page</span>
             <IconChevronsLeft />
@@ -72,8 +72,13 @@ export function DataTablePagination<TData>({
             variant="outline"
             className="size-8"
             size="icon"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => {
+              const currentPage = table.getState().pagination.pageIndex;
+              if (currentPage > 0) {
+                table.setPageIndex(currentPage - 1);
+              }
+            }}
+            disabled={table.getState().pagination.pageIndex <= 0}
           >
             <span className="sr-only">Go to previous page</span>
             <IconChevronLeft />
@@ -82,7 +87,10 @@ export function DataTablePagination<TData>({
             variant="outline"
             className="size-8"
             size="icon"
-            onClick={() => table.nextPage()}
+            onClick={() => {
+              const currentPage = table.getState().pagination.pageIndex;
+              table.setPageIndex(currentPage + 1);
+            }}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to next page</span>

@@ -16,7 +16,7 @@ export default function PurchaseRoute({ params }: PurchaseRouteProps) {
     const { id } = use(params);
 
     // In a real app, fetch product by id from API
-    const product = MOCK_PRODUCTS.find((p) => p.id === id);
+    const product = MOCK_PRODUCTS.find((p) => p._id === id);
 
     if (!product) {
         notFound();
