@@ -67,7 +67,7 @@ export default function CategoryIcons() {
 
   return (
     <section className="bg-white border-b border-gray-200 relative group">
-      <div className="container mx-auto px-4 py-4 relative">
+      <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-center gap-4">
           {/* Left Arrow */}
           {showLeftArrow && (
@@ -84,7 +84,7 @@ export default function CategoryIcons() {
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex gap-6 overflow-x-auto pb-4 pt-2 scrollbar-custom max-w-full"
+            className="flex gap-7 overflow-x-auto pb-5 pt-3 scrollbar-custom max-w-full"
           >
             {categories.map((category) => (
               <div
@@ -97,10 +97,10 @@ export default function CategoryIcons() {
                     )}`,
                   );
                 }}
-                className="flex flex-col items-center min-w-22.5 cursor-pointer group shrink-0"
+                className="flex flex-col items-center min-w-24 cursor-pointer group shrink-0"
               >
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-2 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">
-                  <div className="relative w-12 h-12">
+                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">
+                  <div className="relative w-16 h-16">
                     <Image
                       src={
                         category.image
@@ -114,7 +114,7 @@ export default function CategoryIcons() {
                     />
                   </div>
                 </div>
-                <p className="text-xs text-center text-gray-700 whitespace-pre-line leading-tight group-hover:text-[#004F3B] font-medium transition-colors">
+                <p className="text-center font-semibold text-gray-700 whitespace-pre-line leading-tight group-hover:text-[#004F3B] transition-colors">
                   {category.categoryName}
                 </p>
               </div>

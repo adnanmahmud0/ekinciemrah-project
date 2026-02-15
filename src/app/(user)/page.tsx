@@ -11,10 +11,12 @@ export default function page() {
   return (
     <div>
       <CategoryIcons />
-      <PromotionalBanners />
-      <FeaturedProducts />
-      <HowItWorks />
       <BuyItAgain />
+      <FeaturedProducts />
+      <PromotionalBanners />
+
+      <HowItWorks />
+
       <OfferBanners />
       <AppMockUpBanner />
       <Review />
