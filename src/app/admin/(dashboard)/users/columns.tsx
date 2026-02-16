@@ -8,6 +8,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { UserDetailsDialog } from "@/components/dialog/user-details-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -146,6 +148,101 @@ function ChangeCustomerTypeDialog({
   );
 }
 
+interface AssignCreditLimitDialogProps {
+  user: User;
+  trigger: React.ReactNode;
+}
+
+function AssignCreditLimitDialog({
+  user,
+  trigger,
+}: AssignCreditLimitDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [creditLimit, setCreditLimit] = useState("");
+  const [reason, setReason] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const { patch } = useApi("/user", ["users"]);
+
+  function handleSave() {
+    const targetUrl = `/user/${user._id.trim()}/credit-limit`;
+    patch(
+      targetUrl,
+      {
+        creditLimit: creditLimit ? Number(creditLimit) : null,
+        reason,
+        expiryDate,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Credit limit assigned successfully");
+          setOpen(false);
+        },
+        onError: (err) => {
+          console.error("Credit limit assign error:", err);
+          toast.error("Failed to assign credit limit");
+        },
+      },
+    );
+  }
+
+  const isSaveDisabled =
+    !creditLimit || Number.isNaN(Number(creditLimit)) || !reason || !expiryDate;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="sm:max-w-[450px]">
+        <DialogHeader>
+          <DialogTitle>Assign credit limit</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor={`credit-limit-${user._id}`}>Credit limit</Label>
+            <Input
+              id={`credit-limit-${user._id}`}
+              type="number"
+              placeholder="10000"
+              value={creditLimit}
+              onChange={(e) => setCreditLimit(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor={`reason-${user._id}`}>Reason</Label>
+            <Input
+              id={`reason-${user._id}`}
+              placeholder="Initial credit limit for wholesale customer"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor={`expiry-date-${user._id}`}>Expiry date</Label>
+            <Input
+              id={`expiry-date-${user._id}`}
+              type="date"
+              placeholder="2025-12-31"
+              value={expiryDate}
+              onChange={(e) => setExpiryDate(e.target.value)}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button type="button" onClick={handleSave} disabled={isSaveDisabled}>
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 const UserActions = ({ user }: { user: User }) => {
   const { patch } = useApi("/user", ["users"]);
 
@@ -216,6 +313,14 @@ const UserActions = ({ user }: { user: User }) => {
           trigger={
             <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
               Change customer type
+            </DropdownMenuItem>
+          }
+        />
+        <AssignCreditLimitDialog
+          user={user}
+          trigger={
+            <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+              Assign credit limit
             </DropdownMenuItem>
           }
         />

@@ -126,16 +126,28 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
+    accessorKey: "sku",
+    header: "SKU",
+    cell: ({ row }) => row.original.sku || "-",
+  },
+  {
+    accessorKey: "basePrice",
+    header: "Price",
+    cell: ({ row }) => {
+      const basePrice = row.original.basePrice;
+      return (
+        <div className="flex flex-col">
+          <span>{basePrice ? `$${basePrice}` : "-"}</span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "category",
     header: () => <div className="text-left">Category</div>,
     cell: ({ row }) => (
       <div className="text-left">{row.getValue("category")}</div>
     ),
-  },
-  {
-    accessorKey: "basePrice",
-    header: "Price",
-    cell: ({ row }) => `$${row.original.basePrice}`,
   },
   {
     id: "priceTier",

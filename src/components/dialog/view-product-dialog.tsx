@@ -59,6 +59,11 @@ export function ViewProductDialog({
               <p className="text-sm text-muted-foreground">
                 Category: {product.category}
               </p>
+              {product.sku && (
+                <p className="text-sm text-muted-foreground">
+                  SKU: {product.sku}
+                </p>
+              )}
             </div>
           </div>
 

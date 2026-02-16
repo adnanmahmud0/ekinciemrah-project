@@ -53,6 +53,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
     basePrice: "",
     stock: "",
     status: "Available",
+    sku: "",
   });
   const [categoryPrices, setCategoryPrices] = useState<{
     [key: string]: string;
@@ -94,6 +95,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
         basePrice: product.basePrice.toString(),
         stock: product.stock.toString(),
         status: product.status || "Available",
+        sku: product.sku || "",
       });
 
       const prices: { [key: string]: string } = {};
@@ -113,6 +115,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
           basePrice: "",
           stock: "",
           status: "Available",
+          sku: "",
         });
         setCategoryPrices({});
         setPreviewUrl(null);
@@ -173,6 +176,9 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
     submitData.append("basePrice", formData.basePrice);
     submitData.append("stock", formData.stock);
     submitData.append("status", formData.status);
+    if (formData.sku) {
+      submitData.append("sku", formData.sku);
+    }
 
     const customerTypePrice = Object.entries(categoryPrices).map(
       ([categoryName, price]) => ({
@@ -286,7 +292,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="productName">Product Name</Label>
               <Input
@@ -297,6 +303,17 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
                   setFormData({ ...formData, productName: e.target.value })
                 }
                 required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="sku">SKU</Label>
+              <Input
+                id="sku"
+                placeholder="Enter SKU (e.g: aa-20)"
+                value={formData.sku}
+                onChange={(e) =>
+                  setFormData({ ...formData, sku: e.target.value })
+                }
               />
             </div>
             <div className="grid gap-2">
@@ -334,7 +351,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="price">Base Price</Label>
               <Input
@@ -348,6 +365,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
                 required
               />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="stock">Stock</Label>
               <Input

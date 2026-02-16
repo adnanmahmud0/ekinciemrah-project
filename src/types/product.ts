@@ -14,6 +14,7 @@ export interface Product {
   image: string;
   stock: number;
   status?: string;
+  sku?: string;
   createdAt: string;
   updatedAt: string;
   __v: number;
