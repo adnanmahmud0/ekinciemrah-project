@@ -25,6 +25,7 @@ export default function CartPage() {
     .map((item) => ({
       id: item.product._id, // Map product ID to 'id' for removal
       productId: item.product._id,
+      sku: item.product.sku,
       name: item.product.productName,
       description: item.product.description,
       image: getImageUrl(item.product.image),

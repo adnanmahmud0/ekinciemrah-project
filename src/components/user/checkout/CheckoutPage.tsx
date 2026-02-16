@@ -27,6 +27,7 @@ export default function CheckoutPage() {
     .map((item) => ({
       id: item.product._id,
       productId: item.product._id,
+      sku: item.product.sku,
       name: item.product.productName,
       description: item.product.description,
       image: getImageUrl(item.product.image),

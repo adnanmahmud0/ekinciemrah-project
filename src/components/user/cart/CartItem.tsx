@@ -6,6 +6,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 export interface CartItem {
   id: string;
   productId: string;
+  sku?: string;
   name: string;
   description: string;
   image: string;
@@ -76,24 +77,24 @@ export default function CartItemComponent({
 
       {/* Price & Delete */}
       <div className="flex flex-col items-end gap-4">
-        <div className="text-right">
-          <div className="text-xl font-bold text-[#146041] mb-1">
-            $ {totalPrice.toFixed(2)}{" "}
-            <span className="text-sm font-normal text-gray-500">
-              /{item.unit}
-            </span>
-          </div>
-          <div className="text-xs text-gray-500">
-            ${item.price.toFixed(2)} each
-          </div>
-        </div>
-
         <button
           onClick={() => onRemove(item.id)}
           className="p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg transition-colors"
         >
           <Trash2 className="w-5 h-5" />
         </button>
+        <div className="text-right">
+          <div className="text-xl font-bold text-[#146041] ">
+            {" "}
+            Each: ${item.price.toFixed(2)}
+          </div>
+          <div className="text-gray-500 mb-1">
+            Total: $ {totalPrice.toFixed(2)}{" "}
+            {/* <span className="text-sm font-normal text-gray-500">
+              /{item.unit}
+            </span> */}
+          </div>
+        </div>
       </div>
     </div>
   );

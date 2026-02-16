@@ -15,6 +15,7 @@ export interface CartItemProduct {
   unit: string;
   description: string;
   stock: number;
+  sku?: string;
 }
 
 export interface CartItem {
