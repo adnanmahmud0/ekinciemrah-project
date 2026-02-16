@@ -7,11 +7,11 @@ export type PaymentCredit = {
   id: string;
   business: string;
   owner: string;
-  creditLimit: string;
-  creditUsed: string;
-  available: string;
-  paymentTerms: string;
-  outstanding: string;
+  email: string;
+  creditLimit: number;
+  creditUsed: number;
+  available: number;
+  outstanding: number;
   status: "Near Limit" | "Blocked" | "Good Standing";
 };
 
@@ -26,6 +26,7 @@ export const columns: ColumnDef<PaymentCredit>[] = [
             {row.original.business}
           </span>
           <span className="text-sm text-gray-500">{row.original.owner}</span>
+          <span className="text-xs text-gray-400">{row.original.email}</span>
         </div>
       );
     },
@@ -33,22 +34,22 @@ export const columns: ColumnDef<PaymentCredit>[] = [
   {
     accessorKey: "creditLimit",
     header: "Credit Limit",
+    cell: ({ row }) => `$${row.original.creditLimit.toLocaleString()}`,
   },
   {
     accessorKey: "creditUsed",
     header: "Credit Used",
+    cell: ({ row }) => `$${row.original.creditUsed.toLocaleString()}`,
   },
   {
     accessorKey: "available",
     header: "Available",
-  },
-  {
-    accessorKey: "paymentTerms",
-    header: "Payment Terms",
+    cell: ({ row }) => `$${row.original.available.toLocaleString()}`,
   },
   {
     accessorKey: "outstanding",
     header: "Outstanding",
+    cell: ({ row }) => `$${row.original.outstanding.toLocaleString()}`,
   },
   {
     accessorKey: "status",

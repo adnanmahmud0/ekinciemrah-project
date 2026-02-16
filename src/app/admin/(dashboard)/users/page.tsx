@@ -30,7 +30,14 @@ export default function UsersPage() {
 
   // Map _id to id for DataTable compatibility
   const users = React.useMemo(() => {
-    return apiResponse?.data?.map((u) => ({ ...u, id: u._id })) || [];
+    return (
+      apiResponse?.data?.map((u) => ({
+        ...u,
+        id: u._id,
+        // Derive credit_limit for table from backend creditInfo if present
+        credit_limit: u.creditInfo?.creditLimit ?? u.credit_limit,
+      })) || []
+    );
   }, [apiResponse]);
 
   return (

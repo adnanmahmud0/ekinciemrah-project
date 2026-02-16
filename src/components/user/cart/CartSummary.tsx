@@ -5,12 +5,10 @@ import { CartItem } from "./CartItem";
 
 interface CartSummaryProps {
     items: CartItem[];
-    shipping: number;
 }
 
-export default function CartSummary({ items, shipping }: CartSummaryProps) {
+export default function CartSummary({ items }: CartSummaryProps) {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const total = subtotal + shipping;
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
@@ -22,14 +20,10 @@ export default function CartSummary({ items, shipping }: CartSummaryProps) {
                     <span>Sub-total</span>
                     <span className="font-semibold">${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-700">
-                    <span>Shipping</span>
-                    <span className="font-semibold">${shipping.toFixed(2)}</span>
-                </div>
                 <div className="border-t border-gray-300 pt-4">
                     <div className="flex justify-between text-gray-700 mb-2">
                         <span>Subtotal ({itemCount} items):</span>
-                        <span className="font-semibold">${total.toFixed(2)} USD</span>
+                        <span className="font-semibold">${subtotal.toFixed(2)} USD</span>
                     </div>
                 </div>
             </div>

@@ -110,7 +110,7 @@ export default function CartPage() {
 
           {/* Summary */}
           <div className="lg:w-96">
-            <CartSummary items={uiCartItems} shipping={12.0} />
+            <CartSummary items={uiCartItems} />
           </div>
         </div>
       </div>

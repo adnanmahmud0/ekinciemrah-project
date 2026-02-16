@@ -24,6 +24,7 @@ export default function CheckoutCartItem({ item, onUpdateQuantity, onRemove }: C
                     src={item.image}
                     alt={item.name}
                     fill
+                    unoptimized
                     className="object-contain p-1"
                 />
             </div>

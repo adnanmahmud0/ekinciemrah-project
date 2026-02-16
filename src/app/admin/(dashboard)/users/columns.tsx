@@ -52,8 +52,16 @@ export interface User {
   verified: boolean;
   createdAt: string;
   updatedAt: string;
-  // Optional fields that might not be in API but used in UI
-  credit_limit?: string;
+  // Optional credit info returned from backend
+  creditInfo?: {
+    creditLimit: number;
+    currentOutstanding: number;
+    availableCredit: number;
+    creditStatus: string;
+    lastUpdated: string;
+  };
+  // Derived field used only for table display
+  credit_limit?: number | string;
 }
 
 interface ChangeCustomerTypeDialogProps {
@@ -161,14 +169,14 @@ function AssignCreditLimitDialog({
   const [creditLimit, setCreditLimit] = useState("");
   const [reason, setReason] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
-  const { patch } = useApi("/user", ["users"]);
+  const { post } = useApi("/user", ["users"]);
 
   function handleSave() {
     const targetUrl = `/user/${user._id.trim()}/credit-limit`;
-    patch(
+    post(
       targetUrl,
       {
-        creditLimit: creditLimit ? Number(creditLimit) : null,
+        creditLimit: creditLimit ? Number(creditLimit) : undefined,
         reason,
         expiryDate,
       },
