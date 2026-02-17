@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
@@ -45,6 +44,7 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     productName: "",
     description: "",
@@ -154,6 +154,9 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
       return;
     }
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     const submitData = new FormData();
     submitData.append("productName", formData.productName);
     submitData.append("description", formData.description);
@@ -210,21 +213,21 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
 
     try {
       if (product) {
-        // Edit mode - PATCH
         await patch(`/product&catelog/${product._id}`, submitData);
         toast.success("Product updated successfully");
       } else {
-        // Create mode - POST
         await post("/product&catelog", submitData);
         toast.success("Product created successfully");
       }
-      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       setOpen(false);
     } catch (error) {
       console.error(error);
       toast.error(
         product ? "Failed to update product" : "Failed to create product",
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -423,12 +426,18 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
+              <Button type="button" variant="outline" disabled={isSubmitting}>
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">
-              {product ? "Update Product" : "Add Product"}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? product
+                  ? "Updating..."
+                  : "Adding..."
+                : product
+                  ? "Update Product"
+                  : "Add Product"}
             </Button>
           </DialogFooter>
         </form>

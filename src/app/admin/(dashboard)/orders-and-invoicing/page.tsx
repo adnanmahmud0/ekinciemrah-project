@@ -76,6 +76,11 @@ function mapBackendOrderToOrder(order: BackendOrder): Order {
       userSource.name ||
       userSource._id ||
       "Unknown customer",
+    userName:
+      userSource.name ||
+      userSource.businessName ||
+      userSource._id ||
+      "Unknown user",
     customerEmail: userSource.email || "Unknown email",
     userPhone: userSource.contact,
     orderDate: new Date(order.createdAt).toLocaleDateString(),

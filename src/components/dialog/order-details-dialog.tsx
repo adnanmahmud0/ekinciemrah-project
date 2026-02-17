@@ -31,6 +31,7 @@ export interface Order {
   orderId: string;
   customerName: string;
   customerEmail: string;
+  userName?: string;
   userPhone?: string;
   orderDate: string;
   deliveryDate?: string;
@@ -67,7 +68,7 @@ export function OrderDetailsDialog({
     }).format(value);
 
   const shippingAddress = order.shippingAddress;
-  const userName = order.customerName;
+  const userName = order.userName || order.customerName;
   const userEmail = order.customerEmail;
   const userPhone = order.userPhone || "Not available";
   const userAddress = shippingAddress
