@@ -45,8 +45,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   };
 
   const displayPrice = product.price ?? product.basePrice;
-  const originalPrice = displayPrice * 1.4;
-  const savings = originalPrice - displayPrice;
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";
@@ -106,14 +104,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 $ {displayPrice.toFixed(2)}
               </span>
               <span className="text-gray-400">/{product.unit}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400 line-through">
-                $ {originalPrice.toFixed(2)}
-              </span>
-              <span className="text-green-600 font-semibold">
-                -$ {savings.toFixed(2)} (save)
-              </span>
             </div>
 
             {/* Status Badge */}
