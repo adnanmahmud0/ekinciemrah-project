@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 
@@ -18,6 +21,13 @@ import {
 import { useApi } from "@/hooks/use-api-data";
 import { toast } from "sonner";
 
+type OrdersCache =
+  | {
+      data?: { _id: string; status: string }[];
+      [key: string]: unknown;
+    }
+  | undefined;
+
 function formatMoney(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -26,25 +36,48 @@ function formatMoney(value: number) {
 }
 
 function OrderActionsCell({ order }: { order: Order }) {
-  const { patch } = useApi("/orders", ["orders"]);
+  const { patch } = useApi(undefined, ["orders"], { enabled: false });
+  const queryClient = useQueryClient();
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateStatus = async (status: "ACCEPTED" | "CANCELLED") => {
+  const updateStatus = async (status: "accepted" | "cancelled") => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+
+    const previousData = queryClient.getQueryData<OrdersCache>(["orders"]);
+
+    queryClient.setQueryData<OrdersCache>(["orders"], (oldData) => {
+      if (!oldData || !oldData.data) return oldData;
+
+      return {
+        ...oldData,
+        data: oldData.data.map((o: any) =>
+          o._id === order.id ? { ...o, status } : o,
+        ),
+      };
+    });
+
     try {
-      await patch(`/orders/${order.id}`, { status });
+      await patch(`/orders/admin/${order.id}/status`, { status });
       toast.success(
-        status === "ACCEPTED"
+        status === "accepted"
           ? "Order accepted successfully"
           : "Order cancelled successfully",
       );
     } catch {
+      if (previousData) {
+        queryClient.setQueryData(["orders"], previousData);
+      }
       toast.error("Failed to update order status. Please try again.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 p-0" disabled={isUpdating}>
           <span className="sr-only">Open menu</span>
           <IconDotsVertical className="h-4 w-4" />
         </Button>
@@ -53,26 +86,31 @@ function OrderActionsCell({ order }: { order: Order }) {
         <OrderDetailsDialog
           order={order}
           trigger={
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <DropdownMenuItem
+              disabled={isUpdating}
+              onSelect={(e) => e.preventDefault()}
+            >
               View Details
             </DropdownMenuItem>
           }
         />
         <DropdownMenuItem
+          disabled={isUpdating}
           onSelect={async (e) => {
             e.preventDefault();
-            await updateStatus("ACCEPTED");
+            await updateStatus("accepted");
           }}
         >
-          Accept Order
+          {isUpdating ? "Updating..." : "Accept Order"}
         </DropdownMenuItem>
         <DropdownMenuItem
+          disabled={isUpdating}
           onSelect={async (e) => {
             e.preventDefault();
-            await updateStatus("CANCELLED");
+            await updateStatus("cancelled");
           }}
         >
-          Cancel Order
+          {isUpdating ? "Updating..." : "Cancel Order"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -116,22 +154,31 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const rawStatus = (row.getValue("status") as string) || "";
+      const normalizedStatus = rawStatus.toLowerCase();
+      const displayStatus =
+        normalizedStatus === "accepted"
+          ? "ACCEPTED"
+          : normalizedStatus === "cancelled"
+            ? "CANCELLED"
+            : normalizedStatus === "pending"
+              ? "Pending"
+              : rawStatus || "Unknown";
       return (
         <div className="flex justify-center">
           <Badge
             variant="outline"
             className={
-              status === "Pending"
+              displayStatus === "Pending"
                 ? "border-yellow-500 text-yellow-600 bg-yellow-50"
-                : status === "ACCEPTED"
+                : displayStatus === "ACCEPTED"
                   ? "border-green-500 text-green-600 bg-green-50"
-                  : status === "CANCELLED"
+                  : displayStatus === "CANCELLED"
                     ? "border-red-500 text-red-600 bg-red-50"
                     : "border-gray-300 text-gray-700 bg-gray-50"
             }
           >
-            {status}
+            {displayStatus}
           </Badge>
         </div>
       );
