@@ -39,6 +39,7 @@ export default function CheckoutPage() {
       postalCode: "",
       country: "",
     },
+    deliveryDate: "",
     notes: "",
   });
 
@@ -118,6 +119,7 @@ export default function CheckoutPage() {
       shippingAddress: deliveryDetails.shippingAddress,
       billingAddress: deliveryDetails.billingAddress,
       notes: deliveryDetails.notes,
+      deliveryDate: deliveryDetails.deliveryDate,
     };
 
     try {
@@ -474,6 +476,23 @@ export default function CheckoutPage() {
                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#146041] focus:border-transparent"
                           />
                         </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Delivery Date*
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={deliveryDetails.deliveryDate}
+                          onChange={(e) =>
+                            setDeliveryDetails({
+                              ...deliveryDetails,
+                              deliveryDate: e.target.value,
+                            })
+                          }
+                          className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#146041] focus:border-transparent"
+                        />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">

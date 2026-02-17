@@ -97,6 +97,10 @@ export const columns: ColumnDef<Order>[] = [
     header: "Order Date",
   },
   {
+    accessorKey: "deliveryDate",
+    header: "Delivery Date",
+  },
+  {
     accessorKey: "itemsCount",
     header: "Items",
   },

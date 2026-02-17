@@ -33,6 +33,7 @@ export interface Order {
   customerEmail: string;
   userPhone?: string;
   orderDate: string;
+  deliveryDate?: string;
   itemsCount: number;
   subtotal: number;
   tax: number;
@@ -72,6 +73,7 @@ export function OrderDetailsDialog({
   const userAddress = shippingAddress
     ? `${shippingAddress.line1}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postalCode}, ${shippingAddress.country}`
     : "Not available";
+  const deliveryDate = order.deliveryDate || "Not available";
 
   const displayStatus = order.status;
   const paymentStatus = order.paymentStatus;
@@ -98,6 +100,12 @@ export function OrderDetailsDialog({
                 Order Date
               </p>
               <p className="font-bold text-lg">{order.orderDate}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Delivery Date
+              </p>
+              <p className="font-bold text-lg">{deliveryDate}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">

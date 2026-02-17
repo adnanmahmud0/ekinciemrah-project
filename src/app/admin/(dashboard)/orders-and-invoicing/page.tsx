@@ -48,6 +48,7 @@ interface BackendOrder {
   status: string;
   paymentStatus: string;
   dueDate?: string;
+  deliveryDate?: string;
   shippingAddress: BackendOrderAddress;
   billingAddress: BackendOrderAddress;
   notes?: string;
@@ -60,18 +61,27 @@ type OrdersResponse = ApiResponse<BackendOrder[]>;
 
 function mapBackendOrderToOrder(order: BackendOrder): Order {
   const items = order.items || [];
+  const userSource =
+    (order as unknown as { userId?: BackendOrderUser; user?: BackendOrderUser })
+      .userId ||
+    (order as unknown as { userId?: BackendOrderUser; user?: BackendOrderUser })
+      .user ||
+    ({} as BackendOrderUser);
 
   return {
     id: order._id,
     orderId: order.orderNumber,
     customerName:
-      order.userId?.businessName ||
-      order.userId?.name ||
-      order.userId?._id ||
+      userSource.businessName ||
+      userSource.name ||
+      userSource._id ||
       "Unknown customer",
-    customerEmail: order.userId?.email || "Unknown email",
-    userPhone: order.userId?.contact,
+    customerEmail: userSource.email || "Unknown email",
+    userPhone: userSource.contact,
     orderDate: new Date(order.createdAt).toLocaleDateString(),
+    deliveryDate: order.deliveryDate
+      ? new Date(order.deliveryDate).toLocaleDateString()
+      : "",
     itemsCount: items.length,
     subtotal: order.subtotal,
     tax: order.tax,
@@ -95,10 +105,9 @@ function mapBackendOrderToOrder(order: BackendOrder): Order {
 }
 
 export default function OrdersAndInvoicingPage() {
-  const { data, isLoading } = useApi<OrdersResponse>(
-    "/orders/admin/all",
-    ["orders"],
-  );
+  const { data, isLoading } = useApi<OrdersResponse>("/orders/admin/all", [
+    "orders",
+  ]);
 
   const backendOrders = data?.data || [];
   const orders: Order[] = backendOrders.map(mapBackendOrderToOrder);
