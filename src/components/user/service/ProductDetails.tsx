@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Star, Minus, Plus, Heart } from "lucide-react";
 import { Product } from "./ServiceCard";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
 import { useCart } from "@/hooks/use-cart";
+import { useRouter } from "next/navigation";
 
 interface ProductDetailsProps {
   product: Product;
@@ -16,6 +16,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const { toggleFavourite, isFavourite } = useFavourite();
   const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
+  const router = useRouter();
   const isFav = isFavourite(product._id);
   const [quantity, setQuantity] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -32,6 +33,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     // Get button position for animation
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     triggerFlyAnimation(rect);
+  };
+
+  const handleBuyNow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await addToCart(product._id, quantity, {
+      validateDuplicate: true,
+      suppressToast: true,
+    });
+    router.push("/checkout");
   };
 
   const displayPrice = product.basePrice;
@@ -145,14 +155,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href={`/purchase/${product._id}`} className="flex-1">
-              <button
-                className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!isAvailable}
-              >
-                Buy Now
-              </button>
-            </Link>
+            <button
+              className="flex-1 w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!isAvailable}
+              onClick={handleBuyNow}
+            >
+              Buy Now
+            </button>
             <button
               className="flex-1 py-4 bg-white hover:bg-gray-50 text-[#146041] border-2 border-[#146041] rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!isAvailable}
