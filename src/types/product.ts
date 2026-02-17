@@ -10,6 +10,7 @@ export interface Product {
   category: string;
   unit: string;
   basePrice: number;
+  price?: number;
   customerTypePrice: CategoryPrice[];
   image: string;
   stock: number;

@@ -44,8 +44,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     router.push("/checkout");
   };
 
-  const displayPrice = product.basePrice;
-  // Mock original price logic for now if not provided by API
+  const displayPrice = product.price ?? product.basePrice;
   const originalPrice = displayPrice * 1.4;
   const savings = originalPrice - displayPrice;
 

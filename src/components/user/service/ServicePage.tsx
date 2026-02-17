@@ -8,6 +8,7 @@ import ServiceGrid from "./ServiceGrid";
 import { Product } from "./ServiceCard";
 import { useApi } from "@/hooks/use-api-data";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useAuth } from "@/context/auth-context";
 
 interface ServicePageProps {
   initialProducts?: Product[];
@@ -16,6 +17,7 @@ interface ServicePageProps {
 export default function ServicePage({
   initialProducts = [],
 }: ServicePageProps) {
+  const { isAuthenticated } = useAuth();
   const { data: categoryData, isLoading: isCategoriesLoading } = useApi(
     "/category",
     ["categories"],
@@ -49,8 +51,11 @@ export default function ServicePage({
     setSearchTerm(searchParam);
   }, [searchParam]);
 
-  // Construct API URL based on filters
-  let apiUrl = "/product&catelog";
+  const baseEndpoint = isAuthenticated
+    ? "/product&catelog/customer-type"
+    : "/product&catelog";
+
+  let apiUrl = baseEndpoint;
   let shouldFetch = true;
 
   if (selectedCategory !== "All Categories") {
@@ -58,12 +63,9 @@ export default function ServicePage({
     if (isCategoriesLoading) {
       shouldFetch = false;
     } else {
-      // Use category name directly as requested by user
-      // Backend URL: product&catelog?category=Dry Grocery
       apiUrl += `?category=${encodeURIComponent(selectedCategory)}`;
     }
   } else if (debouncedSearchTerm) {
-    // Based on user prompt: "product&catelog?search=tomato"
     apiUrl += `?search=${encodeURIComponent(debouncedSearchTerm)}`;
   }
 

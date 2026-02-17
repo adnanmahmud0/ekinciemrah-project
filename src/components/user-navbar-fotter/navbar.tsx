@@ -47,6 +47,7 @@ interface SearchProduct {
   productName: string;
   image: string;
   basePrice: number;
+  price?: number;
 }
 
 interface SearchResponse {
@@ -104,12 +105,16 @@ export default function Navbar() {
 
   const suggestionsEnabled = debouncedSearchQuery.trim().length > 0;
 
+  const searchEndpointBase = isAuthenticated
+    ? "/product&catelog/customer-type"
+    : "/product&catelog";
+
   const { data: searchResponse } = useApi<SearchResponse>(
     suggestionsEnabled
-      ? `/product&catelog?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
+      ? `${searchEndpointBase}?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
       : undefined,
     suggestionsEnabled
-      ? ["global-search", debouncedSearchQuery.trim()]
+      ? ["global-search", debouncedSearchQuery.trim(), isAuthenticated]
       : undefined,
     {
       enabled: suggestionsEnabled,
@@ -374,7 +379,7 @@ export default function Navbar() {
                             {product.productName}
                           </span>
                           <span className="text-xs font-semibold text-[#004F3B]">
-                            ${product.basePrice.toFixed(2)}
+                            ${(product.price ?? product.basePrice).toFixed(2)}
                           </span>
                         </div>
                       </button>
@@ -445,7 +450,7 @@ export default function Navbar() {
                         {product.productName}
                       </span>
                       <span className="text-xs font-semibold text-[#004F3B]">
-                        ${product.basePrice.toFixed(2)}
+                        ${(product.price ?? product.basePrice).toFixed(2)}
                       </span>
                     </div>
                   </button>

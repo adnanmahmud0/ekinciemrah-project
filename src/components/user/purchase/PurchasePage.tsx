@@ -100,16 +100,22 @@ export default function PurchasePage({ product }: PurchasePageProps) {
                 <div className="mb-6">
                   <div className="flex items-baseline gap-3 mb-2">
                     <span className="text-4xl font-bold text-[#146041]">
-                      $ {product.basePrice.toFixed(2)}
+                      $ {(product.price ?? product.basePrice).toFixed(2)}
                     </span>
                     <span className="text-gray-400">/{product.unit}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-gray-400 line-through">
-                      $ {(product.basePrice * 1.4).toFixed(2)}
+                      $ {((product.price ?? product.basePrice) * 1.4).toFixed(
+                        2,
+                      )}
                     </span>
                     <span className="text-green-600 font-semibold">
-                      -$ {(product.basePrice * 0.4).toFixed(2)} (save)
+                      -$
+                      {(
+                        (product.price ?? product.basePrice) * 0.4
+                      ).toFixed(2)}{" "}
+                      (save)
                     </span>
                   </div>
                 </div>

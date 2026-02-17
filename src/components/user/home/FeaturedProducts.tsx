@@ -38,12 +38,12 @@ export default function FeaturedProducts() {
 
   const products: Product[] =
     featureData?.data
-      ?.filter((item: any) => item.product) // Filter out items with missing product data
+      ?.filter((item: any) => item.product)
       .map((item: any) => ({
         id: item.product._id,
         name: item.product.productName,
         description: item.product.description || "",
-        price: item.product.basePrice,
+        price: item.product.price ?? item.product.basePrice,
         image: getImageUrl(item.product.image),
         availability: item.product.stock > 0 ? "in-stock" : "stock-out",
       })) || [];

@@ -15,6 +15,7 @@ interface Product {
   productName: string;
   description: string;
   basePrice: number;
+  price?: number;
   image: string;
   status: "Available" | "Unavailable";
   category: string;
@@ -26,9 +27,13 @@ export default function BuyItAgain() {
   const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
-  const { data: productsData } = useApi("/product&catelog", ["products"], {
-    enabled: true,
-  });
+  const { data: productsData } = useApi(
+    "/product&catelog/customer-type",
+    ["products", "customer-type"],
+    {
+      enabled: true,
+    },
+  );
 
   const allProducts: Product[] = productsData?.data?.data || [];
   const displayProducts = allProducts.slice(0, 16);
@@ -133,7 +138,7 @@ export default function BuyItAgain() {
                       className="text-lg font-bold"
                       style={{ color: "#004F3B" }}
                     >
-                      ${product.basePrice.toFixed(2)}
+                      ${(product.price ?? product.basePrice).toFixed(2)}
                     </span>
                     <span
                       className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
@@ -142,7 +147,9 @@ export default function BuyItAgain() {
                           : "bg-red-50 text-red-600"
                       }`}
                     >
-                      {product.status === "Available" ? "In stock" : "Stock out"}
+                      {product.status === "Available"
+                        ? "In stock"
+                        : "Stock out"}
                     </span>
                   </div>
 

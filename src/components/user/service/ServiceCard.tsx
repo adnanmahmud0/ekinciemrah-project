@@ -13,6 +13,7 @@ export interface Product {
   productName: string;
   description: string;
   basePrice: number;
+  price?: number;
   image: string;
   status?: "Available" | "Unavailable";
   category: string;
@@ -34,7 +35,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
   const { triggerFlyAnimation } = useFlyAnimation();
   const [isAnimating, setIsAnimating] = React.useState(false);
   const isFav = isFavourite(product._id);
-  const displayPrice = product.basePrice;
+  const displayPrice = product.price ?? product.basePrice;
   const isAvailable = product.stock > 0;
 
   const getImageUrl = (path: string | undefined) => {
