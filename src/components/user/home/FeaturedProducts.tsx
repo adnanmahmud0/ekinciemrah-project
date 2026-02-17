@@ -9,6 +9,7 @@ import { useApi } from "@/hooks/use-api-data";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useCart } from "@/hooks/use-cart";
 import { useFlyAnimation } from "@/context/fly-animation-context";
+import { useAuth } from "@/context/auth-context";
 
 // Helper to get image URL
 const getImageUrl = (path: string | undefined) => {
@@ -29,9 +30,43 @@ interface Product {
 }
 
 export default function FeaturedProducts() {
+  const { user } = useAuth();
+  const userCustomerType = (user?.customerType || user?.customer_type || "")
+    .toString()
+    .toLowerCase();
+
   const { data: featureData, isLoading } = useApi("/feature-product", [
     "feature-products",
   ]);
+
+  const getUserPrice = (product: any): number => {
+    const customerTypePrice = product.customerTypePrice as
+      | { categoryName: string; price: string }[]
+      | undefined;
+
+    if (customerTypePrice && userCustomerType) {
+      const match = customerTypePrice.find(
+        (cp) => cp.categoryName.toLowerCase() === userCustomerType,
+      );
+      if (match) {
+        const parsed = parseFloat(match.price);
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+      }
+    }
+
+    if (typeof product.price === "number") {
+      return product.price;
+    }
+    if (typeof product.price === "string" && product.price.trim() !== "") {
+      const parsed = parseFloat(product.price);
+      if (!Number.isNaN(parsed)) {
+        return parsed;
+      }
+    }
+    return product.basePrice;
+  };
   const { toggleFavourite, isFavourite } = useFavourite();
   const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
@@ -43,7 +78,7 @@ export default function FeaturedProducts() {
         id: item.product._id,
         name: item.product.productName,
         description: item.product.description || "",
-        price: item.product.price ?? item.product.basePrice,
+        price: getUserPrice(item.product),
         image: getImageUrl(item.product.image),
         availability: item.product.stock > 0 ? "in-stock" : "stock-out",
       })) || [];
