@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  IconCheck,
-  IconX,
-  IconUser,
-} from "@tabler/icons-react";
+import { IconCheck, IconX, IconUser } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,31 +15,40 @@ import { Badge } from "@/components/ui/badge";
 
 export interface OrderItem {
   product: string;
-  quantity: string;
-  price: string;
-  total: string;
+  sku: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
 }
 
-export interface UserInfo {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  deliveryDate: string;
+export interface AddressInfo {
+  line1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
 }
 
 export interface Order {
-  id: number;
+  id: string;
   orderId: string;
-  customer: string;
-  date: string;
-  items: number;
-  total: string;
-  invoice: string;
+  customerName: string;
+  customerEmail: string;
+  userPhone?: string;
+  orderDate: string;
+  itemsCount: number;
+  subtotal: number;
+  tax: number;
+  shippingCost: number;
+  totalAmount: number;
   status: string;
-  orderItems?: OrderItem[];
-  userInfo?: UserInfo;
-  paymentType?: "online pay" | "credit" | "cash on delevary" | string;
+  paymentStatus: string;
+  invoiceNumber?: string;
+  paymentLink?: string;
+  items: OrderItem[];
+  shippingAddress: AddressInfo;
+  billingAddress: AddressInfo;
+  notes?: string;
 }
 
 interface OrderDetailsDialogProps {
@@ -52,30 +57,25 @@ interface OrderDetailsDialogProps {
 }
 
 export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) {
-  const orderItems = order.orderItems || [
-    { product: "Tomatoes", quantity: "50/ Pound", price: "$2.50", total: "$125.00" }
-  ];
-  
-  const userInfo = order.userInfo || {
-    name: "Jhon Doe",
-    email: "jhon145@gmail.com",
-    phone: "01745....",
-    address: "Dhaka Gulsan House #12",
-    deliveryDate: "20/01/2026"
-  };
+  const orderItems = order.items || [];
 
-  const displayStatus =
-    order.status === "Generated" || order.status === "Not-Generated"
-      ? "Pending"
-      : order.status;
+  const formatMoney = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(value);
 
-  function handleApprove() {
-    // Logic to approve order
-  }
+  const shippingAddress = order.shippingAddress;
+  const billingAddress = order.billingAddress;
 
-  function handleReject() {
-    // Logic to reject order
-  }
+  const userName = order.customerName;
+  const userEmail = order.customerEmail;
+  const userPhone = order.userPhone || "Not available";
+  const userAddress = shippingAddress
+    ? `${shippingAddress.line1}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postalCode}, ${shippingAddress.country}`
+    : "Not available";
+
+  const displayStatus = order.status;
 
   return (
     <Dialog>
@@ -91,19 +91,27 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
             {/* Top Info Grid */}
             <div className="grid grid-cols-2 gap-y-4 gap-x-8">
                 <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Order Number</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Order Number
+                    </p>
                     <p className="font-bold text-lg">{order.orderId}</p>
                 </div>
                 <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Date</p>
-                    <p className="font-bold text-lg">{order.date}</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Order Date
+                    </p>
+                    <p className="font-bold text-lg">{order.orderDate}</p>
                 </div>
                 <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Business Type</p>
-                    <p className="font-bold text-lg">{order.customer}</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Customer Name
+                    </p>
+                    <p className="font-bold text-lg">{order.customerName}</p>
                 </div>
                 <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Status</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Status
+                    </p>
                     <Badge
                       variant="outline"
                       className={
@@ -119,35 +127,67 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
                         {displayStatus}
                     </Badge>
                 </div>
-                <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Payment Type</p>
-                    <p className="font-bold text-lg capitalize">{order.paymentType || "N/A"}</p>
-                </div>
             </div>
 
             {/* Order Items */}
             <div className="">
-                <h3 className="text-teal-700 font-medium mb-4 text-base">Order items</h3>
+                <h3 className="text-teal-700 font-medium mb-4 text-base">
+                  Order items
+                </h3>
                 <div className="border rounded-lg p-4 bg-card shadow-sm">
-                    <div className="grid grid-cols-4 text-xs font-semibold text-teal-700 uppercase tracking-wider mb-2">
+                    <div className="grid grid-cols-5 text-xs font-semibold text-teal-700 uppercase tracking-wider mb-2">
                         <div>PRODUCT</div>
-                        <div>QUANTITY</div>
+                        <div>ITEM SKU</div>
+                        <div className="text-right">QUANTITY</div>
                         <div className="text-right">PRICE</div>
                         <div className="text-right">TOTAL</div>
                     </div>
                     <div className="border-t border-dashed my-3"></div>
                     {orderItems.map((item, index) => (
-                        <div key={index} className="grid grid-cols-4 text-sm items-center py-1">
-                            <div className="font-medium text-gray-700">{item.product}</div>
-                            <div className="text-gray-500">{item.quantity}</div>
-                            <div className="text-right text-gray-700">{item.price}</div>
-                            <div className="text-right font-medium text-gray-900">{item.total}</div>
+                        <div key={index} className="grid grid-cols-5 text-sm items-center py-1">
+                            <div className="font-medium text-gray-700">
+                              {item.product}
+                            </div>
+                            <div className="text-gray-500">{item.sku}</div>
+                            <div className="text-right text-gray-700">
+                              {item.quantity}
+                            </div>
+                            <div className="text-right text-gray-700">
+                              {formatMoney(item.unitPrice)}
+                            </div>
+                            <div className="text-right font-medium text-gray-900">
+                              {formatMoney(item.totalPrice)}
+                            </div>
                         </div>
                     ))}
                     <div className="border-t my-3"></div>
-                    <div className="flex justify-end items-center gap-2 text-sm">
-                         <span className="font-bold text-teal-700">Total :</span>
-                         <span className="font-bold text-gray-900">{order.total}</span>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-end items-center gap-2">
+                        <span className="text-teal-700 font-medium">
+                          Subtotal:
+                        </span>
+                        <span className="font-semibold text-gray-900">
+                          {formatMoney(order.subtotal)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end items-center gap-2">
+                        <span className="text-gray-700">Tax:</span>
+                        <span className="text-gray-900">
+                          {formatMoney(order.tax)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end items-center gap-2">
+                        <span className="text-gray-700">Shipping:</span>
+                        <span className="text-gray-900">
+                          {formatMoney(order.shippingCost)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end items-center gap-2">
+                        <span className="font-bold text-teal-700">Total:</span>
+                        <span className="font-bold text-gray-900">
+                          {formatMoney(order.totalAmount)}
+                        </span>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -156,55 +196,47 @@ export function OrderDetailsDialog({ order, trigger }: OrderDetailsDialogProps) 
             <div className="border rounded-lg p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b">
                     <IconUser className="h-5 w-5 text-teal-700" />
-                    <h3 className="text-teal-700 font-medium text-lg">User Information</h3>
+                    <h3 className="text-teal-700 font-medium text-lg">
+                      User Information
+                    </h3>
                 </div>
                 
                 <div className="grid gap-3 text-sm">
                     <div className="grid grid-cols-[120px_1fr] gap-2 items-center">
-                        <span className="font-medium text-gray-700">User Name :</span>
-                        <span className="text-teal-600 font-medium">{userInfo.name}</span>
+                        <span className="font-medium text-gray-700">
+                          User Name :
+                        </span>
+                        <span className="text-teal-600 font-medium">
+                          {userName}
+                        </span>
                     </div>
                     <div className="grid grid-cols-[120px_1fr] gap-2 items-center">
-                        <span className="font-medium text-gray-700">Email :</span>
-                        <span className="text-teal-600 font-medium">{userInfo.email}</span>
+                        <span className="font-medium text-gray-700">
+                          Email :
+                        </span>
+                        <span className="text-teal-600 font-medium">
+                          {userEmail}
+                        </span>
                     </div>
                     <div className="grid grid-cols-[120px_1fr] gap-2 items-center">
-                        <span className="font-medium text-gray-700">Phone Number :</span>
-                        <span className="text-teal-600 font-medium">{userInfo.phone}</span>
+                        <span className="font-medium text-gray-700">
+                          Phone Number :
+                        </span>
+                        <span className="text-teal-600 font-medium">
+                          {userPhone}
+                        </span>
                     </div>
                     <div className="grid grid-cols-[120px_1fr] gap-2 items-start">
-                        <span className="font-medium text-gray-700">Address:</span>
-                        <span className="text-teal-600 font-medium">{userInfo.address}</span>
-                    </div>
-                     <div className="grid grid-cols-[120px_1fr] gap-2 items-center">
-                        <span className="font-medium text-gray-700">Delivery Date:</span>
-                        <span className="text-teal-600 font-medium">{userInfo.deliveryDate}</span>
+                        <span className="font-medium text-gray-700">
+                          Address:
+                        </span>
+                        <span className="text-teal-600 font-medium">
+                          {userAddress}
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <DialogFooter className="flex flex-row gap-4 w-full sm:justify-between">
-            <DialogClose asChild>
-              <Button
-                className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white h-11 text-base"
-                onClick={handleApprove}
-              >
-                <IconCheck className="h-5 w-5 mr-2" />
-                Approve Order
-              </Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button
-                variant="destructive"
-                className="flex-1 bg-[#FF0000] hover:bg-[#CC0000] h-11 text-base"
-                onClick={handleReject}
-              >
-                <IconX className="h-5 w-5 mr-2" />
-                Reject Order
-              </Button>
-            </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

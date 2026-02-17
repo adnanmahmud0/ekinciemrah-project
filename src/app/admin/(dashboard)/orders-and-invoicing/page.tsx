@@ -1,16 +1,123 @@
+"use client";
+
 import { DataTable } from "@/components/datatable/DataTable";
 import { PageHeader } from "@/components/page-header";
 import { columns } from "./columns";
-import data from "./data.json";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useApi } from "@/hooks/use-api-data";
+import type { ApiResponse } from "@/services/auth.service";
+import type { Order } from "@/components/dialog/order-details-dialog";
 
-export default function page() {
+interface BackendOrderUser {
+  _id: string;
+  name?: string;
+  businessName?: string;
+  email?: string;
+  contact?: string;
+}
+
+interface BackendOrderItem {
+  productId: {
+    _id: string;
+    sku?: string;
+  };
+  name: string;
+  sku: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+interface BackendOrderAddress {
+  line1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+interface BackendOrder {
+  _id: string;
+  orderNumber: string;
+  userId: BackendOrderUser;
+  items: BackendOrderItem[];
+  subtotal: number;
+  tax: number;
+  shippingCost: number;
+  totalAmount: number;
+  status: string;
+  paymentStatus: string;
+  dueDate?: string;
+  shippingAddress: BackendOrderAddress;
+  billingAddress: BackendOrderAddress;
+  notes?: string;
+  createdAt: string;
+  invoiceNumber?: string;
+  paymentLink?: string;
+}
+
+type OrdersResponse = ApiResponse<BackendOrder[]>;
+
+function mapBackendOrderToOrder(order: BackendOrder): Order {
+  const items = order.items || [];
+
+  return {
+    id: order._id,
+    orderId: order.orderNumber,
+    customerName:
+      order.userId?.businessName ||
+      order.userId?.name ||
+      order.userId?._id ||
+      "Unknown customer",
+    customerEmail: order.userId?.email || "Unknown email",
+    userPhone: order.userId?.contact,
+    orderDate: new Date(order.createdAt).toLocaleDateString(),
+    itemsCount: items.length,
+    subtotal: order.subtotal,
+    tax: order.tax,
+    shippingCost: order.shippingCost,
+    totalAmount: order.totalAmount,
+    status: order.status,
+    paymentStatus: order.paymentStatus,
+    invoiceNumber: order.invoiceNumber,
+    paymentLink: order.paymentLink,
+    items: items.map((item) => ({
+      product: item.name,
+      sku: item.sku,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+    })),
+    shippingAddress: order.shippingAddress,
+    billingAddress: order.billingAddress,
+    notes: order.notes,
+  };
+}
+
+export default function OrdersAndInvoicingPage() {
+  const { data, isLoading } = useApi<OrdersResponse>(
+    "/orders/admin/all",
+    ["orders"],
+  );
+
+  const backendOrders = data?.data || [];
+  const orders: Order[] = backendOrders.map(mapBackendOrderToOrder);
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Orders & Invoicing Management"
         description="View and manage your orders and invoices"
       />
-      <DataTable columns={columns} data={data} searchKey="orderId" />
+
+      {isLoading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      ) : (
+        <DataTable columns={columns} data={orders} searchKey="orderId" />
+      )}
     </div>
   );
 }

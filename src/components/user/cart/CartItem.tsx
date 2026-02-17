@@ -13,6 +13,7 @@ export interface CartItem {
   price: number;
   unit: string;
   quantity: number;
+  quickbooksItemId?: string;
 }
 
 interface CartItemProps {

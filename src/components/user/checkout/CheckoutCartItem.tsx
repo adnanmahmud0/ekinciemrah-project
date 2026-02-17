@@ -59,6 +59,7 @@ export default function CheckoutCartItem({
       {/* Quantity Controls */}
       <div className="flex items-center gap-2">
         <button
+          type="button"
           onClick={() => handleQuantityChange(-1)}
           className="w-7 h-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center text-[#146041] transition-colors"
         >
@@ -68,6 +69,7 @@ export default function CheckoutCartItem({
           {item.quantity}
         </span>
         <button
+          type="button"
           onClick={() => handleQuantityChange(1)}
           className="w-7 h-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center text-[#146041] transition-colors"
         >
@@ -77,6 +79,7 @@ export default function CheckoutCartItem({
 
       {/* Delete Button */}
       <button
+        type="button"
         onClick={() => onRemove(item.id)}
         className="p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg transition-colors"
       >

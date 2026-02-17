@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDotsVertical, IconDownload } from "@tabler/icons-react";
+import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,77 +11,108 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { OrderDetailsDialog } from "@/components/dialog/order-details-dialog";
+import {
+  OrderDetailsDialog,
+  type Order,
+} from "@/components/dialog/order-details-dialog";
+import { useApi } from "@/hooks/use-api-data";
+import { toast } from "sonner";
 
-export type Order = {
-  id: number;
-  orderId: string;
-  customer: string;
-  date: string;
-  items: number;
-  total: string;
-  invoice: string;
-  status: string;
-  orderItems?: {
-    product: string;
-    quantity: string;
-    price: string;
-    total: string;
-  }[];
-  userInfo?: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    deliveryDate: string;
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+}
+
+function OrderActionsCell({ order }: { order: Order }) {
+  const { patch } = useApi("/orders", ["orders"]);
+
+  const updateStatus = async (status: "ACCEPTED" | "CANCELLED") => {
+    try {
+      await patch(`/orders/${order.id}`, { status });
+      toast.success(
+        status === "ACCEPTED"
+          ? "Order accepted successfully"
+          : "Order cancelled successfully",
+      );
+    } catch {
+      toast.error("Failed to update order status. Please try again.");
+    }
   };
-  paymentType?: "online pay" | "credit" | "cash on delevary" | string;
-};
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <IconDotsVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <OrderDetailsDialog
+          order={order}
+          trigger={
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              View Details
+            </DropdownMenuItem>
+          }
+        />
+        <DropdownMenuItem
+          onSelect={async (e) => {
+            e.preventDefault();
+            await updateStatus("ACCEPTED");
+          }}
+        >
+          Accept Order
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={async (e) => {
+            e.preventDefault();
+            await updateStatus("CANCELLED");
+          }}
+        >
+          Cancel Order
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "orderId",
-    header: "Order Id",
+    header: "Order ID",
   },
   {
-    accessorKey: "customer",
-    header: "Customer",
+    accessorKey: "customerName",
+    header: "Customer Name",
   },
   {
-    accessorKey: "paymentType",
-    header: "Payment Type",
-    cell: ({ row }) => {
-        const type = row.getValue("paymentType") as string;
-        return (
-            <div className="capitalize">{type}</div>
-        )
-    }
+    accessorKey: "customerEmail",
+    header: "Customer Email",
   },
   {
-    accessorKey: "date",
-    header: "Date",
+    accessorKey: "orderDate",
+    header: "Order Date",
   },
   {
-    accessorKey: "items",
+    accessorKey: "itemsCount",
     header: "Items",
   },
   {
-    accessorKey: "total",
+    accessorKey: "totalAmount",
     header: "Total",
-  },
-  {
-    accessorKey: "invoice",
-    header: "Invoice",
+    cell: ({ row }) => {
+      const total = row.getValue("totalAmount") as number;
+      return <span>{formatMoney(total)}</span>;
+    },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const rawStatus = row.getValue("status") as string;
-      const status =
-        rawStatus === "Generated" || rawStatus === "Not-Generated"
-          ? "Pending"
-          : rawStatus;
+      const status = row.getValue("status") as string;
       return (
         <div className="flex justify-center">
           <Badge
@@ -89,11 +120,11 @@ export const columns: ColumnDef<Order>[] = [
             className={
               status === "Pending"
                 ? "border-yellow-500 text-yellow-600 bg-yellow-50"
-                : status === "Approved"
-                ? "border-green-500 text-green-600 bg-green-50"
-                : status === "Rejected"
-                ? "border-red-500 text-red-600 bg-red-50"
-                : "border-gray-300 text-gray-700 bg-gray-50"
+                : status === "ACCEPTED"
+                  ? "border-green-500 text-green-600 bg-green-50"
+                  : status === "CANCELLED"
+                    ? "border-red-500 text-red-600 bg-red-50"
+                    : "border-gray-300 text-gray-700 bg-gray-50"
             }
           >
             {status}
@@ -107,33 +138,7 @@ export const columns: ColumnDef<Order>[] = [
     header: "Action",
     cell: ({ row }) => {
       const order = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <IconDotsVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <OrderDetailsDialog
-              order={order}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  View Details
-                </DropdownMenuItem>
-              }
-            />
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <div className="flex items-center gap-2">
-                <IconDownload className="h-4 w-4" />
-                <span>Download Invoice</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <OrderActionsCell order={order} />;
     },
   },
 ];

@@ -16,6 +16,7 @@ export interface CartItemProduct {
   description: string;
   stock: number;
   sku?: string;
+  quickbooksItemId?: string;
 }
 
 export interface CartItem {
