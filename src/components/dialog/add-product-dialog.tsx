@@ -160,20 +160,19 @@ export function AddProductDialog({ product, trigger }: AddProductDialogProps) {
     const submitData = new FormData();
     submitData.append("productName", formData.productName);
     submitData.append("description", formData.description);
-    // Find the selected category object to get its name
-    const selectedCategory = categories.find(
-      (c) => c._id === formData.category,
-    );
+    // Find the selected category object to get its ID and name
+    const selectedCategory =
+      categories.find((c) => c._id === formData.category) ||
+      categories.find((c) => c.categoryName === formData.category);
 
-    // Append 'category' with the Name (as shown in your screenshot)
     if (selectedCategory) {
       submitData.append("category", selectedCategory.categoryName);
+      submitData.append("categoryId", selectedCategory._id);
     } else {
-      submitData.append("category", formData.category); // Fallback
+      // Fallback: keep previous behavior if we somehow don't find a match
+      submitData.append("category", formData.category);
+      submitData.append("categoryId", formData.category);
     }
-
-    // Append 'categoryId' with the ID (to fix the validation error)
-    submitData.append("categoryId", formData.category);
 
     submitData.append("unit", formData.unit);
     submitData.append("basePrice", formData.basePrice);
