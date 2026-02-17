@@ -67,108 +67,106 @@ export default function BuyItAgain() {
         {/* Products Grid - 2 rows x 8 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
           {displayProducts.map((product) => (
-            <div
+            <Link
               key={product._id}
-              className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col"
+              href={`/service/${product._id}`}
+              className="block"
             >
-              {/* Product Image */}
-              <div className="relative h-40 bg-gray-100">
-                <Image
-                  src={getImageUrl(product.image)}
-                  alt={product.productName}
-                  fill
-                  unoptimized
-                  className="object-contain p-4"
-                />
-                {/* Favourite Button */}
-                <button
-                  className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors shadow-sm ${
-                    isFavourite(product._id)
-                      ? "bg-red-50 text-red-500 hover:bg-red-100"
-                      : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
-                  } ${animatingIds.has(product._id) ? "animate-pop" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!isFavourite(product._id)) {
-                      setAnimatingIds((prev) => {
-                        const next = new Set(prev);
-                        next.add(product._id);
-                        return next;
-                      });
+              <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
+                <div className="relative h-40 bg-gray-100">
+                  <Image
+                    src={getImageUrl(product.image)}
+                    alt={product.productName}
+                    fill
+                    unoptimized
+                    className="object-contain p-4"
+                  />
+                  <button
+                    className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors shadow-sm ${
+                      isFavourite(product._id)
+                        ? "bg-red-50 text-red-500 hover:bg-red-100"
+                        : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+                    } ${animatingIds.has(product._id) ? "animate-pop" : ""}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!isFavourite(product._id)) {
+                        setAnimatingIds((prev) => {
+                          const next = new Set(prev);
+                          next.add(product._id);
+                          return next;
+                        });
 
-                      // Trigger fly animation
+                        const rect = (
+                          e.currentTarget as HTMLElement
+                        ).getBoundingClientRect();
+                        triggerFlyAnimation(rect);
+
+                        setTimeout(() => {
+                          setAnimatingIds((prev) => {
+                            const next = new Set(prev);
+                            next.delete(product._id);
+                            return next;
+                          });
+                        }, 400);
+                      }
+                      toggleFavourite(product._id);
+                    }}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        isFavourite(product._id) ? "fill-current" : ""
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="p-3 flex-1 flex flex-col">
+                  <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-1">
+                    {product.productName}
+                  </h3>
+                  <p className="text-xs text-gray-600 mb-2 line-clamp-2 flex-1">
+                    {product.description}
+                  </p>
+
+                  <div className="mb-2 flex items-center justify-between">
+                    <span
+                      className="text-lg font-bold"
+                      style={{ color: "#004F3B" }}
+                    >
+                      ${product.basePrice.toFixed(2)}
+                    </span>
+                    <span
+                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        product.status === "Available"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-red-50 text-red-600"
+                      }`}
+                    >
+                      {product.status === "Available" ? "In stock" : "Stock out"}
+                    </span>
+                  </div>
+
+                  <Button
+                    className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
+                    style={{ backgroundColor: "#004F3B" }}
+                    size="sm"
+                    disabled={product.status !== "Available"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addToCart(product._id, 1, { validateDuplicate: true });
+
                       const rect = (
                         e.currentTarget as HTMLElement
                       ).getBoundingClientRect();
                       triggerFlyAnimation(rect);
-
-                      setTimeout(() => {
-                        setAnimatingIds((prev) => {
-                          const next = new Set(prev);
-                          next.delete(product._id);
-                          return next;
-                        });
-                      }, 400);
-                    }
-                    toggleFavourite(product._id);
-                  }}
-                >
-                  <Heart
-                    className={`w-4 h-4 ${isFavourite(product._id) ? "fill-current" : ""}`}
-                  />
-                </button>
-              </div>
-
-              {/* Product Info */}
-              <div className="p-3 flex-1 flex flex-col">
-                <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-1">
-                  {product.productName}
-                </h3>
-                <p className="text-xs text-gray-600 mb-2 line-clamp-2 flex-1">
-                  {product.description}
-                </p>
-
-                {/* Price & Availability */}
-                <div className="mb-2 flex items-center justify-between">
-                  <span
-                    className="text-lg font-bold"
-                    style={{ color: "#004F3B" }}
+                    }}
                   >
-                    ${product.basePrice.toFixed(2)}
-                  </span>
-                  <span
-                    className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                      product.status === "Available"
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "bg-red-50 text-red-600"
-                    }`}
-                  >
-                    {product.status === "Available" ? "In stock" : "Stock out"}
-                  </span>
+                    <ShoppingCart className="w-3 h-3" />
+                    Add to Cart
+                  </Button>
                 </div>
-
-                {/* Add to Cart Button */}
-                <Button
-                  className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
-                  style={{ backgroundColor: "#004F3B" }}
-                  size="sm"
-                  disabled={product.status !== "Available"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addToCart(product._id, 1, { validateDuplicate: true });
-
-                    // Trigger fly animation
-                    const rect = (
-                      e.currentTarget as HTMLElement
-                    ).getBoundingClientRect();
-                    triggerFlyAnimation(rect);
-                  }}
-                >
-                  <ShoppingCart className="w-3 h-3" />
-                  Add to Cart
-                </Button>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

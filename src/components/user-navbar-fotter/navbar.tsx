@@ -3,6 +3,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -34,10 +36,39 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Ticket, Copy, Check, Search } from "lucide-react";
-import { toast } from "sonner";
+import { Search } from "lucide-react";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useCart } from "@/hooks/use-cart";
+import { useApi } from "@/hooks/use-api-data";
+import { useDebounce } from "@/hooks/use-debounce";
+
+interface SearchProduct {
+  _id: string;
+  productName: string;
+  image: string;
+  basePrice: number;
+}
+
+interface SearchResponse {
+  success: boolean;
+  message: string;
+  data: {
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+    };
+    data: SearchProduct[];
+  };
+}
+
+const getImageUrl = (path: string | undefined) => {
+  if (!path) return "/placeholder.png";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/"))
+    return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}${path}`;
+  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "")}/${path}`;
+};
 
 const SOCIAL_LINKS = [
   { icon: Facebook, href: "#" },
@@ -53,24 +84,41 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
-const PROMO_CODES = [
-  { code: "FRESH25", discount: "25% OFF" },
-  { code: "UNIFIED10", discount: "10% OFF" },
-];
-
 export default function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const { user, isAuthenticated, logout } = useAuth();
   const { favouriteList, isLoading } = useFavourite();
   const { cartCount, isLoading: isCartLoading } = useCart();
   const [isBumpAnimating, setIsBumpAnimating] = useState(false);
   const [isCartBumpAnimating, setIsCartBumpAnimating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchQuery, setMobileSearchQuery] = useState("");
   const prevCountRef = useRef(0);
   const prevCartCountRef = useRef(0);
   const isFirstRender = useRef(true);
   const isFirstCartRender = useRef(true);
+
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  const suggestionsEnabled = debouncedSearchQuery.trim().length > 0;
+
+  const { data: searchResponse } = useApi<SearchResponse>(
+    suggestionsEnabled
+      ? `/product&catelog?search=${encodeURIComponent(debouncedSearchQuery.trim())}`
+      : undefined,
+    suggestionsEnabled
+      ? ["global-search", debouncedSearchQuery.trim()]
+      : undefined,
+    {
+      enabled: suggestionsEnabled,
+      staleTime: 10000,
+    },
+  );
+
+  const suggestions: SearchProduct[] =
+    searchResponse?.data?.data?.slice(0, 6) || [];
 
   useEffect(() => {
     // Skip animation on initial load or if loading
@@ -114,14 +162,16 @@ export default function Navbar() {
     prevCartCountRef.current = cartCount;
   }, [cartCount, isCartLoading]);
 
-  const handleCopyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    toast.success(`Promo code ${code} selected!`, {
-      description: "Code has been copied to your clipboard.",
-      duration: 2000,
-    });
-    setTimeout(() => setCopiedCode(null), 2000);
+  const handleGlobalSearch = (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    router.push(`/service?search=${encodeURIComponent(trimmed)}`);
+  };
+
+  const handleSelectSuggestion = (product: SearchProduct) => {
+    setSearchQuery(product.productName);
+    setMobileSearchQuery(product.productName);
+    router.push(`/service/${product._id}`);
   };
 
   return (
@@ -284,20 +334,54 @@ export default function Navbar() {
       <div className="sm:px-10 px-4 py-3 border-t border-white/10">
         <div className="container mx-auto">
           <div className="hidden lg:grid grid-cols-3 items-center w-full">
-            {/* Left: Search Input */}
             <div className="flex justify-start">
-              <div className="relative group w-full max-w-55 focus-within:max-w-95 transition-all duration-500 ease-in-out">
-                <Search
-                  className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-all duration-300 ${copiedCode ? "text-white/30" : "text-white/50 group-focus-within:text-primary group-focus-within:scale-110"}`}
-                />
+              <form
+                className="relative group w-full max-w-55 focus-within:max-w-95 transition-all duration-500 ease-in-out"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleGlobalSearch(searchQuery);
+                }}
+              >
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-all duration-300 text-white/50 group-focus-within:text-primary group-focus-within:scale-110" />
                 <input
                   type="text"
                   placeholder="Search fresh produce..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-2xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:bg-white/15 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] focus:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
                 />
-                {/* Visual indicator for search field expansion */}
                 <div className="absolute inset-0 rounded-2xl border border-white/0 group-focus-within:border-white/20 pointer-events-none transition-all duration-500" />
-              </div>
+                {searchQuery.trim().length > 0 && suggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 max-h-80 overflow-y-auto z-50">
+                    {suggestions.map((product) => (
+                      <button
+                        key={product._id}
+                        type="button"
+                        onClick={() => handleSelectSuggestion(product)}
+                        className="w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-gray-50"
+                      >
+                        <div className="relative h-9 w-9 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          <Image
+                            src={getImageUrl(product.image)}
+                            alt={product.productName}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 flex items-center justify-between gap-3">
+                          <span className="text-sm text-gray-800 line-clamp-1">
+                            {product.productName}
+                          </span>
+                          <span className="text-xs font-semibold text-[#004F3B]">
+                            ${product.basePrice.toFixed(2)}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </form>
             </div>
 
             {/* Center: Desktop Menu */}
@@ -313,39 +397,7 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Right: Promo Codes */}
-            <div className="flex justify-end items-center gap-3">
-              <div className="flex items-center gap-3">
-                {PROMO_CODES.map((promo) => (
-                  <button
-                    key={promo.code}
-                    onClick={() => handleCopyCode(promo.code)}
-                    className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 border-dashed transition-all duration-300 ${
-                      copiedCode === promo.code
-                        ? "bg-white border-white text-primary scale-105"
-                        : "border-white/20 text-white hover:border-white/50 hover:bg-white/10"
-                    }`}
-                  >
-                    <Ticket
-                      className={`w-3.5 h-3.5 ${copiedCode === promo.code ? "text-primary" : "text-white/60 group-hover:text-white"}`}
-                    />
-                    <div className="flex flex-col items-start leading-none">
-                      <span className="text-[9px] font-black uppercase opacity-70">
-                        {promo.discount}
-                      </span>
-                      <span className="text-xs font-black tracking-wider">
-                        {promo.code}
-                      </span>
-                    </div>
-                    {copiedCode === promo.code ? (
-                      <Check className="w-3 h-3 text-primary animate-in zoom-in" />
-                    ) : (
-                      <Copy className="w-3 h-3 opacity-0 group-hover:opacity-40 transition-opacity" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <div />
           </div>
         </div>
 
@@ -356,8 +408,50 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Search items..."
+              value={mobileSearchQuery}
+              onChange={(e) => setMobileSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleGlobalSearch(mobileSearchQuery);
+                  setIsOpen(false);
+                }
+              }}
               className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:bg-white/10 transition-colors shadow-inner"
             />
+            {mobileSearchQuery.trim().length > 0 && suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 max-h-80 overflow-y-auto z-50">
+                {suggestions.map((product) => (
+                  <button
+                    key={product._id}
+                    type="button"
+                    onClick={() => {
+                      handleSelectSuggestion(product);
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-gray-50"
+                  >
+                    <div className="relative h-9 w-9 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                      <Image
+                        src={getImageUrl(product.image)}
+                        alt={product.productName}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 flex items-center justify-between gap-3">
+                      <span className="text-sm text-gray-800 line-clamp-1">
+                        {product.productName}
+                      </span>
+                      <span className="text-xs font-semibold text-[#004F3B]">
+                        ${product.basePrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu - using Sheet */}
@@ -403,36 +497,7 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-                <div className="mt-4 pt-6 border-t border-gray-100 flex flex-col gap-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    Active Offers
-                  </p>
-                  {PROMO_CODES.map((promo) => (
-                    <button
-                      key={promo.code}
-                      onClick={() => {
-                        handleCopyCode(promo.code);
-                        setIsOpen(false);
-                      }}
-                      className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 hover:border-primary hover:bg-primary/5 transition-all text-left"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 bg-white rounded-xl shadow-sm">
-                          <Ticket className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-xs font-bold text-primary">
-                            {promo.discount}
-                          </span>
-                          <span className="text-lg font-black text-[#1A2D42]">
-                            {promo.code}
-                          </span>
-                        </div>
-                      </div>
-                      <Copy className="w-5 h-5 text-gray-400" />
-                    </button>
-                  ))}
-                </div>
+                <div className="mt-4 pt-6 border-t border-gray-100 flex flex-col gap-4" />
               </nav>
             </SheetContent>
           </Sheet>

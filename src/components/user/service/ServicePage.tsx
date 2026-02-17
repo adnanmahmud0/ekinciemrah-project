@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ServiceSidebar from "./ServiceSidebar";
@@ -30,6 +30,7 @@ export default function ServicePage({
   const router = useRouter();
   const categoryParam = searchParams.get("category");
   const selectedCategory = categoryParam || "All Categories";
+  const searchParam = searchParams.get("search") || "";
 
   const handleSelectCategory = (category: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -41,8 +42,12 @@ export default function ServicePage({
     router.push(`/service?${params.toString()}`);
   };
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>(searchParam);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    setSearchTerm(searchParam);
+  }, [searchParam]);
 
   // Construct API URL based on filters
   let apiUrl = "/product&catelog";
@@ -87,6 +92,13 @@ export default function ServicePage({
             className="w-full max-w-xl"
             onSubmit={(e) => {
               e.preventDefault();
+              const params = new URLSearchParams(searchParams.toString());
+              if (searchTerm.trim()) {
+                params.set("search", searchTerm.trim());
+              } else {
+                params.delete("search");
+              }
+              router.push(`/service?${params.toString()}`);
             }}
           >
             <div className="relative flex w-full items-center gap-2">
