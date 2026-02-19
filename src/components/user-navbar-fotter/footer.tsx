@@ -17,9 +17,9 @@ const RESOURCES_LINKS = [
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Browse Services", href: "/services" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms of Condition", href: "/terms" },
+  { label: "Browse Services", href: "/service" },
+  { label: "Privacy Policy", href: "/privacyPolicy" },
+  { label: "Terms & Conditions", href: "/terms-and-conditions" },
 ];
 
 export default function Footer() {
