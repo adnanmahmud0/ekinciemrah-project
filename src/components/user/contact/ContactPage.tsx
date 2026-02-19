@@ -112,7 +112,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-[#EAF6F6]/90 backdrop-blur-sm overflow-hidden flex flex-col lg:flex-row shadow-lg ring-1 ring-[#CDE4E4]">
+        {/* <div className="rounded-3xl bg-[#EAF6F6]/90 backdrop-blur-sm overflow-hidden flex flex-col lg:flex-row shadow-lg ring-1 ring-[#CDE4E4]">
           <div className="lg:w-1/2 p-8 md:p-10 lg:p-12">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
               Send us a message
@@ -191,7 +191,7 @@ export default function ContactPage() {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
