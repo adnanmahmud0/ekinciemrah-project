@@ -36,8 +36,6 @@ export default function PromotionalBanners() {
     [bannerData],
   );
 
-  const isLocalImage = (url: string) => url.includes("localhost");
-
   const carouselSlides = useMemo(
     () =>
       webBanners.length > 0
@@ -121,7 +119,7 @@ export default function PromotionalBanners() {
                   alt="Promotional Banner"
                   fill
                   className="object-cover"
-                  unoptimized={isLocalImage(carouselSlides[currentSlide].image)}
+                  unoptimized
                 />
               </div>
 
@@ -166,7 +164,7 @@ export default function PromotionalBanners() {
                 alt="Promotion 2"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
-                unoptimized={isLocalImage(rightBanner1)}
+                unoptimized
               />
             </div>
 
@@ -177,7 +175,7 @@ export default function PromotionalBanners() {
                 alt="Promotion 3"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
-                unoptimized={isLocalImage(rightBanner2)}
+                unoptimized
               />
             </div>
           </div>

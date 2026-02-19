@@ -19,13 +19,14 @@ export default function OfferBanners() {
     return `${baseUrl}/${path}`;
   };
 
-  const isLocalImage = (url: string) => url.includes("localhost");
+  const offerBanners =
+    webBanners.length >= 2 ? webBanners.slice(-2) : webBanners.slice(0, 2);
 
-  const banner1 = webBanners[4]
-    ? getImageUrl(webBanners[4].image, "/hero_market_display.png")
+  const banner1 = offerBanners[0]
+    ? getImageUrl(offerBanners[0].image, "/hero_market_display.png")
     : "/hero_market_display.png";
-  const banner2 = webBanners[5]
-    ? getImageUrl(webBanners[5].image, "/hero_delivery_handover.png")
+  const banner2 = offerBanners[1]
+    ? getImageUrl(offerBanners[1].image, "/hero_delivery_handover.png")
     : "/hero_delivery_handover.png";
 
   return (
@@ -39,7 +40,7 @@ export default function OfferBanners() {
               alt="Market Display Offer"
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
-              unoptimized={isLocalImage(banner1)}
+              unoptimized
             />
           </div>
 
@@ -50,7 +51,7 @@ export default function OfferBanners() {
               alt="Delivery Handover Offer"
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
-              unoptimized={isLocalImage(banner2)}
+              unoptimized
             />
           </div>
         </div>

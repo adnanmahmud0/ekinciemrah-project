@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useApi } from "@/hooks/use-api-data";
 import { BannerResponse } from "@/types/banner";
 import { toast } from "sonner";
+import { privateApi } from "@/lib/api-client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface BannerCardProps {
   label: string;
@@ -118,6 +120,7 @@ interface BannerState {
   file: File | null;
   preview: string;
   originalUrl?: string;
+  id?: string;
 }
 
 export default function BannerUpload() {
@@ -125,7 +128,6 @@ export default function BannerUpload() {
     data: bannerData,
     isLoading,
     post,
-    put,
   } = useApi<BannerResponse>("/banner", ["banners"]);
   const [banners, setBanners] = useState<BannerState[]>(
     Array(6).fill({ file: null, preview: "" }),
@@ -134,6 +136,7 @@ export default function BannerUpload() {
     Array(4).fill({ file: null, preview: "" }),
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (bannerData?.data) {
@@ -162,6 +165,7 @@ export default function BannerUpload() {
               file: null,
               preview: imageUrl,
               originalUrl: banner.image,
+              id: banner._id,
             } as BannerState;
           }
         });
@@ -196,6 +200,7 @@ export default function BannerUpload() {
               file: null,
               preview: imageUrl,
               originalUrl: banner.image,
+              id: banner._id,
             } as BannerState;
           }
         });
@@ -216,9 +221,26 @@ export default function BannerUpload() {
   };
 
   const handleRemove = (index: number) => {
+    const banner = banners[index];
     const newBanners = [...banners];
-    newBanners[index] = { file: null, preview: "" };
-    setBanners(newBanners);
+
+    if (banner?.id) {
+      privateApi
+        .delete(`/banner/web/${banner.id}`)
+        .then(() => {
+          toast.success("Web banner deleted successfully");
+          queryClient.invalidateQueries({ queryKey: ["banners"] });
+          newBanners[index] = { file: null, preview: "" };
+          setBanners(newBanners);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed to delete web banner");
+        });
+    } else {
+      newBanners[index] = { file: null, preview: "" };
+      setBanners(newBanners);
+    }
   };
 
   const handleMobileFileChange = (index: number, file: File | null) => {
@@ -233,9 +255,26 @@ export default function BannerUpload() {
   };
 
   const handleMobileRemove = (index: number) => {
+    const banner = mobileBanners[index];
     const newBanners = [...mobileBanners];
-    newBanners[index] = { file: null, preview: "" };
-    setMobileBanners(newBanners);
+
+    if (banner?.id) {
+      privateApi
+        .delete(`/banner/mobile/${banner.id}`)
+        .then(() => {
+          toast.success("Mobile banner deleted successfully");
+          queryClient.invalidateQueries({ queryKey: ["banners"] });
+          newBanners[index] = { file: null, preview: "" };
+          setMobileBanners(newBanners);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed to delete mobile banner");
+        });
+    } else {
+      newBanners[index] = { file: null, preview: "" };
+      setMobileBanners(newBanners);
+    }
   };
 
   const handleSubmit = async () => {
@@ -243,35 +282,24 @@ export default function BannerUpload() {
     try {
       const formData = new FormData();
 
-      // Web Banners
+      // Web Banners - only send new files, using backend field name "webBanner"
       banners.forEach((banner) => {
         if (banner.file) {
-          formData.append("webBanners", banner.file);
-        } else if (banner.originalUrl) {
-          // If keeping existing image, send the URL as a string.
-          // The backend should detect this is a string (not a file) and keep the old path.
-          formData.append("webBanners", banner.originalUrl);
-        } else {
-          // If empty, send an empty string so the index is preserved
-          // but the backend knows there's no image here.
-          formData.append("webBanners", "null");
+          formData.append("webBanner", banner.file);
         }
       });
 
-      // Mobile Banners
+      // Mobile Banners - only send new files, using backend field name "mobileBanner"
       mobileBanners.forEach((banner) => {
         if (banner.file) {
-          formData.append("mobileBanners", banner.file);
-        } else if (banner.originalUrl) {
-          formData.append("mobileBanners", banner.originalUrl);
-        } else {
-          formData.append("mobileBanners", "null");
+          formData.append("mobileBanner", banner.file);
         }
       });
 
-      await post("/banner/create-update", formData, {
+      await post("/banner", formData, {
         onSuccess: () => {
           toast.success("Banners saved successfully");
+          queryClient.invalidateQueries({ queryKey: ["banners"] });
         },
         onError: (err: unknown) => {
           console.error(err);
