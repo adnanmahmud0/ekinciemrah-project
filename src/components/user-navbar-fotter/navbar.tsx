@@ -90,7 +90,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const { favouriteList, isLoading } = useFavourite();
+  const { FavouriteList, isLoading } = useFavourite();
   const { cartCount, isLoading: isCartLoading } = useCart();
   const [isBumpAnimating, setIsBumpAnimating] = useState(false);
   const [isCartBumpAnimating, setIsCartBumpAnimating] = useState(false);
@@ -131,11 +131,11 @@ export default function Navbar() {
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      prevCountRef.current = favouriteList.length;
+      prevCountRef.current = FavouriteList.length;
       return;
     }
 
-    if (favouriteList.length > prevCountRef.current) {
+    if (FavouriteList.length > prevCountRef.current) {
       const startTimer = setTimeout(() => setIsBumpAnimating(true), 0);
       const endTimer = setTimeout(() => setIsBumpAnimating(false), 300);
       return () => {
@@ -143,8 +143,8 @@ export default function Navbar() {
         clearTimeout(endTimer);
       };
     }
-    prevCountRef.current = favouriteList.length;
-  }, [favouriteList.length, isLoading]);
+    prevCountRef.current = FavouriteList.length;
+  }, [FavouriteList.length, isLoading]);
 
   useEffect(() => {
     // Skip animation on initial load or if loading
@@ -215,7 +215,7 @@ export default function Navbar() {
         {/* Icons */}
         <div className="lg:absolute lg:right-10 flex items-center ml-auto gap-6 sm:gap-8">
           <Link
-            href="/favourite"
+            href="/Favourite"
             className="text-white hover:text-white/80 transition-colors relative"
           >
             <div id="navbar-wishlist-icon" className="relative">
@@ -226,13 +226,13 @@ export default function Navbar() {
                     : ""
                 }`}
               />
-              {favouriteList.length > 0 && (
+              {FavouriteList.length > 0 && (
                 <span
                   className={`absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full transition-transform duration-300 ${
                     isBumpAnimating ? "scale-125" : "scale-100"
                   }`}
                 >
-                  {favouriteList.length}
+                  {FavouriteList.length}
                 </span>
               )}
             </div>

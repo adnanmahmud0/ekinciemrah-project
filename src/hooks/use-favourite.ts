@@ -5,7 +5,7 @@ import { useApi } from "@/hooks/use-api-data";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth-context";
 
-// Define a minimal product interface for the favourite list
+// Define a minimal product interface for the Favourite list
 export interface FavouriteProduct {
   _id: string;
   productName: string;
@@ -31,21 +31,21 @@ interface FavouriteListResponse {
 export function useFavourite() {
   const { isAuthenticated } = useAuth();
 
-  // Fetch favourite list
+  // Fetch Favourite list
   const {
     data: response,
     isLoading,
     refetch,
   } = useApi<FavouriteListResponse>(
-    isAuthenticated ? "/favourite" : undefined,
-    isAuthenticated ? ["favourites"] : undefined
+    isAuthenticated ? "/Favourite" : undefined,
+    isAuthenticated ? ["Favourites"] : undefined,
   );
 
-  const favouriteList = response?.data || [];
+  const FavouriteList = response?.data || [];
   // Create a Set of IDs for O(1) lookup
   // Handle both flat structure (if any) and nested structure (item.product._id)
-  const favouriteIds = new Set(
-    favouriteList.map((item: any) => item.product?._id || item._id)
+  const FavouriteIds = new Set(
+    FavouriteList.map((item: any) => item.product?._id || item._id),
   );
 
   // Get post method from useApi
@@ -53,31 +53,34 @@ export function useFavourite() {
 
   const toggleFavourite = async (productId: string) => {
     if (!isAuthenticated) {
-      toast.error("Please login to add favourites");
+      toast.error("Please login to add Favourites", {
+        description:
+          "You need to be logged in to add products to your Favourites.",
+      });
       return;
     }
 
     try {
       await post(
-        "/favourite",
+        "/Favourite",
         { productId },
         {
           onSuccess: (res) => {
             // Check the new state from response data
             const isFav = res.data?.isFavourite;
             if (isFav) {
-              toast.success("Added to your favorite list.");
+              toast.success("Added to your Favourite list.");
             } else {
-              toast.success("Removed from favorite list.");
+              toast.success("Removed from Favourite list.");
             }
             refetch(); // Reload the list to ensure sync
           },
           onError: (err: any) => {
             toast.error(
-              err.response?.data?.message || "Failed to update favourite"
+              err.response?.data?.message || "Failed to update Favourite",
             );
           },
-        }
+        },
       );
     } catch (error) {
       // Error is handled in onError callback
@@ -85,11 +88,11 @@ export function useFavourite() {
   };
 
   const isFavourite = (productId: string) => {
-    return favouriteIds.has(productId);
+    return FavouriteIds.has(productId);
   };
 
   return {
-    favouriteList,
+    FavouriteList,
     isLoading,
     toggleFavourite,
     isFavourite,
