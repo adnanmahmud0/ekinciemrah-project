@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
@@ -46,10 +44,10 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
               status === "Pending"
                 ? "border-green-500 text-green-500 bg-green-500/10"
                 : status === "Verified"
-                ? "border-blue-500 text-blue-500 bg-blue-500/10"
-                : status === "Rejected"
-                ? "border-red-500 text-red-500 bg-red-500/10"
-                : ""
+                  ? "border-blue-500 text-blue-500 bg-blue-500/10"
+                  : status === "Rejected"
+                    ? "border-red-500 text-red-500 bg-red-500/10"
+                    : ""
             }
           >
             {status}

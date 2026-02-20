@@ -1,5 +1,3 @@
-// app/(user)/layout.tsx
-
 import Footer from "@/components/user-navbar-fotter/footer";
 import Navbar from "@/components/user-navbar-fotter/navbar";
 
@@ -10,9 +8,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
     <div className="relative flex min-h-screen flex-col bg-background">
       <Navbar />
 
-      <main className="flex-1 w-full">
-        {children}
-      </main>
+      <main className="flex-1 w-full">{children}</main>
 
       <Footer />
     </div>
