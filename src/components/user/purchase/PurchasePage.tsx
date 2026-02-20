@@ -5,6 +5,7 @@ import { Star, Minus, Plus, MapPin, Truck, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "../service/ServiceCard";
 import LocationModal, { PurchaseDetails } from "./LocationModal";
+import { useAuth } from "@/context/auth-context";
 
 interface PurchasePageProps {
   product: Product;
@@ -17,6 +18,7 @@ export default function PurchasePage({ product }: PurchasePageProps) {
     useState<PurchaseDetails | null>(null);
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0); // Store as percentage
+  const { isAuthenticated } = useAuth();
 
   const handleApplyPromo = () => {
     const code = promoCode.toUpperCase().trim();
@@ -96,29 +98,30 @@ export default function PurchasePage({ product }: PurchasePageProps) {
                   </a>
                 </div>
 
-                {/* Price */}
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-3 mb-2">
-                    <span className="text-4xl font-bold text-[#146041]">
-                      $ {(product.price ?? product.basePrice).toFixed(2)}
-                    </span>
-                    <span className="text-gray-400">/{product.unit}</span>
+                {isAuthenticated && (
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-3 mb-2">
+                      <span className="text-4xl font-bold text-[#146041]">
+                        $ {(product.price ?? product.basePrice).toFixed(2)}
+                      </span>
+                      <span className="text-gray-400">/{product.unit}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 line-through">
+                        $ {((product.price ?? product.basePrice) * 1.4).toFixed(
+                          2,
+                        )}
+                      </span>
+                      <span className="text-green-600 font-semibold">
+                        -$
+                        {(
+                          (product.price ?? product.basePrice) * 0.4
+                        ).toFixed(2)}{" "}
+                        (save)
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400 line-through">
-                      $ {((product.price ?? product.basePrice) * 1.4).toFixed(
-                        2,
-                      )}
-                    </span>
-                    <span className="text-green-600 font-semibold">
-                      -$
-                      {(
-                        (product.price ?? product.basePrice) * 0.4
-                      ).toFixed(2)}{" "}
-                      (save)
-                    </span>
-                  </div>
-                </div>
+                )}
 
                 {/* Quantity Selector */}
                 <div className="flex items-center justify-between mb-6">
@@ -208,44 +211,46 @@ export default function PurchasePage({ product }: PurchasePageProps) {
                   )}
                 </div>
 
-                {/* Price Summary */}
-                <div className="bg-white rounded-xl p-4 mb-6 space-y-3">
-                  <div className="flex justify-between text-gray-700">
-                    <span>Merchandise Subtotal ({quantity} kg)</span>
-                    <span className="font-semibold">
-                      ${merchandiseSubtotal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>Shipping Subtotal</span>
-                    <span className="font-semibold">
-                      ${shippingCost.toFixed(2)}
-                    </span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-[#146041]">
-                      <span className="font-medium">
-                        Promo Discount ({discount}%)
-                      </span>
-                      <span className="font-bold">
-                        -${discountAmount.toFixed(2)}
-                      </span>
+                {isAuthenticated && (
+                  <>
+                    <div className="bg-white rounded-xl p-4 mb-6 space-y-3">
+                      <div className="flex justify-between text-gray-700">
+                        <span>Merchandise Subtotal ({quantity} kg)</span>
+                        <span className="font-semibold">
+                          ${merchandiseSubtotal.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-gray-700">
+                        <span>Shipping Subtotal</span>
+                        <span className="font-semibold">
+                          ${shippingCost.toFixed(2)}
+                        </span>
+                      </div>
+                      {discount > 0 && (
+                        <div className="flex justify-between text-[#146041]">
+                          <span className="font-medium">
+                            Promo Discount ({discount}%)
+                          </span>
+                          <span className="font-bold">
+                            -${discountAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="border-t border-gray-200 pt-3">
+                        <div className="flex justify-between text-gray-900">
+                          <span className="font-semibold">Total :</span>
+                          <span className="font-bold text-xl">
+                            ${total.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <div className="border-t border-gray-200 pt-3">
-                    <div className="flex justify-between text-gray-900">
-                      <span className="font-semibold">Total :</span>
-                      <span className="font-bold text-xl">
-                        ${total.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Payment Button */}
-                <button className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors">
-                  Payment
-                </button>
+                    <button className="w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors">
+                      Payment
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

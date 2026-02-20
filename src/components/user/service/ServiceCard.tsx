@@ -7,6 +7,7 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/context/auth-context";
 
 export interface Product {
   _id: string;
@@ -34,6 +35,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
   const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
   const [isAnimating, setIsAnimating] = React.useState(false);
+  const { isAuthenticated } = useAuth();
   const isFav = isFavourite(product._id);
   const displayPrice = product.price ?? product.basePrice;
   const isAvailable = product.stock > 0;
@@ -102,52 +104,53 @@ export default function ServiceCard({ product }: ServiceCardProps) {
             {product.description}
           </p>
 
-          {/* Price Section */}
-          <div className="flex items-end justify-between mb-4">
-            <div className="flex flex-col">
-              <span className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-0.5">
-                Price
-              </span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-[#004F3B]">
-                  ${displayPrice.toFixed(2)}
-                </span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                  /{product.unit}
-                </span>
+          {isAuthenticated && (
+            <>
+              <div className="flex items-end justify-between mb-4">
+                <div className="flex flex-col">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-0.5">
+                    Price
+                  </span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-[#004F3B]">
+                      ${displayPrice.toFixed(2)}
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                      /{product.unit}
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
+                    isAvailable
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {isAvailable ? "In Stock" : "Stock Out"}
+                </div>
               </div>
-            </div>
 
-            <div
-              className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
-                isAvailable
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {isAvailable ? "In Stock" : "Stock Out"}
-            </div>
-          </div>
+              <Button
+                className="w-full bg-[#004F3B] hover:bg-[#003d2e] text-white text-xs font-bold py-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/20"
+                size="sm"
+                disabled={!isAvailable}
+                onClick={(e) => {
+                  e.preventDefault();
+                  addToCart(product._id, 1, { validateDuplicate: true });
 
-          {/* Add to Cart Button */}
-          <Button
-            className="w-full bg-[#004F3B] hover:bg-[#003d2e] text-white text-xs font-bold py-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/20"
-            size="sm"
-            disabled={!isAvailable}
-            onClick={(e) => {
-              e.preventDefault();
-              addToCart(product._id, 1, { validateDuplicate: true });
-
-              // Trigger fly animation
-              const rect = (
-                e.currentTarget as HTMLElement
-              ).getBoundingClientRect();
-              triggerFlyAnimation(rect);
-            }}
-          >
-            <ShoppingCart className="w-4 h-4" />
-            Add to Cart
-          </Button>
+                  const rect = (
+                    e.currentTarget as HTMLElement
+                  ).getBoundingClientRect();
+                  triggerFlyAnimation(rect);
+                }}
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Add to Cart
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </Link>

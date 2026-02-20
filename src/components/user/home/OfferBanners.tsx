@@ -30,7 +30,7 @@ export default function OfferBanners() {
     : "/hero_delivery_handover.png";
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Banner 1: Market Display */}

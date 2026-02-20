@@ -9,6 +9,7 @@ import { useApi } from "@/hooks/use-api-data";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/context/auth-context";
 
 interface Product {
   _id: string;
@@ -26,10 +27,15 @@ export default function BuyItAgain() {
   const { toggleFavourite, isFavourite } = useFavourite();
   const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
+  const { isAuthenticated } = useAuth();
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
+  const baseEndpoint = isAuthenticated
+    ? "/product&catelog/customer-type"
+    : "/product&catelog";
+
   const { data: productsData } = useApi(
-    "/product&catelog/customer-type",
-    ["products", "customer-type"],
+    baseEndpoint,
+    ["products", "customer-type", isAuthenticated],
     {
       enabled: true,
     },
@@ -47,10 +53,10 @@ export default function BuyItAgain() {
   };
 
   return (
-    <section className="bg-white py-8">
+    <section className="bg-white my-14">
       <div className="container mx-auto px-4">
         {/* Section Header with Button */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-end items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">
               All Products
@@ -61,7 +67,7 @@ export default function BuyItAgain() {
           </div>
           <Link href="/service" className="hidden md:block">
             <Button
-              className="text-white px-8 py-3 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="text-white px-8 py-3 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all cursor-pointer"
               style={{ backgroundColor: "#004F3B" }}
             >
               See More Products
@@ -133,44 +139,50 @@ export default function BuyItAgain() {
                     {product.description}
                   </p>
 
-                  <div className="mb-2 flex items-center justify-between">
-                    <span
-                      className="text-lg font-bold"
-                      style={{ color: "#004F3B" }}
-                    >
-                      ${(product.price ?? product.basePrice).toFixed(2)}
-                    </span>
-                    <span
-                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                        product.status === "Available"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-red-50 text-red-600"
-                      }`}
-                    >
-                      {product.status === "Available"
-                        ? "In stock"
-                        : "Stock out"}
-                    </span>
-                  </div>
+                  {isAuthenticated && (
+                    <>
+                      <div className="mb-2 flex items-center justify-between">
+                        <span
+                          className="text-lg font-bold"
+                          style={{ color: "#004F3B" }}
+                        >
+                          ${(product.price ?? product.basePrice).toFixed(2)}
+                        </span>
+                        <span
+                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                            product.status === "Available"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-red-50 text-red-600"
+                          }`}
+                        >
+                          {product.status === "Available"
+                            ? "In stock"
+                            : "Stock out"}
+                        </span>
+                      </div>
 
-                  <Button
-                    className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
-                    style={{ backgroundColor: "#004F3B" }}
-                    size="sm"
-                    disabled={product.status !== "Available"}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addToCart(product._id, 1, { validateDuplicate: true });
+                      <Button
+                        className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
+                        style={{ backgroundColor: "#004F3B" }}
+                        size="sm"
+                        disabled={product.status !== "Available"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addToCart(product._id, 1, {
+                            validateDuplicate: true,
+                          });
 
-                      const rect = (
-                        e.currentTarget as HTMLElement
-                      ).getBoundingClientRect();
-                      triggerFlyAnimation(rect);
-                    }}
-                  >
-                    <ShoppingCart className="w-3 h-3" />
-                    Add to Cart
-                  </Button>
+                          const rect = (
+                            e.currentTarget as HTMLElement
+                          ).getBoundingClientRect();
+                          triggerFlyAnimation(rect);
+                        }}
+                      >
+                        <ShoppingCart className="w-3 h-3" />
+                        Add to Cart
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </Link>

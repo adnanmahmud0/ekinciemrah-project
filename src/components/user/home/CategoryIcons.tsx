@@ -99,8 +99,8 @@ export default function CategoryIcons() {
                 }}
                 className="flex flex-col items-center min-w-24 cursor-pointer group shrink-0"
               >
-                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">
-                  <div className="relative w-16 h-16">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-green-50 transition-colors overflow-hidden border-2 border-transparent group-hover:border-green-500">
+                  <div className="relative w-12 h-12">
                     <Image
                       src={
                         category.image
@@ -114,7 +114,7 @@ export default function CategoryIcons() {
                     />
                   </div>
                 </div>
-                <p className="text-center font-semibold text-gray-700 whitespace-pre-line leading-tight group-hover:text-[#004F3B] transition-colors">
+                <p className="text-center font-medium text-gray-700 whitespace-pre-line leading-tight group-hover:text-[#004F3B] transition-colors text-sm">
                   {category.categoryName}
                 </p>
               </div>

@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Pin, Star } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 interface Product {
   id: string;
@@ -86,6 +87,8 @@ const PRODUCTS: Product[] = [
 ];
 
 export default function Products() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-6 md:px-12 lg:px-24">
@@ -129,31 +132,39 @@ export default function Products() {
                     {product.description}
                   </p>
 
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
-                    <div className="text-lg md:text-2xl font-bold text-[#146041]">
-                      $ {product.price.toFixed(2)}
-                      <span className="text-xs md:text-sm font-normal text-gray-500"> /{product.unit}</span>
-                    </div>
-                    <span
-                      className={`text-[10px] md:text-xs font-semibold px-2 py-1 rounded-full ${
-                        product.availability === "in-stock"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-red-50 text-red-600"
-                      }`}
-                    >
-                      {product.availability === "in-stock" ? "In stock" : "Stock out"}
-                    </span>
-                  </div>
+                  {isAuthenticated && (
+                    <>
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
+                        <div className="text-lg md:text-2xl font-bold text-[#146041]">
+                          $ {product.price.toFixed(2)}
+                          <span className="text-xs md:text-sm font-normal text-gray-500">
+                            {" "}
+                            /{product.unit}
+                          </span>
+                        </div>
+                        <span
+                          className={`text-[10px] md:text-xs font-semibold px-2 py-1 rounded-full ${
+                            product.availability === "in-stock"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-red-50 text-red-600"
+                          }`}
+                        >
+                          {product.availability === "in-stock"
+                            ? "In stock"
+                            : "Stock out"}
+                        </span>
+                      </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Handle add to cart
-                    }}
-                    className="w-full mt-3 md:mt-4 py-2 md:py-3 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-lg md:rounded-xl text-xs md:text-base font-semibold transition-colors"
-                  >
-                    + Add
-                  </button>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                        }}
+                        className="w-full mt-3 md:mt-4 py-2 md:py-3 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-lg md:rounded-xl text-xs md:text-base font-semibold transition-colors"
+                      >
+                        + Add
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </Link>

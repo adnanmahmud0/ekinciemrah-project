@@ -30,7 +30,7 @@ interface Product {
 }
 
 export default function FeaturedProducts() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const userCustomerType = (user?.customerType || user?.customer_type || "")
     .toString()
     .toLowerCase();
@@ -94,8 +94,8 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
+    <section className="bg-gray-50 my-14">
+      <div className="container mx-auto px-4 py-12">
         {/* Section Header */}
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -150,43 +150,47 @@ export default function FeaturedProducts() {
                     {product.description}
                   </p>
 
-                  <div className="mb-2 flex items-center justify-between">
-                    <span
-                      className="text-lg font-bold"
-                      style={{ color: "#004F3B" }}
-                    >
-                      ${product.price.toFixed(2)}
-                    </span>
-                    <span
-                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                        product.availability === "in-stock"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-red-50 text-red-600"
-                      }`}
-                    >
-                      {product.availability === "in-stock"
-                        ? "In stock"
-                        : "Stock out"}
-                    </span>
-                  </div>
+                  {isAuthenticated && (
+                    <>
+                      <div className="mb-2 flex items-center justify-between">
+                        <span
+                          className="text-lg font-bold"
+                          style={{ color: "#004F3B" }}
+                        >
+                          ${product.price.toFixed(2)}
+                        </span>
+                        <span
+                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                            product.availability === "in-stock"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-red-50 text-red-600"
+                          }`}
+                        >
+                          {product.availability === "in-stock"
+                            ? "In stock"
+                            : "Stock out"}
+                        </span>
+                      </div>
 
-                  <Button
-                    className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
-                    style={{ backgroundColor: "#004F3B" }}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addToCart(product.id, 1, { validateDuplicate: true });
+                      <Button
+                        className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
+                        style={{ backgroundColor: "#004F3B" }}
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addToCart(product.id, 1, { validateDuplicate: true });
 
-                      const rect = (
-                        e.currentTarget as HTMLElement
-                      ).getBoundingClientRect();
-                      triggerFlyAnimation(rect);
-                    }}
-                  >
-                    <ShoppingCart className="w-3 h-3" />
-                    Add to Cart
-                  </Button>
+                          const rect = (
+                            e.currentTarget as HTMLElement
+                          ).getBoundingClientRect();
+                          triggerFlyAnimation(rect);
+                        }}
+                      >
+                        <ShoppingCart className="w-3 h-3" />
+                        Add to Cart
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </Link>

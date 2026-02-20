@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
-import Image from "next/image";
 import { Apple, Play } from "lucide-react";
+import Image from "next/image";
 
 export default function AppMockUpBanner() {
   return (
-    <section className="py-10 bg-[#E6F4F1] overflow-hidden">
+    <section className="py-14 bg-[#E6F4F1] overflow-hidden">
       <div className="container mx-auto px-6 md:px-12 lg:px-24">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
           {/* Left Content */}
@@ -25,7 +24,9 @@ export default function AppMockUpBanner() {
               <button className="flex items-center gap-3 bg-black text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity">
                 <Play className="w-8 h-8 fill-current" />
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-medium leading-none">Get it on</p>
+                  <p className="text-[10px] uppercase font-medium leading-none">
+                    Get it on
+                  </p>
                   <p className="text-lg font-bold leading-tight">Google Play</p>
                 </div>
               </button>

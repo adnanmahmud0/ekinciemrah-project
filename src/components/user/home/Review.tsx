@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useState } from "react";
-import { Star, User, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { publicApi } from "@/lib/api-client";
+import { ChevronLeft, ChevronRight, Quote, Star, User } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 type ReviewType = {
   id: string;
@@ -85,12 +85,15 @@ export default function Review() {
   }, [currentIndex, reviews]);
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+    <section className="py-16 bg-linear-to-b from-white  to-emerald-100/70 overflow-hidden">
       <div className="container mx-auto px-6 md:px-12">
         <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6 text-center md:text-left">
           <div className="max-w-2xl">
-            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-bold tracking-wider uppercase mb-4">
-              Testimonials
+            <span className="inline-flex items-center gap-x-1 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-bold tracking-wider uppercase mb-4">
+              Reviews
+              <Star className="w-4 h-4" />
+              <Star className="w-4 h-4" />
+              <Star className="w-4 h-4" />
             </span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#1A2D42] leading-[1.1] tracking-tight">
               What Our{" "}
@@ -102,14 +105,14 @@ export default function Review() {
             <button
               onClick={handlePrev}
               disabled={loading || reviews.length === 0}
-              className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:border-primary hover:text-primary transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:border-primary hover:text-primary transition-all group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronLeft className="w-6 h-6 group-active:scale-90 transition-transform" />
             </button>
             <button
               onClick={handleNext}
               disabled={loading || reviews.length === 0}
-              className="p-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-[#0e4b32] transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-[#0e4b32] transition-all group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronRight className="w-6 h-6 group-active:scale-90 transition-transform" />
             </button>

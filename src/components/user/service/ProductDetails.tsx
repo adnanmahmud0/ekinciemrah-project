@@ -7,6 +7,7 @@ import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
 import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
 interface ProductDetailsProps {
   product: Product;
@@ -17,6 +18,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const { addToCart } = useCart();
   const { triggerFlyAnimation } = useFlyAnimation();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const isFav = isFavourite(product._id);
   const [quantity, setQuantity] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -97,26 +99,26 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </a>
           </div>
 
-          {/* Price */}
-          <div className="mb-6">
-            <div className="flex items-baseline gap-3 mb-2">
-              <span className="text-4xl font-bold text-[#146041]">
-                $ {displayPrice.toFixed(2)}
-              </span>
-              <span className="text-gray-400">/{product.unit}</span>
-            </div>
+          {isAuthenticated && (
+            <div className="mb-6">
+              <div className="flex items-baseline gap-3 mb-2">
+                <span className="text-4xl font-bold text-[#146041]">
+                  $ {displayPrice.toFixed(2)}
+                </span>
+                <span className="text-gray-400">/{product.unit}</span>
+              </div>
 
-            {/* Status Badge */}
-            <div
-              className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mt-2 ${
-                isAvailable
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {isAvailable ? "In Stock" : "Stock Out"}
+              <div
+                className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mt-2 ${
+                  isAvailable
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {isAvailable ? "In Stock" : "Stock Out"}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quantity Selector */}
           <div className="mb-8">
@@ -142,15 +144,17 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              className="flex-1 w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!isAvailable}
-              onClick={handleBuyNow}
-            >
-              Buy Now
-            </button>
+            {isAuthenticated && (
+              <button
+                className="flex-1 w-full py-4 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!isAvailable}
+                onClick={handleBuyNow}
+              >
+                Buy Now
+              </button>
+            )}
+
             <button
               className="flex-1 py-4 bg-white hover:bg-gray-50 text-[#146041] border-2 border-[#146041] rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!isAvailable}
