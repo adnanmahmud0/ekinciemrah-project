@@ -98,7 +98,7 @@ export default function PromotionalBanners() {
       <div className="container mx-auto px-4">
         {/* Main Carousel Banner - Full Width */}
         <div
-          className="relative h-[280px] md:h-[420px] lg:h-[620px] rounded-2xl overflow-hidden shadow-lg touch-pan-y"
+          className="relative h-[280px] md:h-[420px] lg:h-[640px] rounded-2xl overflow-hidden shadow-lg touch-pan-y"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -109,7 +109,8 @@ export default function PromotionalBanners() {
               <Image
                 src={carouselSlides[currentSlide].image}
                 alt="Promotional Banner"
-                fill
+                width={1505}
+                height={620}
                 className="object-cover"
                 unoptimized
               />

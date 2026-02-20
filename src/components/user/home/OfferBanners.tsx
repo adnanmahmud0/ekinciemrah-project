@@ -34,22 +34,24 @@ export default function OfferBanners() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Banner 1: Market Display */}
-          <div className="relative h-[250px] md:h-[300px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-xl">
+          <div className="relative h-[250px] md:h-[350px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-xl">
             <Image
               src={banner1}
+              width={750}
+              height={250}
               alt="Market Display Offer"
-              fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
               unoptimized
             />
           </div>
 
           {/* Banner 2: Delivery Handover */}
-          <div className="relative h-[250px] md:h-[300px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-xl">
+          <div className="relative h-[250px] md:h-[350px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-xl">
             <Image
               src={banner2}
+              width={750}
+              height={250}
               alt="Delivery Handover Offer"
-              fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
               unoptimized
             />

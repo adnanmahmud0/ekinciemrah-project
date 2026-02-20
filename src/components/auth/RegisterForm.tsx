@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
+import Link from "next/link";
 
 export function RegisterForm({
   className,
@@ -167,12 +168,12 @@ export function RegisterForm({
           <Field>
             <FieldDescription className="text-center">
               Already have an account?{" "}
-              <a
+              <Link
                 href={`${baseAuthPath}/login`}
                 className="underline underline-offset-4"
               >
                 Login
-              </a>
+              </Link>
             </FieldDescription>
           </Field>
         </div>

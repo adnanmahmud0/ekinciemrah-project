@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { authService } from "@/services/auth.service";
+import Link from "next/link";
 
 export function VerifyCodeForm({
   className,
@@ -33,8 +34,8 @@ export function VerifyCodeForm({
     if (storedEmail) {
       setEmail(storedEmail);
     } else {
-        // If no email found, maybe redirect back to forgot password
-        // router.push(`${baseAuthPath}/reset-password`);
+      // If no email found, maybe redirect back to forgot password
+      // router.push(`${baseAuthPath}/reset-password`);
     }
   }, []);
 
@@ -45,35 +46,40 @@ export function VerifyCodeForm({
     setIsLoading(true);
 
     try {
-      const response = await authService.verifyEmail({ 
-          email, 
-          oneTimeCode: parseInt(code) 
+      const response = await authService.verifyEmail({
+        email,
+        oneTimeCode: parseInt(code),
       });
-      
+
       if (response.success) {
         setMessage(response.message || "Verification successful");
         // Store the reset token/data for the next step
         if (response.data) {
-             // Assuming response.data is the token string or contains it
-             const token = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-             localStorage.setItem("resetToken", token);
+          // Assuming response.data is the token string or contains it
+          const token =
+            typeof response.data === "string"
+              ? response.data
+              : JSON.stringify(response.data);
+          localStorage.setItem("resetToken", token);
         }
         setTimeout(() => {
-           router.push(`${baseAuthPath}/set-new-password`);
+          router.push(`${baseAuthPath}/set-new-password`);
         }, 1000);
       } else {
         setError(response.message || "Verification failed");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Something went wrong");
+      setError(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form 
-      className={cn("flex flex-col gap-6", className)} 
+    <form
+      className={cn("flex flex-col gap-6", className)}
       onSubmit={handleSubmit}
       {...props}
     >
@@ -84,15 +90,19 @@ export function VerifyCodeForm({
             Enter the verification code sent to your email ({email})
           </p>
         </div>
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-        {message && <div className="text-green-500 text-sm text-center">{message}</div>}
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
+        )}
+        {message && (
+          <div className="text-green-500 text-sm text-center">{message}</div>
+        )}
         <Field>
           <FieldLabel htmlFor="code">Verification Code</FieldLabel>
-          <Input 
-            id="code" 
-            type="text" 
-            placeholder="123456" 
-            required 
+          <Input
+            id="code"
+            type="text"
+            placeholder="123456"
+            required
             value={code}
             onChange={(e) => setCode(e.target.value)}
           />
@@ -105,9 +115,9 @@ export function VerifyCodeForm({
         <Field>
           <FieldDescription className="text-center">
             Didn&apos;t receive a code?{" "}
-            <a href="#" className="underline underline-offset-4">
+            <Link href="#" className="underline underline-offset-4">
               Resend
-            </a>
+            </Link>
           </FieldDescription>
         </Field>
       </FieldGroup>

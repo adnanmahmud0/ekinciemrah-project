@@ -29,22 +29,24 @@ export default function SideBanners() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Side Banner 1 */}
-          <div className="relative h-[200px] md:h-[280px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
+          <div className="relative h-[200px] md:h-[335px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
             <Image
               src={rightBanner1}
+              width={860}
+              height={300}
               alt="Promotion Banner"
-              fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
               unoptimized
             />
           </div>
 
           {/* Side Banner 2 */}
-          <div className="relative h-[200px] md:h-[280px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
+          <div className="relative h-[200px] md:h-[335px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
             <Image
               src={rightBanner2}
               alt="Promotion Banner 2"
-              fill
+              width={860}
+              height={300}
               className="object-cover group-hover:scale-105 transition-transform duration-500"
               unoptimized
             />

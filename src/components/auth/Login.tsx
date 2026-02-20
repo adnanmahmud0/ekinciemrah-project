@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { ArrowLeft, Eye } from "lucide-react";
+import Link from "next/link";
 
 export function Login({
   className,
@@ -60,11 +62,16 @@ export function Login({
       {...props}
     >
       <FieldGroup>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
-          </p>
+        <div>
+          <Button className="cursor-pointer" onClick={() => router.push("/")}>
+            <ArrowLeft /> Back
+          </Button>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h1 className="text-2xl font-bold">Login to your account</h1>
+            <p className="text-muted-foreground text-sm text-balance">
+              Enter your email below to login to your account
+            </p>
+          </div>
         </div>
         {error && (
           <div className="text-red-500 text-sm text-center">{error}</div>
@@ -93,6 +100,7 @@ export function Login({
           <Input
             id="password"
             type="password"
+            placeholder="*******"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -107,12 +115,12 @@ export function Login({
           <Field>
             <FieldDescription className="text-center">
               Don&apos;t have an account?{" "}
-              <a
+              <Link
                 href={`${baseAuthPath}/register`}
                 className="underline underline-offset-4"
               >
                 Sign up
-              </a>
+              </Link>
             </FieldDescription>
           </Field>
         )}
