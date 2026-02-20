@@ -37,11 +37,12 @@ export function Login({
     setIsLoading(true);
     try {
       const response = await login({ email, password }, isAdminRoute || false);
+      console.log(response);
       if (response.success) {
         if (isAdminRoute) {
-          router.push("/admin/dashboard"); // Assuming admin dashboard is here
+          router.push("/admin/dashboard");
         } else {
-          router.push("/");
+          router.push("/service");
         }
       } else {
         setError(response.message || "Login failed");
