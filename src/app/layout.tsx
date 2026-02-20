@@ -17,7 +17,7 @@ export default function RootLayout({
           <AuthProvider>
             <FlyAnimationProvider>{children}</FlyAnimationProvider>
           </AuthProvider>
-          <Toaster richColors position="top-center" />
+          <Toaster richColors position="top-right" closeButton />
         </QueryProvider>
       </body>
     </html>
