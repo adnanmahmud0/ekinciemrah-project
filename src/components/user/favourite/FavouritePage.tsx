@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import FavouriteGrid from "./FavouriteGrid";
-import { Product } from "./FavouriteCard";
 import { useFavourite } from "@/hooks/use-favourite";
+import { Product } from "./FavouriteCard";
+import FavouriteGrid from "./FavouriteGrid";
 
 interface FavouritePageProps {
   initialProducts?: Product[];
@@ -11,8 +10,7 @@ interface FavouritePageProps {
 export default function FavouritePage({
   initialProducts = [],
 }: FavouritePageProps) {
-  const { favouriteList, toggleFavourite, isLoading } = useFavourite();
-  console.log(toggleFavourite);
+  const { FavouriteList, toggleFavourite, isLoading } = useFavourite();
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";
@@ -23,7 +21,7 @@ export default function FavouritePage({
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const products: Product[] = favouriteList.map((item: any) => ({
+  const products: Product[] = FavouriteList.map((item: any) => ({
     id: item.product?._id || item._id,
     name: item.product?.productName,
     category: item.product?.category,
@@ -36,13 +34,11 @@ export default function FavouritePage({
     availability: item.product?.stock > 0 ? "in-stock" : "stock-out",
   }));
 
-  console.log(products);
-
   if (isLoading) {
     return (
       <section className="py-12 bg-gray-50 min-h-screen">
         <div className="container mx-auto px-6 md:px-12 lg:px-24">
-          <div className="text-center">Loading favourites...</div>
+          <div className="text-center">Loading Favourites...</div>
         </div>
       </section>
     );
