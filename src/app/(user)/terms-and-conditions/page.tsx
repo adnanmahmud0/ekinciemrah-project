@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description:
+    "Read the Unified Produce Terms and Conditions to understand the rules for account registration, ordering, delivery, payments, and acceptable use of our platform.",
+  alternates: { canonical: "/terms-and-conditions" },
+};
+
 export default function TermsAndConditionsPage() {
   return (
     <section className="py-12 bg-white min-h-screen">

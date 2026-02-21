@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -11,10 +10,11 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
+import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, Eye } from "lucide-react";
-import Link from "next/link";
 
 export function Login({
   className,
@@ -37,10 +37,10 @@ export function Login({
     setIsLoading(true);
     try {
       const response = await login({ email, password }, isAdminRoute || false);
-      console.log(response);
+
       if (response.success) {
         if (isAdminRoute) {
-          router.push("/admin/dashboard");
+          router.push("/admin");
         } else {
           router.push("/service");
         }

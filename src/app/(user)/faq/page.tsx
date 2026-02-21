@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FAQ",
+  description:
+    "Find answers to common questions about ordering, account registration, delivery schedules, and more on Unified Produce.",
+  alternates: { canonical: "/faq" },
+};
+
 export default function FAQPage() {
   const faqs = [
     {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import AppMockUpBanner from "@/components/user/home/AppMockUpBanner";
 import BuyItAgain from "@/components/user/home/BuyItAgain";
 import CategoryIcons from "@/components/user/home/CategoryIcons";
@@ -9,6 +10,19 @@ import OfferBanners from "@/components/user/home/OfferBanners";
 import PromotionalBanners from "@/components/user/home/PromotionalBanners";
 import Review from "@/components/user/home/Review";
 import SideBanners from "@/components/user/home/SideBanners";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description:
+    "Shop fresh fruits, vegetables, and wholesale grocery products at Unified Produce. Browse featured items, discover daily deals, and place your business order online.",
+  openGraph: {
+    title: "Unified Produce | Fresh & Quality Products for Your Business",
+    description:
+      "Shop fresh fruits, vegetables, and wholesale grocery products online. Explore featured items and place your business order today.",
+    url: "/",
+  },
+  alternates: { canonical: "/" },
+};
 
 export default function page() {
   return (

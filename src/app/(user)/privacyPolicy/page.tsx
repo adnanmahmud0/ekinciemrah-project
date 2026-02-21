@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Read the Unified Produce Privacy Policy to understand how we collect, use, and protect your business information.",
+  alternates: { canonical: "/privacyPolicy" },
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <section className="min-h-screen bg-gray-50 py-12">
