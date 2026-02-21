@@ -109,13 +109,13 @@ export default function FeaturedProducts() {
         {/* Products Grid - 2 rows x 8 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
           {products.map((product) => (
-            <Link
-              key={product.id}
-              href={`/service/${product.id}`}
-              className="block"
-            >
-              <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
-                <div className="relative h-40 bg-gray-100">
+            <div className="bg-white rounded-lg shadow-xl hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
+              <div className="relative h-40 ">
+                <Link
+                  key={product.id}
+                  href={`/service/${product.id}`}
+                  className="block"
+                >
                   <Image
                     src={product.image}
                     alt={product.name}
@@ -123,77 +123,77 @@ export default function FeaturedProducts() {
                     unoptimized
                     className="object-contain p-4"
                   />
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleFavourite(product.id);
-                    }}
-                    className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors shadow-sm ${
-                      isFavourite(product.id)
-                        ? "bg-red-50 text-red-500 hover:bg-red-100"
-                        : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+                </Link>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleFavourite(product.id);
+                  }}
+                  className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors shadow-sm ${
+                    isFavourite(product.id)
+                      ? "bg-red-50 text-red-500 hover:bg-red-100"
+                      : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+                  }`}
+                >
+                  <Heart
+                    className={`w-4 h-4 ${
+                      isFavourite(product.id) ? "fill-current" : ""
                     }`}
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        isFavourite(product.id) ? "fill-current" : ""
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="p-3 flex-1 flex flex-col">
-                  <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-1">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-gray-600 mb-2 line-clamp-2 flex-1">
-                    {product.description}
-                  </p>
-
-                  {isAuthenticated && (
-                    <>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span
-                          className="text-lg font-bold"
-                          style={{ color: "#004F3B" }}
-                        >
-                          ${product.price.toFixed(2)}
-                        </span>
-                        <span
-                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                            product.availability === "in-stock"
-                              ? "bg-emerald-50 text-emerald-700"
-                              : "bg-red-50 text-red-600"
-                          }`}
-                        >
-                          {product.availability === "in-stock"
-                            ? "In stock"
-                            : "Stock out"}
-                        </span>
-                      </div>
-
-                      <Button
-                        className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
-                        style={{ backgroundColor: "#004F3B" }}
-                        size="sm"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          addToCart(product.id, 1, { validateDuplicate: true });
-
-                          const rect = (
-                            e.currentTarget as HTMLElement
-                          ).getBoundingClientRect();
-                          triggerFlyAnimation(rect);
-                        }}
-                      >
-                        <ShoppingCart className="w-3 h-3" />
-                        Add to Cart
-                      </Button>
-                    </>
-                  )}
-                </div>
+                  />
+                </button>
               </div>
-            </Link>
+
+              <div className="p-3 flex-1 flex flex-col">
+                <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-1">
+                  {product.name}
+                </h3>
+                <p className="text-xs text-gray-600 mb-2 line-clamp-2 flex-1">
+                  {product.description}
+                </p>
+
+                {isAuthenticated && (
+                  <>
+                    <div className="mb-2 flex items-center justify-between">
+                      <span
+                        className="text-lg font-bold"
+                        style={{ color: "#004F3B" }}
+                      >
+                        ${product.price.toFixed(2)}
+                      </span>
+                      <span
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                          product.availability === "in-stock"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-red-50 text-red-600"
+                        }`}
+                      >
+                        {product.availability === "in-stock"
+                          ? "In stock"
+                          : "Stock out"}
+                      </span>
+                    </div>
+
+                    <Button
+                      className="w-full text-white text-xs py-2 rounded-md flex items-center justify-center gap-1"
+                      style={{ backgroundColor: "#004F3B" }}
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addToCart(product.id, 1, { validateDuplicate: true });
+
+                        const rect = (
+                          e.currentTarget as HTMLElement
+                        ).getBoundingClientRect();
+                        triggerFlyAnimation(rect);
+                      }}
+                    >
+                      <ShoppingCart className="w-3 h-3" />
+                      Add to Cart
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
           ))}
         </div>
       </div>

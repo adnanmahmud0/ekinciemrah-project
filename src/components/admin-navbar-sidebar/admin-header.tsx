@@ -25,11 +25,11 @@ export function AdminHeader() {
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4">
       <SidebarTrigger />
       <div className="ml-auto flex items-center gap-4">
-        <Link href="/notifications">
+        {/* <Link href="/notifications">
           <Button variant="ghost" size="icon" className="rounded-full">
             <Bell className="h-5 w-5" />
           </Button>
-        </Link>
+        </Link> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

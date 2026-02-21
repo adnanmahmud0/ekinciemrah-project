@@ -1,18 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { authService } from "@/services/auth.service";
+import { Eye, EyeOff } from "lucide-react";
 
-export function SetNewPasswordForm({ className, ...props }: React.ComponentProps<"form">) {
+export function SetNewPasswordForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
   const pathname = usePathname();
   const router = useRouter();
   const isAdminRoute = pathname?.startsWith("/admin");
@@ -20,6 +21,8 @@ export function SetNewPasswordForm({ className, ...props }: React.ComponentProps
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,16 +31,12 @@ export function SetNewPasswordForm({ className, ...props }: React.ComponentProps
   useEffect(() => {
     const storedToken = localStorage.getItem("resetToken");
     if (storedToken) {
-        // If stored token is a JSON string (e.g. from data object), try to parse it or use as is
-        try {
-            const parsed = JSON.parse(storedToken);
-            setToken(parsed.token || parsed); // Adjust based on actual data structure
-        } catch (e) {
-            setToken(storedToken);
-        }
-    } else {
-        // Redirect if no token?
-        // router.push(`${baseAuthPath}/login`);
+      try {
+        const parsed = JSON.parse(storedToken);
+        setToken(parsed.token || parsed);
+      } catch (e) {
+        setToken(storedToken);
+      }
     }
   }, []);
 
@@ -45,7 +44,7 @@ export function SetNewPasswordForm({ className, ...props }: React.ComponentProps
     e.preventDefault();
     setError("");
     setMessage("");
-    
+
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -54,32 +53,33 @@ export function SetNewPasswordForm({ className, ...props }: React.ComponentProps
     setIsLoading(true);
 
     try {
-      const response = await authService.resetPassword({ 
-          newPassword, 
-          confirmPassword 
-      }, token);
-      
+      const response = await authService.resetPassword(
+        { newPassword, confirmPassword },
+        token,
+      );
+
       if (response.success) {
         setMessage(response.message || "Password reset successfully");
-        // Clear temp storage
         localStorage.removeItem("resetEmail");
         localStorage.removeItem("resetToken");
         setTimeout(() => {
-           router.push(`${baseAuthPath}/login`);
+          router.push(`${baseAuthPath}/login`);
         }, 2000);
       } else {
         setError(response.message || "Failed to reset password");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Something went wrong");
+      setError(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form 
-      className={cn("flex flex-col gap-6", className)} 
+    <form
+      className={cn("flex flex-col gap-6", className)}
       onSubmit={handleSubmit}
       {...props}
     >
@@ -90,27 +90,59 @@ export function SetNewPasswordForm({ className, ...props }: React.ComponentProps
             Enter your new password below
           </p>
         </div>
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-        {message && <div className="text-green-500 text-sm text-center">{message}</div>}
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
+        )}
+        {message && (
+          <div className="text-green-500 text-sm text-center">{message}</div>
+        )}
         <Field>
           <FieldLabel htmlFor="password">New Password</FieldLabel>
-          <Input 
-            id="password" 
-            type="password" 
-            required 
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showNewPassword ? "text" : "password"}
+              required
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowNewPassword(!showNewPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              {showNewPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
         </Field>
         <Field>
           <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
-          <Input 
-            id="confirmPassword" 
-            type="password" 
-            required 
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
         </Field>
         <Field>
           <Button type="submit" disabled={isLoading}>

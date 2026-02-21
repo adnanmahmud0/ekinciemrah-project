@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export function RegisterForm({
   className,
@@ -34,6 +35,7 @@ export function RegisterForm({
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,9 +51,6 @@ export function RegisterForm({
     try {
       const response = await register(formData);
       if (response.success) {
-        // Redirect to login or verification page
-        // User didn't specify, but usually login or verify-email
-        // Let's assume login for now or verify-code if that page exists
         router.push(`${baseAuthPath}/login`);
       } else {
         setError(response.message || "Registration failed");
@@ -150,13 +149,28 @@ export function RegisterForm({
           </Field>
           <Field className="md:col-span-2">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Input
-              id="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder="*******"
+                value={formData.password}
+                onChange={handleChange}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </Field>
         </div>
         <div className="mt-4 flex flex-col gap-3">

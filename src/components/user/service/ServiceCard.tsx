@@ -49,110 +49,131 @@ export default function ServiceCard({ product }: ServiceCardProps) {
   };
 
   return (
-    <Link href={`/service/${product._id}`} className="block">
-      <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden flex flex-col h-full border border-gray-100 group">
-        {/* Product Image */}
-        <div className="relative h-48 bg-gray-50/50 flex items-center justify-center overflow-hidden">
+    <div className="bg-white rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden flex flex-col h-full border border-gray-100 group">
+      {/* Product Image */}
+      <div className="relative h-56  flex items-center justify-center overflow-hidden">
+        <Link href={`/service/${product._id}`} className="block">
           <Image
             src={getImageUrl(product.image)}
             alt={product.productName}
-            fill
-            unoptimized
+            width={280}
+            height={280}
             className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
           />
-          {/* Badge for Tier (Optional UI flair) */}
-          <div className="absolute top-4 left-4">
-            <span className="px-3 py-1 bg-white/80 backdrop-blur-md border border-white/40 rounded-full text-[10px] font-bold text-gray-500 shadow-sm uppercase tracking-tighter">
-              {product.category}
-            </span>
-          </div>
-          {/* Favourite Button */}
-          <button
-            className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-colors shadow-sm z-10 ${
-              isFav
-                ? "bg-red-50 text-red-500 hover:bg-red-100"
-                : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
-            } ${isAnimating ? "animate-pop" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              if (!isFav) {
-                setIsAnimating(true);
-                // Trigger fly animation
-                const rect = (
-                  e.currentTarget as HTMLElement
-                ).getBoundingClientRect();
-                triggerFlyAnimation(rect);
-
-                setTimeout(() => setIsAnimating(false), 400);
-              }
-              toggleFavourite(product._id);
-            }}
-          >
-            <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
-          </button>
+        </Link>
+        {/* Badge for Tier (Optional UI flair) */}
+        <div className="absolute top-2 left-5">
+          <span className="px-3 py-1 bg-white/80 backdrop-blur-md border border-white/40 rounded-full text-[9px] font-bold text-gray-500 shadow-sm uppercase tracking-tighter">
+            {product.category}
+          </span>
         </div>
+        {/* Favourite Button */}
+        <button
+          className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-colors shadow-sm z-10  ${
+            isFav
+              ? "bg-red-50 text-red-500 hover:bg-red-100"
+              : "bg-white/80 text-gray-400 hover:bg-white hover:text-red-500"
+          } ${isAnimating ? "animate-pop" : ""}`}
+          onClick={(e) => {
+            e.preventDefault();
+            if (!isFav) {
+              setIsAnimating(true);
+              // Trigger fly animation
+              const rect = (
+                e.currentTarget as HTMLElement
+              ).getBoundingClientRect();
+              triggerFlyAnimation(rect);
 
-        {/* Product Info */}
-        <div className="p-5 flex-1 flex flex-col">
+              setTimeout(() => setIsAnimating(false), 400);
+            }
+            toggleFavourite(product._id);
+          }}
+        >
+          <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
+        </button>
+      </div>
+
+      {/* Product Info */}
+      <div className="p-5 flex flex-col flex-1">
+        <Link href={`/service/${product._id}`} className="block">
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-bold text-[15px] text-[#1A2D42] leading-tight line-clamp-1">
-              {product.productName}
+              {product.productName.length > 20
+                ? product.productName.slice(0, 20) + "..."
+                : product.productName}
             </h3>
           </div>
+        </Link>
 
-          <p className="text-xs text-gray-400 mb-4 line-clamp-2 flex-1 leading-relaxed">
-            {product.description}
-          </p>
+        {/* Description grows to fill space */}
+        <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed flex-1">
+          {product.description.length > 100
+            ? product.description.slice(0, 100) + "..."
+            : product.description}
+        </p>
 
-          {isAuthenticated && (
-            <>
-              <div className="flex items-end justify-between mb-4">
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-0.5">
-                    Price
+        {/* Price + Buttons — always pinned to card bottom */}
+        {isAuthenticated && (
+          <div className="mt-auto pt-4">
+            <div className="flex items-end justify-between mb-3">
+              <div className="flex flex-col">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl font-black text-[#004F3B]">
+                    ${displayPrice.toFixed(2)}
                   </span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-black text-[#004F3B]">
-                      ${displayPrice.toFixed(2)}
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                      /{product.unit}
-                    </span>
-                  </div>
-                </div>
-
-                <div
-                  className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
-                    isAvailable
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {isAvailable ? "In Stock" : "Stock Out"}
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                    /{product.unit}
+                  </span>
                 </div>
               </div>
 
+              <div
+                className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
+                  isAvailable
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {isAvailable ? "In Stock" : "Stock Out"}
+              </div>
+            </div>
+
+            {/* Buttons row */}
+            <div className="flex gap-2">
               <Button
-                className="w-full bg-[#004F3B] hover:bg-[#003d2e] text-white text-xs font-bold py-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/20"
+                className="flex-1 bg-[#004F3B] hover:bg-[#003d2e] text-white text-xs font-bold py-5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-md shadow-primary/20"
                 size="sm"
                 disabled={!isAvailable}
                 onClick={(e) => {
                   e.preventDefault();
                   addToCart(product._id, 1, { validateDuplicate: true });
-
                   const rect = (
                     e.currentTarget as HTMLElement
                   ).getBoundingClientRect();
                   triggerFlyAnimation(rect);
                 }}
               >
-                <ShoppingCart className="w-4 h-4" />
+                <ShoppingCart className="w-3.5 h-3.5" />
                 Add to Cart
               </Button>
-            </>
-          )}
-        </div>
+
+              <Link
+                href={`/service/${product._id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1"
+              >
+                <Button
+                  className="w-full bg-white hover:bg-[#004F3B] text-[#004F3B] hover:text-white border border-[#004F3B] text-xs font-bold py-5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                  size="sm"
+                  disabled={!isAvailable}
+                >
+                  Buy Now
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
-    </Link>
+    </div>
   );
 }

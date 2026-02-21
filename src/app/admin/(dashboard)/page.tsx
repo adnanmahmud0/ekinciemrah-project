@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Reporting & Analytics"
+        title="Overview"
         description="Overview of user approvals, orders, and credit usage."
       />
 

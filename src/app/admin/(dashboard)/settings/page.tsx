@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,31 +33,41 @@ export default function SettingsPage() {
     setMessage("");
 
     // Only attempt password change if fields are filled
-    if (passwords.currentPassword || passwords.newPassword || passwords.confirmPassword) {
-       if (passwords.newPassword !== passwords.confirmPassword) {
-           setError("New passwords do not match");
-           return;
-       }
-       
-       setLoading(true);
-       try {
-           const response = await authService.changePassword({
-               currentPassword: passwords.currentPassword,
-               newPassword: passwords.newPassword,
-               confirmPassword: passwords.confirmPassword
-           });
-           
-           if (response.success) {
-               setMessage("Password changed successfully");
-               setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
-           } else {
-               setError(response.message || "Failed to change password");
-           }
-       } catch (err: any) {
-           setError(err.response?.data?.message || err.message || "Something went wrong");
-       } finally {
-           setLoading(false);
-       }
+    if (
+      passwords.currentPassword ||
+      passwords.newPassword ||
+      passwords.confirmPassword
+    ) {
+      if (passwords.newPassword !== passwords.confirmPassword) {
+        setError("New passwords do not match");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await authService.changePassword({
+          currentPassword: passwords.currentPassword,
+          newPassword: passwords.newPassword,
+          confirmPassword: passwords.confirmPassword,
+        });
+
+        if (response.success) {
+          setMessage("Password changed successfully");
+          setPasswords({
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+          });
+        } else {
+          setError(response.message || "Failed to change password");
+        }
+      } catch (err: any) {
+        setError(
+          err.response?.data?.message || err.message || "Something went wrong",
+        );
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -72,7 +82,7 @@ export default function SettingsPage() {
         <div className="grid gap-6 max-w-2xl">
           {error && <div className="text-red-500 text-sm">{error}</div>}
           {message && <div className="text-green-500 text-sm">{message}</div>}
-          
+
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -97,7 +107,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="border-t border-gray-200 my-2"></div>
-          
+
           <h3 className="text-lg font-medium">Change Password</h3>
 
           <div className="grid gap-2">
@@ -187,17 +197,16 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div>
-        <Button 
-            className="bg-blue-600 hover:bg-blue-700"
-            onClick={handleSave}
-            disabled={loading}
+        <Button
+          className="cursor-pointer mt-8"
+          onClick={handleSave}
+          disabled={loading}
         >
-            {loading ? "Saving..." : "Save & Change"}
+          <Save /> {loading ? "Saving..." : "Save & Change"}
         </Button>
       </div>
+
+      <div></div>
     </div>
   );
 }

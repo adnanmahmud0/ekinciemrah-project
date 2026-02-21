@@ -101,11 +101,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
           {isAuthenticated && (
             <div className="mb-6">
-              <div className="flex items-baseline gap-3 mb-2">
-                <span className="text-4xl font-bold text-[#146041]">
+              <div className="flex items-baseline gap-1 mb-2">
+                <span className="text-4xl font-black text-[#146041]">
                   $ {displayPrice.toFixed(2)}
                 </span>
-                <span className="text-gray-400">/{product.unit}</span>
+                <span className="text-gray-400 text-lg font-semibold uppercase">
+                  /{product.unit}
+                </span>
               </div>
 
               <div
