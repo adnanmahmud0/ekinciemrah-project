@@ -215,7 +215,7 @@ export default function Navbar() {
         {/* Icons */}
         <div className="lg:absolute lg:right-10 flex items-center ml-auto gap-6 sm:gap-8">
           <Link
-            href="/Favourite"
+            href="/favourite"
             className="text-white hover:text-white/80 transition-colors relative"
           >
             <div id="navbar-wishlist-icon" className="relative">
