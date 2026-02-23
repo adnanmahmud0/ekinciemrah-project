@@ -71,13 +71,13 @@ export default function ContactPage() {
               <Phone className="w-7 h-7 md:w-8 md:h-8" />
             </div>
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
-              Customer care phone
+              Customer service phone
             </h3>
             <p className="text-sm text-[#05472C] mb-3">
               Call us for instant support on urgent orders.
             </p>
             <p className="text-base md:text-lg text-[#1D5DFF] font-semibold">
-              1800-245-6747
+              +1 415 203 4805
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export default function ContactPage() {
               Share detailed requirements or feedback anytime.
             </p>
             <p className="text-base md:text-lg text-[#1D5DFF] font-semibold">
-              Support14@vs.com
+              sales@unifiedproduce.com
             </p>
           </div>
 
@@ -106,8 +106,17 @@ export default function ContactPage() {
             <p className="text-sm text-[#05472C] mb-3">
               Quick questions, live updates, and order clarifications.
             </p>
-            <Button className="bg-[#00E676] hover:bg-[#00C853] text-white font-semibold px-7 mt-1 rounded-full">
-              Start chat
+            <Button
+              asChild
+              className="bg-[#00E676] hover:bg-[#00C853] text-white font-semibold px-7 mt-1 rounded-full"
+            >
+              <a
+                href="https://wa.me/14152034805"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Start chat
+              </a>
             </Button>
           </div>
         </div>
