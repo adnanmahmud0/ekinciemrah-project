@@ -40,7 +40,17 @@ export function Login({
       const response = await login({ email, password }, isAdminRoute || false);
 
       if (response.success) {
-        if (isAdminRoute) {
+        let role = "";
+        try {
+          role = localStorage.getItem("role") || "";
+        } catch {
+          role = "";
+        }
+
+        const normalizedRole = role.toLowerCase();
+        const isAdminUser = normalizedRole.includes("admin");
+
+        if (isAdminUser) {
           router.push("/admin");
         } else {
           router.push("/service");

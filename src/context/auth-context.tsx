@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.success && response.data) {
         let token = "";
-        let userData = null;
+        let userData: any = null;
 
         if (typeof response.data === "string") {
           token = response.data;
@@ -88,7 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (token && token !== "undefined" && token !== "null") {
           localStorage.setItem("token", token);
-          localStorage.setItem("role", isAdmin ? "admin" : "user");
         }
 
         if (!userData) {
@@ -99,6 +98,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (profileResponse.success) {
             userData = profileResponse.data;
           }
+        }
+
+        if (userData && typeof userData === "object") {
+          const rawRole =
+            (userData as any).role ||
+            (userData as any).userRole ||
+            (userData as any).type;
+
+          if (rawRole) {
+            const normalized = String(rawRole).toLowerCase();
+            const storedRole = normalized.includes("admin") ? "admin" : "user";
+            localStorage.setItem("role", storedRole);
+          } else {
+            localStorage.setItem("role", isAdmin ? "admin" : "user");
+          }
+        } else {
+          localStorage.setItem("role", isAdmin ? "admin" : "user");
         }
 
         setUser(userData);
