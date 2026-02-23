@@ -47,20 +47,52 @@ export default function CompanySection() {
       <div className="container mx-auto px-4 py-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           {/* Left: Heading */}
-          <div className="flex flex-col justify-center">
-            <span className="inline-block text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 border px-4 py-1.5 rounded-full w-fit mb-4">
-              Who We Are
-            </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-              Unified Produce —{" "}
-              <span className="text-emerald-600">Fresh &amp; Reliable</span>
-            </h2>
-            <p className="text-gray-500 text-base md:text-lg leading-relaxed max-w-md">
-              We are a premium produce distributor committed to delivering the
-              freshest, highest-quality vegetables and fruits straight from the
-              farm to your business or doorstep.
-            </p>
-            <div className="mt-8 h-1 w-16 rounded-full bg-emerald-500" />
+          <div className="flex flex-col justify-center gap-6">
+            <div className="space-y-3">
+              <span className="inline-block text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-1.5 rounded-full w-fit">
+                About Unified Produce
+              </span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
+                Unified Produce, fresh supply chain{" "}
+                <span className="text-emerald-600">built for businesses</span>
+              </h2>
+              <p className="text-gray-500 text-base md:text-lg leading-relaxed max-w-md">
+                We connect restaurants, retailers, and food businesses directly
+                with trusted farms, combining consistent quality, stable
+                pricing, and on-time delivery in one simple platform.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 max-w-md">
+              <div className="rounded-2xl bg-white border border-emerald-50 px-4 py-3">
+                <p className="text-xs font-medium text-gray-500 mb-1">
+                  Businesses served
+                </p>
+                <p className="text-xl font-bold text-gray-900">
+                  500<span className="text-emerald-600">+</span>
+                </p>
+              </div>
+              <div className="rounded-2xl bg-white border border-emerald-50 px-4 py-3">
+                <p className="text-xs font-medium text-gray-500 mb-1">
+                  Delivery reliability
+                </p>
+                <p className="text-xl font-bold text-gray-900">
+                  98<span className="text-emerald-600">%</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 text-xs md:text-sm text-gray-600">
+              <span className="inline-flex items-center rounded-full bg-white border border-gray-200 px-3 py-1">
+                • Restaurants &amp; cafes
+              </span>
+              <span className="inline-flex items-center rounded-full bg-white border border-gray-200 px-3 py-1">
+                • Hotels &amp; catering
+              </span>
+              <span className="inline-flex items-center rounded-full bg-white border border-gray-200 px-3 py-1">
+                • Retail &amp; wholesalers
+              </span>
+            </div>
           </div>
 
           {/* Right: Cards Grid */}
