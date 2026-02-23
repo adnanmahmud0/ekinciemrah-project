@@ -1,13 +1,29 @@
+"use client";
+
 // components/Footer.tsx
 import Link from "next/link";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { useApi } from "@/hooks/use-api-data";
+import { toast } from "sonner";
 
 const SOCIAL_LINKS = [
-  { icon: Facebook, href: "#" },
-  { icon: Twitter, href: "#" },
-  { icon: Instagram, href: "#" },
-  { icon: Linkedin, href: "#" },
+  { icon: Facebook, key: "facebook" as const },
+  { icon: Twitter, key: "twitter" as const },
+  { icon: Instagram, key: "instagram" as const },
+  { icon: Linkedin, key: "linkedin" as const },
 ];
+
+type BackendSocialLink = {
+  _id: string;
+  name: string;
+  socialLink: string;
+};
+
+type SocialLinksResponse = {
+  success: boolean;
+  message: string;
+  data?: BackendSocialLink[];
+};
 
 const RESOURCES_LINKS = [
   { label: "About Us", href: "/about" },
@@ -77,20 +93,7 @@ export default function Footer() {
         {/* FOLLOW US ON */}
         <div className="space-y-6">
           <h6 className="text-lg text-white font-bold">Follow Us On</h6>
-          <div className="flex items-center gap-4">
-            {SOCIAL_LINKS.map((link, index) => {
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={index}
-                  href={link.href}
-                  className="bg-white/10 p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all"
-                >
-                  <Icon className="w-5 h-5" />
-                </Link>
-              );
-            })}
-          </div>
+          <FooterSocialIcons />
 
           <div className="pt-4">
             <p className="text-white/60 text-sm">
@@ -100,5 +103,43 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterSocialIcons() {
+  const { data } = useApi<SocialLinksResponse>("/social-links", [
+    "social-links-public",
+  ]);
+
+  const socialLinkMap = new Map(
+    (data?.data || []).map((item) => [
+      item.name.toLowerCase(),
+      item.socialLink,
+    ]),
+  );
+
+  return (
+    <div className="flex items-center gap-4">
+      {SOCIAL_LINKS.map((link, index) => {
+        const Icon = link.icon;
+        const href = (socialLinkMap.get(link.key) as string | undefined) || "";
+        return (
+          <button
+            key={index}
+            type="button"
+            onClick={() => {
+              if (!href) {
+                toast.error("Not available.");
+                return;
+              }
+              window.open(href, "_blank", "noopener,noreferrer");
+            }}
+            className="bg-white/10 p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all"
+          >
+            <Icon className="w-5 h-5" />
+          </button>
+        );
+      })}
+    </div>
   );
 }

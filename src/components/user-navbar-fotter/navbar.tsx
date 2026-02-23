@@ -41,6 +41,7 @@ import { useFavourite } from "@/hooks/use-favourite";
 import { useCart } from "@/hooks/use-cart";
 import { useApi } from "@/hooks/use-api-data";
 import { useDebounce } from "@/hooks/use-debounce";
+import { toast } from "sonner";
 
 interface SearchProduct {
   _id: string;
@@ -63,6 +64,18 @@ interface SearchResponse {
   };
 }
 
+type BackendSocialLink = {
+  _id: string;
+  name: string;
+  socialLink: string;
+};
+
+type SocialLinksResponse = {
+  success: boolean;
+  message: string;
+  data?: BackendSocialLink[];
+};
+
 const getImageUrl = (path: string | undefined) => {
   if (!path) return "/placeholder.png";
   if (path.startsWith("http")) return path;
@@ -72,10 +85,10 @@ const getImageUrl = (path: string | undefined) => {
 };
 
 const SOCIAL_LINKS = [
-  { icon: Facebook, href: "#" },
-  { icon: Twitter, href: "#" },
-  { icon: Instagram, href: "#" },
-  { icon: Linkedin, href: "#" },
+  { icon: Facebook, key: "facebook" as const },
+  { icon: Twitter, key: "twitter" as const },
+  { icon: Instagram, key: "instagram" as const },
+  { icon: Linkedin, key: "linkedin" as const },
 ];
 
 const NAV_LINKS = [
@@ -124,6 +137,18 @@ export default function Navbar() {
 
   const suggestions: SearchProduct[] =
     searchResponse?.data?.data?.slice(0, 6) || [];
+
+  const { data: socialLinksResponse } = useApi<SocialLinksResponse>(
+    "/social-links",
+    ["social-links-public"],
+  );
+
+  const socialLinkMap = new Map(
+    (socialLinksResponse?.data || []).map((item) => [
+      item.name.toLowerCase(),
+      item.socialLink,
+    ]),
+  );
 
   useEffect(() => {
     // Skip animation on initial load or if loading
@@ -187,14 +212,23 @@ export default function Navbar() {
         <div className="absolute left-10 z-50 flex items-center gap-4 max-lg:hidden">
           {SOCIAL_LINKS.map((link, index) => {
             const Icon = link.icon;
+            const href =
+              (socialLinkMap.get(link.key) as string | undefined) || "";
             return (
-              <Link
+              <button
                 key={index}
-                href={link.href}
+                type="button"
+                onClick={() => {
+                  if (!href) {
+                    toast.error("Not available.");
+                    return;
+                  }
+                  window.open(href, "_blank", "noopener,noreferrer");
+                }}
                 className="text-white transition-colors hover:text-white/80"
               >
                 <Icon className="w-5 h-5" />
-              </Link>
+              </button>
             );
           })}
         </div>
