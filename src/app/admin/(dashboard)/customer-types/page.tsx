@@ -10,15 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function CustomerTypesPage() {
   const { data, isLoading } = useApi("/customer-type", ["customer-types"]);
 
-  // Backend response structure:
-  // {
-  //     "success": true,
-  //     "message": "...",
-  //     "data": [...]
-  // }
-  // useApi's `data` returns the full response object.
-  // We need data.data for the rows.
-
   const customerTypes = data?.data || [];
 
   // Sort customer types alphabetically
@@ -48,11 +39,7 @@ export default function CustomerTypesPage() {
                 <Skeleton className="h-20 w-full" />
               </div>
             ) : (
-              <DataTable
-                columns={columns}
-                data={sortedCustomerTypes}
-                searchKey="customerType"
-              />
+              <DataTable columns={columns} data={sortedCustomerTypes} />
             )}
           </div>
         </div>
