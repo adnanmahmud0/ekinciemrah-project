@@ -35,7 +35,7 @@ export default function FavouriteCard({
 
   return (
     <Link href={`/service/${product.id}`} className="block">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
         <div className="relative h-48 w-full bg-[#FAFAFA] flex items-center justify-center p-4">
           <button
             onClick={(e) => {
@@ -110,7 +110,7 @@ export default function FavouriteCard({
                   ).getBoundingClientRect();
                   triggerFlyAnimation(rect);
                 }}
-                className="w-full py-2.5 bg[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-[#146041] hover:bg-[#0e4b32] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <ShoppingCart className="w-4 h-4" />
                 Add to Cart
