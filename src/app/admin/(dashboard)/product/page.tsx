@@ -75,23 +75,23 @@ export default function ProductPage() {
                 categoryPrice: true,
                 priceTier: false,
               }}
-              toolbarAction={(table) => (
-                <Select
-                  defaultValue="Category A"
-                  onValueChange={(value) => {
-                    table.getColumn("priceTier")?.setFilterValue(value);
-                  }}
-                >
-                  <SelectTrigger className="w-45">
-                    <SelectValue placeholder="Category A" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Category A">Category A</SelectItem>
-                    <SelectItem value="Category B">Category B</SelectItem>
-                    <SelectItem value="Category C">Category C</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+              // toolbarAction={(table) => (
+              //   <Select
+              //     defaultValue="Category A"
+              //     onValueChange={(value) => {
+              //       table.getColumn("priceTier")?.setFilterValue(value);
+              //     }}
+              //   >
+              //     <SelectTrigger className="w-45">
+              //       <SelectValue placeholder="Category A" />
+              //     </SelectTrigger>
+              //     <SelectContent>
+              //       <SelectItem value="Category A">Category A</SelectItem>
+              //       <SelectItem value="Category B">Category B</SelectItem>
+              //       <SelectItem value="Category C">Category C</SelectItem>
+              //     </SelectContent>
+              //   </Select>
+              // )}
             />
           </div>
         </div>
