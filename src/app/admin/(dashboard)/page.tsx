@@ -2,10 +2,8 @@
 
 import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
 import { SectionCards } from "@/components/dashboard/section-cards";
-import { columns } from "@/components/datatable/columns";
-import { DataTable } from "@/components/datatable/DataTable";
 import { PageHeader } from "@/components/page-header";
-import data from "./data.json";
+import UsersPage from "./users/page";
 
 export default function Page() {
   return (
@@ -22,7 +20,7 @@ export default function Page() {
             <div className="px-4 lg:px-6">
               <ChartAreaInteractive />
             </div>
-            <DataTable columns={columns} data={data} searchKey="name" />
+            <UsersPage showIntro={false} />
           </div>
         </div>
       </div>

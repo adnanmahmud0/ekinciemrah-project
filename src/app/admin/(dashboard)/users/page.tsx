@@ -8,7 +8,11 @@ import { useApi } from "@/hooks/use-api-data";
 import { ApiResponse } from "@/services/auth.service";
 import { Input } from "@/components/ui/input";
 
-export default function UsersPage() {
+interface UsersPageProps {
+  showIntro?: boolean;
+}
+
+export default function UsersPage({ showIntro = true }: UsersPageProps) {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
 
@@ -47,33 +51,35 @@ export default function UsersPage() {
         description="Review & manage business user account"
       />
       <div className="flex flex-col gap-4">
-        <div className="grid gap-4 rounded-lg bg-muted/40 p-4 md:grid-cols-3 md:p-6">
-          <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-foreground">
-              Review and approve new business user registrations
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Check pending requests and verify business details before giving
-              access.
-            </p>
+        {showIntro && (
+          <div className="grid gap-4 rounded-lg bg-muted/40 p-4 md:grid-cols-3 md:p-6">
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-foreground">
+                Review and approve new business user registrations
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Check pending requests and verify business details before giving
+                access.
+              </p>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-foreground">
+                Manage user profiles
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Edit user information, disable risky accounts.
+              </p>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-foreground">
+                Monitor credit limits
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Quickly see each user&apos;s assigned credit limit. status.
+              </p>
+            </div>
           </div>
-          <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-foreground">
-              Manage user profiles
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Edit user information, disable risky accounts.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-foreground">
-              Monitor credit limits
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Quickly see each user&apos;s assigned credit limit. status.
-            </p>
-          </div>
-        </div>
+        )}
 
         <div className="flex items-center">
           <Input
