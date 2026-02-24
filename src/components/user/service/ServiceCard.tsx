@@ -58,6 +58,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
             alt={product.productName}
             width={280}
             height={280}
+            unoptimized
             className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
           />
         </Link>
