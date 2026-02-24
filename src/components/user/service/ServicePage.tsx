@@ -14,6 +14,8 @@ interface ServicePageProps {
   initialProducts?: Product[];
 }
 
+const ITEMS_PER_PAGE = 12; // Define how many items per page
+
 export default function ServicePage({
   initialProducts = [],
 }: ServicePageProps) {
@@ -47,9 +49,17 @@ export default function ServicePage({
   const [searchTerm, setSearchTerm] = useState<string>(searchParam);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  // State for client-side pagination
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     setSearchTerm(searchParam);
   }, [searchParam]);
+
+  // Reset current page to 1 whenever category or search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, debouncedSearchTerm]);
 
   const baseEndpoint = isAuthenticated
     ? "/product&catelog/customer-type"
@@ -77,6 +87,12 @@ export default function ServicePage({
     },
   );
   const products: Product[] = productsData?.data?.data || [];
+
+  // Calculate paginated products
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
 
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
@@ -129,13 +145,54 @@ export default function ServicePage({
             selectedCategory={selectedCategory}
             onSelectCategory={handleSelectCategory}
           />
-          {isLoading || !shouldFetch ? (
-            <div className="w-full flex justify-center py-20">
-              Loading products...
-            </div>
-          ) : (
-            <ServiceGrid products={products} />
-          )}
+          <div className="flex-1">
+            {isLoading || !shouldFetch ? (
+              <div className="w-full flex justify-center py-20">
+                Loading products...
+              </div>
+            ) : (
+              <>
+                <ServiceGrid products={paginatedProducts} />
+                {products.length > ITEMS_PER_PAGE && (
+                  <div className="flex justify-center mt-8 space-x-2">
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-4 py-2 border rounded-md ${
+                            currentPage === page
+                              ? "bg-[#004F3B] text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ),
+                    )}
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </section>
