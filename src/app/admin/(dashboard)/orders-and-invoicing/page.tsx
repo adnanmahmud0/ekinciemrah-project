@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useApi } from "@/hooks/use-api-data";
 import type { ApiResponse } from "@/services/auth.service";
 import type { Order } from "@/components/dialog/order-details-dialog";
+import { useMemo, useState } from "react";
 
 interface BackendOrderUser {
   _id: string;
@@ -110,12 +111,22 @@ function mapBackendOrderToOrder(order: BackendOrder): Order {
 }
 
 export default function OrdersAndInvoicingPage() {
+  const [search, setSearch] = useState("");
+
   const { data, isLoading } = useApi<OrdersResponse>("/orders/admin/all", [
     "orders",
   ]);
 
   const backendOrders = data?.data || [];
   const orders: Order[] = backendOrders.map(mapBackendOrderToOrder);
+
+  const filteredOrders = useMemo(() => {
+    if (!search.trim()) return orders;
+    const term = search.toLowerCase();
+    return orders.filter((order) =>
+      (order.orderId || "").toLowerCase().includes(term),
+    );
+  }, [orders, search]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -130,7 +141,14 @@ export default function OrdersAndInvoicingPage() {
           <Skeleton className="h-[400px] w-full" />
         </div>
       ) : (
-        <DataTable columns={columns} data={orders} searchKey="orderId" />
+        <DataTable
+          columns={columns}
+          data={filteredOrders}
+          searchKey="orderId"
+          searchValue={search}
+          onSearchValueChange={setSearch}
+          searchPlaceholder="Search by order ID"
+        />
       )}
     </div>
   );
