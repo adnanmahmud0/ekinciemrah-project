@@ -2,7 +2,6 @@
 
 import { IconDotsVertical } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { schema } from "./schema";
 
-export const columns: ColumnDef<z.infer<typeof schema>>[] = [
+export type OverviewUserRow = {
+  name: string;
+  email: string;
+  business: string;
+  credit_limit: string | number;
+  status: string;
+};
+
+export const columns: ColumnDef<OverviewUserRow>[] = [
   {
     accessorKey: "name",
     header: "Name",
