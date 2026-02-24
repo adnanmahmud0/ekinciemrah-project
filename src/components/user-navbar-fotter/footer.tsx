@@ -134,7 +134,7 @@ function FooterSocialIcons() {
               }
               window.open(href, "_blank", "noopener,noreferrer");
             }}
-            className="bg-white/10 p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all"
+            className="bg-white/10 p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all cursor-pointer"
           >
             <Icon className="w-5 h-5" />
           </button>

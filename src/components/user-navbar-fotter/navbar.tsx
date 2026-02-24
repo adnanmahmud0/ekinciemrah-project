@@ -225,7 +225,7 @@ export default function Navbar() {
                   }
                   window.open(href, "_blank", "noopener,noreferrer");
                 }}
-                className="text-white transition-colors hover:text-white/80"
+                className="text-white transition-colors hover:text-white/80 cursor-pointer"
               >
                 <Icon className="w-5 h-5" />
               </button>

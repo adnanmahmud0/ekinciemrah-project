@@ -100,6 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
+        let isActuallyAdmin = false;
         if (userData && typeof userData === "object") {
           const rawRole =
             (userData as any).role ||
@@ -108,37 +109,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           if (rawRole) {
             const normalized = String(rawRole).toLowerCase();
-            const storedRole = normalized.includes("admin") ? "admin" : "user";
+            isActuallyAdmin = normalized.includes("admin");
+            const storedRole = isActuallyAdmin ? "admin" : "user";
             localStorage.setItem("role", storedRole);
           } else {
+            isActuallyAdmin = isAdmin;
             localStorage.setItem("role", isAdmin ? "admin" : "user");
           }
         } else {
+          isActuallyAdmin = isAdmin;
           localStorage.setItem("role", isAdmin ? "admin" : "user");
         }
 
-        setUser(userData);
-      } else {
-        // If data is just the token string as per user example "data": "..."
-        // wait, user said `output- { "success": true, ..., "data": "..." }`
-        // If data IS the token.
-        if (typeof response.data === "string") {
-          const profileResponse = isAdmin
-            ? await authService.getAdminProfile()
-            : await authService.getProfile();
-          if (profileResponse.success) {
-            setUser(profileResponse.data);
-          }
-          return response;
+        // Only set user state and stop loading if it's not an admin login to prevent re-render flash
+        // The hard redirect will handle setting the user state on the next page load
+        if (!isActuallyAdmin) {
+          setUser(userData);
+          setIsLoading(false);
         }
         return response;
+      } else {
+        return response;
       }
-      return response;
     } catch (error: any) {
-      // Re-throw or return error format
-      throw error;
-    } finally {
       setIsLoading(false);
+      throw error;
     }
   };
 

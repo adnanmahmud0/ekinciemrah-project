@@ -51,9 +51,13 @@ export function Login({
         const isAdminUser = normalizedRole.includes("admin");
 
         if (isAdminUser) {
-          router.push("/admin");
+          window.location.replace("/admin");
+          // Keep loading state active during redirect to prevent flicker
+          return;
         } else {
-          router.push("/service");
+          router.replace("/service");
+          // For router.replace, it might be fast enough, but let's return anyway
+          return;
         }
       } else {
         setError(response.message || "Login failed");
@@ -62,9 +66,9 @@ export function Login({
       setError(
         err.response?.data?.message || err.message || "Something went wrong",
       );
-    } finally {
-      setIsLoading(false);
     }
+    // Only reach here if there was no redirect
+    setIsLoading(false);
   };
 
   return (
