@@ -6,8 +6,11 @@ import { columns, PaymentCredit } from "./columns";
 import { useApi } from "@/hooks/use-api-data";
 import { ApiResponse } from "@/services/auth.service";
 import { User } from "../users/columns";
+import { useMemo, useState } from "react";
 
 export default function PaymentAndCreditPage() {
+  const [search, setSearch] = useState("");
+
   const { data, isLoading, isError } = useApi<ApiResponse<User[]>>("/user", [
     "users",
   ]);
@@ -30,6 +33,16 @@ export default function PaymentAndCreditPage() {
             : "Near Limit",
       })) || [];
 
+  const filteredPaymentData = useMemo(() => {
+    if (!search.trim()) return paymentData;
+    const term = search.toLowerCase();
+    return paymentData.filter(
+      (row) =>
+        (row.owner || "").toLowerCase().includes(term) ||
+        (row.email || "").toLowerCase().includes(term),
+    );
+  }, [paymentData, search]);
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -45,7 +58,14 @@ export default function PaymentAndCreditPage() {
           Failed to load payment & credit data.
         </div>
       ) : (
-        <DataTable columns={columns} data={paymentData} searchKey="business" />
+        <DataTable
+          columns={columns}
+          data={filteredPaymentData}
+          searchKey="business"
+          searchValue={search}
+          onSearchValueChange={setSearch}
+          searchPlaceholder="search by user name and email"
+        />
       )}
     </div>
   );
