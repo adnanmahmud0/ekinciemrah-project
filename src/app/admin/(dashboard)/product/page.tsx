@@ -38,8 +38,11 @@ export default function ProductPage() {
 
   const products = response?.data?.data || [];
   const meta = response?.data?.meta;
-  const pageCount = meta ? Math.ceil(meta.total / meta.limit) : -1;
-  const totalRows = meta ? meta.total : 0;
+  const pageCount =
+    meta && meta.total > 0 && meta.limit > 0
+      ? Math.ceil(meta.total / meta.limit)
+      : -1;
+  const totalRows = meta?.total ?? 0;
 
   return (
     <div className="space-y-4">
