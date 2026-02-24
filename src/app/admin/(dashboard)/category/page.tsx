@@ -3,12 +3,13 @@ import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/datatable/DataTable";
 import { AddCategoryDialog } from "@/components/dialog/add-category-dialog";
 import { columns, Category } from "./columns";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { privateApi } from "@/lib/api-client";
 
 export default function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -25,6 +26,14 @@ export default function CategoryPage() {
     };
     fetchCategories();
   }, []);
+
+  const filteredCategories = useMemo(() => {
+    if (!search.trim()) return categories;
+    const term = search.toLowerCase();
+    return categories.filter((category) =>
+      category.categoryName.toLowerCase().includes(term),
+    );
+  }, [categories, search]);
 
   return (
     <div className="space-y-4">
@@ -46,8 +55,11 @@ export default function CategoryPage() {
             ) : (
               <DataTable
                 columns={columns}
-                data={categories}
+                data={filteredCategories}
                 searchKey="categoryName"
+                searchValue={search}
+                onSearchValueChange={setSearch}
+                searchPlaceholder="Search by category name"
               />
             )}
           </div>
@@ -56,4 +68,3 @@ export default function CategoryPage() {
     </div>
   );
 }
-
