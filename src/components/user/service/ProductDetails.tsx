@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { Star, Minus, Plus, Heart } from "lucide-react";
+import { Minus, Plus, Heart } from "lucide-react";
 import { Product } from "./ServiceCard";
 import { useFavourite } from "@/hooks/use-favourite";
 import { useFlyAnimation } from "@/context/fly-animation-context";
@@ -81,23 +81,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           <p className="text-gray-600 leading-relaxed mb-6">
             {product.description}
           </p>
-
-          {/* Rating - using mock rating if not in API */}
-          <div className="flex items-center gap-2 mb-6">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-5 h-5 ${
-                  i < Math.floor(product.rating || 5)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-gray-300"
-                }`}
-              />
-            ))}
-            <a href="#reviews" className="text-[#146041] underline ml-2">
-              Ratings {product.reviewCount || 0}
-            </a>
-          </div>
 
           {isAuthenticated && (
             <div className="mb-6">

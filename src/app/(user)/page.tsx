@@ -30,23 +30,23 @@ export default function page() {
       {/* 1. Category icons row */}
       <CategoryIcons />
 
+      {/* 5. Side banners (relocated from beside the slider) */}
+      <SideBanners />
+
+      {/* 4. Featured Products */}
+      <FeaturedProducts />
+
+      {/* 6. All Products grid */}
+      <BuyItAgain />
+
       {/* 2. Main full-width slider */}
-      <PromotionalBanners />
+      {/* <PromotionalBanners /> */}
 
       {/* 3. Company info section */}
       <CompanySection />
 
       {/* 3. Mini promotional banners */}
       <MiniPromotionalBanners />
-
-      {/* 4. Featured Products */}
-      <FeaturedProducts />
-
-      {/* 5. Side banners (relocated from beside the slider) */}
-      <SideBanners />
-
-      {/* 6. All Products grid */}
-      <BuyItAgain />
 
       {/* 7. How It Works */}
       <HowItWorks />
@@ -58,7 +58,7 @@ export default function page() {
       <AppMockUpBanner />
 
       {/* 10. Reviews */}
-      <Review />
+      {/* <Review /> */}
     </>
   );
 }

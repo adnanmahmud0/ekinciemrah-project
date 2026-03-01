@@ -23,6 +23,9 @@ interface Product {
   unit: string;
 }
 
+const HOME_ALL_PRODUCTS_LIMIT = 16;
+const HOME_PAGE_SIZE = 10;
+
 export default function BuyItAgain() {
   const { toggleFavourite, isFavourite } = useFavourite();
   const { addToCart } = useCart();
@@ -33,16 +36,26 @@ export default function BuyItAgain() {
     ? "/product&catelog/customer-type"
     : "/product&catelog";
 
-  const { data: productsData } = useApi(
-    baseEndpoint,
-    ["products", "customer-type", isAuthenticated],
+  const { data: firstPageData } = useApi(
+    `${baseEndpoint}?page=1&limit=${HOME_PAGE_SIZE}`,
+    ["products", "home", "page-1", isAuthenticated],
     {
       enabled: true,
     },
   );
 
-  const allProducts: Product[] = productsData?.data?.data || [];
-  const displayProducts = allProducts.slice(0, 16);
+  const { data: secondPageData } = useApi(
+    `${baseEndpoint}?page=2&limit=${HOME_PAGE_SIZE}`,
+    ["products", "home", "page-2", isAuthenticated],
+    {
+      enabled: !!firstPageData,
+    },
+  );
+
+  const firstPageProducts: Product[] = firstPageData?.data?.data || [];
+  const secondPageProducts: Product[] = secondPageData?.data?.data || [];
+  const allProducts: Product[] = [...firstPageProducts, ...secondPageProducts];
+  const displayProducts = allProducts.slice(0, HOME_ALL_PRODUCTS_LIMIT);
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";

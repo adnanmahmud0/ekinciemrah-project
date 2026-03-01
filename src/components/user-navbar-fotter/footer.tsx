@@ -47,11 +47,11 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-white">
               <span className="font-medium">Phone:</span>
-              <span className="text-white/80">+012 (345) 678 99</span>
+              <span className="text-white/80">+1 415 203 4805</span>
             </div>
             <div className="flex items-center gap-3 text-white">
               <span className="font-medium">Email:</span>
-              <span className="text-white/80">support@unifiedproduce.com</span>
+              <span className="text-white/80">sales@unifiedproduce.com</span>
             </div>
           </div>
         </div>
