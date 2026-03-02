@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ServiceSidebar from "./ServiceSidebar";
@@ -51,6 +51,7 @@ export default function ServicePage({
 
   // State for client-side pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setSearchTerm(searchParam);
@@ -93,6 +94,22 @@ export default function ServicePage({
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedProducts = products.slice(startIndex, endIndex);
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+
+  const scrollToProductsTop = () => {
+    if (listRef.current) {
+      const rect = listRef.current.getBoundingClientRect();
+      const top = window.scrollY + rect.top - 100;
+      window.scrollTo({ top, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    setCurrentPage(page);
+    scrollToProductsTop();
+  };
 
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
@@ -145,7 +162,7 @@ export default function ServicePage({
             selectedCategory={selectedCategory}
             onSelectCategory={handleSelectCategory}
           />
-          <div className="flex-1">
+          <div className="flex-1" ref={listRef}>
             {isLoading || !shouldFetch ? (
               <div className="w-full flex justify-center py-20">
                 Loading products...
@@ -156,9 +173,7 @@ export default function ServicePage({
                 {products.length > ITEMS_PER_PAGE && (
                   <div className="flex justify-center mt-8 space-x-2">
                     <button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(1, prev - 1))
-                      }
+                      onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                       className="px-4 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                     >
@@ -168,7 +183,7 @@ export default function ServicePage({
                       (page) => (
                         <button
                           key={page}
-                          onClick={() => setCurrentPage(page)}
+                          onClick={() => handlePageChange(page)}
                           className={`px-4 py-2 border rounded-md ${
                             currentPage === page
                               ? "bg-[#004F3B] text-white"
@@ -180,9 +195,7 @@ export default function ServicePage({
                       ),
                     )}
                     <button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                      }
+                      onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                       className="px-4 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                     >
