@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { Search } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
-import ServiceSidebar from "./ServiceSidebar";
-import ServiceGrid from "./ServiceGrid";
-import { Product } from "./ServiceCard";
+import { useAuth } from "@/context/auth-context";
 import { useApi } from "@/hooks/use-api-data";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useAuth } from "@/context/auth-context";
+import { Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Product } from "./ServiceCard";
+import ServiceGrid from "./ServiceGrid";
+import ServiceSidebar from "./ServiceSidebar";
 
 interface ServicePageProps {
   initialProducts?: Product[];
@@ -19,6 +19,18 @@ const ITEMS_PER_PAGE = 12; // Define how many items per page
 export default function ServicePage({
   initialProducts = [],
 }: ServicePageProps) {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const key = `service:reloaded:${window.location.pathname}`;
+    const hasReloaded = sessionStorage.getItem(key);
+    if (!hasReloaded) {
+      sessionStorage.setItem(key, "1");
+      window.location.reload();
+    }
+    return () => {
+      sessionStorage.removeItem(key);
+    };
+  }, []);
   const { isAuthenticated } = useAuth();
   const { data: categoryData, isLoading: isCategoriesLoading } = useApi(
     "/category",
@@ -35,6 +47,8 @@ export default function ServicePage({
   const categoryParam = searchParams.get("category");
   const selectedCategory = categoryParam || "All Categories";
   const searchParam = searchParams.get("search") || "";
+
+  const [products2, setProducts2] = useState<Product[]>(initialProducts);
 
   const handleSelectCategory = (category: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -87,12 +101,14 @@ export default function ServicePage({
       enabled: shouldFetch,
     },
   );
+
   const products: Product[] = productsData?.data?.data || [];
 
   // Calculate paginated products
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedProducts = products.slice(startIndex, endIndex);
+
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
 
   const scrollToProductsTop = () => {
@@ -110,6 +126,17 @@ export default function ServicePage({
     setCurrentPage(page);
     scrollToProductsTop();
   };
+
+  useEffect(() => {
+    const getAllProducts = async () => {
+      const response = await fetch(
+        `http://10.10.7.101:5001/api/v1/product&catelog?page=${currentPage}&limit=${ITEMS_PER_PAGE}`,
+      );
+      const data = await response.json();
+      setProducts2(data.data?.data || []);
+    };
+    getAllProducts();
+  }, [currentPage]);
 
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
@@ -169,7 +196,8 @@ export default function ServicePage({
               </div>
             ) : (
               <>
-                <ServiceGrid products={paginatedProducts} />
+                {/* <ServiceGrid products={paginatedProducts} /> */}
+                <ServiceGrid products={products2} />
                 {products.length > ITEMS_PER_PAGE && (
                   <div className="flex justify-center mt-8 space-x-2">
                     <button
