@@ -129,7 +129,7 @@ export default function ServiceCard({ product }: ServiceCardProps) {
               </div>
 
               <div
-                className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
+                className={`text-[10px] font-bold px-1.5 py-1 rounded-full uppercase tracking-wider ${
                   isAvailable
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
