@@ -94,6 +94,7 @@ interface BannerCardProps {
   previewUrl: string;
   onFileChange: (file: File | null) => void;
   onRemove: () => void;
+  warningText?: string;
 }
 
 function BannerCard({
@@ -104,6 +105,7 @@ function BannerCard({
   previewUrl,
   onFileChange,
   onRemove,
+  warningText,
 }: BannerCardProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [validating, setValidating] = useState(false);
@@ -152,6 +154,11 @@ function BannerCard({
         </span>
         {helper && (
           <span className="text-xs md:text-sm text-gray-500">{helper}</span>
+        )}
+        {warningText && (
+          <span className="text-xs md:text-sm text-amber-600 font-semibold">
+            {warningText}
+          </span>
         )}
       </div>
       <div
@@ -475,6 +482,7 @@ export default function BannerUpload() {
               previewUrl={banners[0].preview}
               onFileChange={(file) => handleFileChange(0, file)}
               onRemove={() => handleRemove(0)}
+              warningText="⚠️ Please ignore this banner"
             />
             <BannerCard
               label="Slider Banner 2"
@@ -483,6 +491,7 @@ export default function BannerUpload() {
               previewUrl={banners[1].preview}
               onFileChange={(file) => handleFileChange(1, file)}
               onRemove={() => handleRemove(1)}
+              warningText="⚠️ Please ignore this banner"
             />
           </div>
         </div>
