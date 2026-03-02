@@ -109,10 +109,12 @@ export default function FeaturedProducts() {
         {/* Products Grid - 2 rows x 8 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
           {products.map((product) => (
-            <div className="bg-white rounded-lg shadow-xl hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
+            <div
+              key={product.id}
+              className="bg-white rounded-lg shadow-xl hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col"
+            >
               <div className="relative h-40 ">
                 <Link
-                  key={product.id}
                   href={`/service/${product.id}`}
                   className="block"
                 >

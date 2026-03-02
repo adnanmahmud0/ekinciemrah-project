@@ -48,7 +48,10 @@ export default function ServicePage({
   const selectedCategory = categoryParam || "All Categories";
   const searchParam = searchParams.get("search") || "";
 
-  const [products2, setProducts2] = useState<Product[]>(initialProducts);
+  // Using API-provided products to keep filters and search in sync
+  const [
+    /* legacyInitialProducts */
+  ] = useState<Product[]>(initialProducts);
 
   const handleSelectCategory = (category: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -127,17 +130,6 @@ export default function ServicePage({
     scrollToProductsTop();
   };
 
-  useEffect(() => {
-    const getAllProducts = async () => {
-      const response = await fetch(
-        `http://10.10.7.101:5001/api/v1/product&catelog?page=${currentPage}&limit=${ITEMS_PER_PAGE}`,
-      );
-      const data = await response.json();
-      setProducts2(data.data?.data || []);
-    };
-    getAllProducts();
-  }, [currentPage]);
-
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4">
@@ -196,8 +188,7 @@ export default function ServicePage({
               </div>
             ) : (
               <>
-                {/* <ServiceGrid products={paginatedProducts} /> */}
-                <ServiceGrid products={products2} />
+                <ServiceGrid products={paginatedProducts} />
                 {products.length > ITEMS_PER_PAGE && (
                   <div className="flex justify-center mt-8 space-x-2">
                     <button

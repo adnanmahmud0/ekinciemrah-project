@@ -24,7 +24,7 @@ interface Product {
 }
 
 const HOME_ALL_PRODUCTS_LIMIT = 16;
-const HOME_PAGE_SIZE = 10;
+const HOME_PAGE_SIZE = 16;
 
 export default function BuyItAgain() {
   const { toggleFavourite, isFavourite } = useFavourite();
@@ -36,25 +36,16 @@ export default function BuyItAgain() {
     ? "/product&catelog/customer-type"
     : "/product&catelog";
 
-  const { data: firstPageData } = useApi(
-    `${baseEndpoint}?page=1&limit=${HOME_PAGE_SIZE}`,
-    ["products", "home", "page-1", isAuthenticated],
+  const { data: productsData } = useApi(
+    `${baseEndpoint}?limit=${HOME_PAGE_SIZE}`,
+    ["products", "home", "limit-16", isAuthenticated],
     {
       enabled: true,
     },
   );
 
-  const { data: secondPageData } = useApi(
-    `${baseEndpoint}?page=2&limit=${HOME_PAGE_SIZE}`,
-    ["products", "home", "page-2", isAuthenticated],
-    {
-      enabled: !!firstPageData,
-    },
-  );
-
-  const firstPageProducts: Product[] = firstPageData?.data?.data || [];
-  const secondPageProducts: Product[] = secondPageData?.data?.data || [];
-  const allProducts: Product[] = [...firstPageProducts, ...secondPageProducts];
+  const allProducts: Product[] = productsData?.data?.data || [];
+  console.log(allProducts.length);
   const displayProducts = allProducts.slice(0, HOME_ALL_PRODUCTS_LIMIT);
 
   const getImageUrl = (path: string | undefined) => {
@@ -91,13 +82,12 @@ export default function BuyItAgain() {
         {/* Products Grid - 2 rows x 8 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
           {displayProducts.map((product) => (
-            <div className="bg-white rounded-lg shadow-xl hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
+            <div
+              key={product._id}
+              className="bg-white rounded-lg shadow-xl hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col"
+            >
               <div className="relative h-40 ">
-                <Link
-                  key={product._id}
-                  href={`/service/${product._id}`}
-                  className="block"
-                >
+                <Link href={`/service/${product._id}`} className="block">
                   <Image
                     src={getImageUrl(product.image)}
                     alt={product.productName}
