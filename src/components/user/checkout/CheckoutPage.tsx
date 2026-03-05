@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CheckoutCartItem from "./CheckoutCartItem";
 import { CartItem as UICartItem } from "../cart/CartItem";
 import { useCart } from "@/hooks/use-cart";
@@ -42,6 +42,49 @@ export default function CheckoutPage() {
     deliveryDate: "",
     notes: "",
   });
+
+  // Load saved address on mount
+  useEffect(() => {
+    const loadAddress = async () => {
+      // 1. Try to load from localStorage first (regardless of login status)
+      const savedAddress = localStorage.getItem("checkout_address");
+      if (savedAddress) {
+        try {
+          const parsed = JSON.parse(savedAddress);
+          setDeliveryDetails((prev) => ({
+            ...prev,
+            shippingAddress: parsed.shippingAddress || prev.shippingAddress,
+            billingAddress: parsed.billingAddress || prev.billingAddress,
+          }));
+        } catch (e) {
+          console.error("Failed to parse saved address from localStorage", e);
+        }
+      }
+
+      // 2. If logged in, fetch from API (overwrites localStorage if available)
+      if (user) {
+        try {
+          // Assuming user profile returns shippingAddress and billingAddress
+          // If the profile endpoint is available and returns these fields
+          const response = await post("/user/profile", {}); // Using post for refresh or get if available
+          if (response?.success && response?.data) {
+            const profile = response.data;
+            if (profile.shippingAddress || profile.billingAddress) {
+              setDeliveryDetails((prev) => ({
+                ...prev,
+                shippingAddress: profile.shippingAddress || prev.shippingAddress,
+                billingAddress: profile.billingAddress || prev.billingAddress,
+              }));
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch address from profile API", e);
+        }
+      }
+    };
+
+    loadAddress();
+  }, [user, post]);
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";
@@ -137,6 +180,23 @@ export default function CheckoutPage() {
         }
 
         await clearCart();
+
+        // Save address to localStorage for next time
+        const addressToSave = {
+          shippingAddress: deliveryDetails.shippingAddress,
+          billingAddress: deliveryDetails.billingAddress,
+        };
+        localStorage.setItem("checkout_address", JSON.stringify(addressToSave));
+
+        // If logged in, also update profile on backend (recommended approach)
+        if (user) {
+          try {
+            await post("/user/profile/update", addressToSave);
+          } catch (e) {
+            console.error("Failed to update profile with new address", e);
+          }
+        }
+
         setIsSuccessModalOpen(true);
       } else {
         toast.error(

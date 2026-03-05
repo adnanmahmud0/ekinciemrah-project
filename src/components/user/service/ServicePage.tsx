@@ -19,18 +19,6 @@ const ITEMS_PER_PAGE = 12; // Define how many items per page
 export default function ServicePage({
   initialProducts = [],
 }: ServicePageProps) {
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const key = `service:reloaded:${window.location.pathname}`;
-    const hasReloaded = sessionStorage.getItem(key);
-    if (!hasReloaded) {
-      sessionStorage.setItem(key, "1");
-      window.location.reload();
-    }
-    return () => {
-      sessionStorage.removeItem(key);
-    };
-  }, []);
   const { isAuthenticated } = useAuth();
   const { data: categoryData, isLoading: isCategoriesLoading } = useApi(
     "/category",
@@ -48,6 +36,16 @@ export default function ServicePage({
   const selectedCategory = categoryParam || "All Categories";
   const searchParam = searchParams.get("search") || "";
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const flagKey = "service:reloadOnce";
+    const shouldReload = sessionStorage.getItem(flagKey);
+    if (shouldReload === "1") {
+      sessionStorage.setItem(flagKey, "done");
+      window.location.reload();
+    }
+  }, []);
+
   // Using API-provided products to keep filters and search in sync
   const [
     /* legacyInitialProducts */
@@ -59,6 +57,9 @@ export default function ServicePage({
       params.delete("category");
     } else {
       params.set("category", category);
+    }
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("service:reloadOnce", "1");
     }
     router.push(`/service?${params.toString()}`);
   };
