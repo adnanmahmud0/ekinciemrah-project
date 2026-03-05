@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { CheckCircle2 } from "lucide-react";
 import type { AxiosError } from "axios";
+import { authService } from "@/services/auth.service";
 
 export default function CheckoutPage() {
   const { cartItems, isLoading, addToCart, removeFromCart, clearCart } =
@@ -64,9 +65,8 @@ export default function CheckoutPage() {
       // 2. If logged in, fetch from API (overwrites localStorage if available)
       if (user) {
         try {
-          // Assuming user profile returns shippingAddress and billingAddress
-          // If the profile endpoint is available and returns these fields
-          const response = await post("/user/profile", {}); // Using post for refresh or get if available
+          // Changed to GET request via authService
+          const response = await authService.getProfile();
           if (response?.success && response?.data) {
             const profile = response.data;
             if (profile.shippingAddress || profile.billingAddress) {
@@ -84,7 +84,7 @@ export default function CheckoutPage() {
     };
 
     loadAddress();
-  }, [user, post]);
+  }, [user]); // Removed 'post' from dependencies to prevent infinite loop
 
   const getImageUrl = (path: string | undefined) => {
     if (!path) return "/placeholder.png";

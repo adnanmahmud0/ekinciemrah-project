@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient, UseQueryOptions, MutateOptions } from '@tanstack/react-query';
 import { privateApi } from '@/lib/api-client';
+import { useCallback, useMemo } from 'react';
 
 /**
  * ============================================================================
@@ -8,33 +8,15 @@ import { privateApi } from '@/lib/api-client';
  * ============================================================================
  * 
  * One hook to rule them all.
- * 
- * Logic:
- * 1. Uses the Authenticated Client (`privateApi`) by default.
- * 2. If you have a token, it attaches it.
- * 3. If you don't have a token, it sends the request without one.
- * 4. If the server says "Unauthorized" (401), it automatically logs you out and redirects to login.
- * 
- * Usage:
- * const { data, create, update, remove } = useApi('/orders', ['orders']);
- * ============================================================================
  */
 
-/**
- * Universal Hook for API Operations
- * 
- * @param resourcePath - (Optional) The base URL for the resource (e.g., "/orders").
- * @param queryKey - (Optional) The unique key for caching (e.g., ["orders"]).
- * @param options - (Optional) React Query options.
- */
 export const useApi = <T = any>(
   resourcePath?: string,
   queryKey?: any[],
   options?: Omit<UseQueryOptions<T, Error, T, any[]>, 'queryKey' | 'queryFn'>
 ) => {
   const queryClient = useQueryClient();
-  
-  // We always use privateApi because it handles tokens AND auto-logout on error.
+
   const api = privateApi;
 
   // ==========================================================================
@@ -52,15 +34,14 @@ export const useApi = <T = any>(
   });
 
   // Helper: Invalidate cache
-  const invalidate = () => {
+  const invalidate = useCallback(() => {
     if (queryKey) queryClient.invalidateQueries({ queryKey });
-  };
+  }, [queryClient, queryKey]);
 
   // ==========================================================================
   // 2. MUTATIONS (CREATE, UPDATE, DELETE)
   // ==========================================================================
 
-  // --- POST (Create / Custom) ---
   const postMutation = useMutation({
     mutationFn: async ({ url, data }: { url?: string; data: any }) => {
       const targetUrl = url || resourcePath;
@@ -71,7 +52,6 @@ export const useApi = <T = any>(
     onSuccess: invalidate,
   });
 
-  // --- PUT (Update / Custom) ---
   const putMutation = useMutation({
     mutationFn: async ({ url, data }: { url?: string; data: any }) => {
       const targetUrl = url || resourcePath;
@@ -82,7 +62,6 @@ export const useApi = <T = any>(
     onSuccess: invalidate,
   });
 
-  // --- PATCH (Partial Update) ---
   const patchMutation = useMutation({
     mutationFn: async ({ url, data }: { url?: string; data: any }) => {
       const targetUrl = url || resourcePath;
@@ -93,7 +72,6 @@ export const useApi = <T = any>(
     onSuccess: invalidate,
   });
 
-  // --- DELETE (Remove) ---
   const deleteMutation = useMutation({
     mutationFn: async (url?: string) => {
       const targetUrl = url || resourcePath;
@@ -105,32 +83,54 @@ export const useApi = <T = any>(
   });
 
   // ==========================================================================
-  // 3. RETURN VALUES
+  // 3. STABILIZED ACTIONS
   // ==========================================================================
-  return {
-    // State
+
+  const create = useCallback((data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) =>
+    postMutation.mutateAsync({ data }, options), [postMutation]);
+
+  const update = useCallback((id: string | number, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) =>
+    putMutation.mutateAsync({ url: `${resourcePath}/${id}`, data }, options), [putMutation, resourcePath]);
+
+  const remove = useCallback((id: string | number, options?: MutateOptions<any, Error, string | undefined, unknown>) =>
+    deleteMutation.mutateAsync(`${resourcePath}/${id}`, options), [deleteMutation, resourcePath]);
+
+  const post = useCallback((url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) =>
+    postMutation.mutateAsync({ url, data }, options), [postMutation]);
+
+  const put = useCallback((url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) =>
+    putMutation.mutateAsync({ url, data }, options), [putMutation]);
+
+  const patch = useCallback((url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) =>
+    patchMutation.mutateAsync({ url, data }, options), [patchMutation]);
+
+  const del = useCallback((url: string, options?: MutateOptions<any, Error, string | undefined, unknown>) =>
+    deleteMutation.mutateAsync(url, options), [deleteMutation]);
+
+  // ==========================================================================
+  // 4. MEMOIZED RETURN VALUE
+  // ==========================================================================
+  return useMemo(() => ({
     data: query.data,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
     refetch: query.refetch,
-
-    // Resource Actions
-    create: (data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => postMutation.mutateAsync({ data }, options),
-    update: (id: string | number, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => putMutation.mutateAsync({ url: `${resourcePath}/${id}`, data }, options),
-    remove: (id: string | number, options?: MutateOptions<any, Error, string | undefined, unknown>) => deleteMutation.mutateAsync(`${resourcePath}/${id}`, options),
-
-    // Custom Actions (Any URL)
-    post: (url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => postMutation.mutateAsync({ url, data }, options),
-    put: (url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => putMutation.mutateAsync({ url, data }, options),
-    patch: (url: string, data: any, options?: MutateOptions<any, Error, { url?: string; data: any }, unknown>) => patchMutation.mutateAsync({ url, data }, options),
-    del: (url: string, options?: MutateOptions<any, Error, string | undefined, unknown>) => deleteMutation.mutateAsync(url, options),
-    
-    // Loading States
+    create,
+    update,
+    remove,
+    post,
+    put,
+    patch,
+    del,
     isCreating: postMutation.isPending,
     isUpdating: putMutation.isPending,
     isDeleting: deleteMutation.isPending,
-  };
+  }), [
+    query.data, query.isLoading, query.isError, query.error, query.refetch,
+    create, update, remove, post, put, patch, del,
+    postMutation.isPending, putMutation.isPending, deleteMutation.isPending
+  ]);
 };
 
 // For backward compatibility or clarity, you can alias it
